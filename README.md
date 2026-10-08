@@ -20,7 +20,7 @@ The bundled browser is shared by official pages and web verification; it is inde
 
 - **Three game regions**: a shared graphical interface and Proton launch workflow, with separate client directories, account credentials, Dalamud, and plugin data.
 - **Proton support**: discovers installed versions in system locations and Steam libraries, with manual path selection. Tested on Arch Linux–based CachyOS with proton-cachyos-slr.
-- **Account management**: add, select, edit, and delete accounts by game region; store credentials in a Linux desktop password manager or ordinary files.
+- **Account management**: add, select, edit, and delete accounts by game region; store credentials in a local plaintext files.
 - **Verification codes**: manual code entry and local TOTP generation for Traditional Chinese and Global accounts. Global accounts require OTP only if it is enabled on the account.
 - **Game updates**: check and install patches for the selected game region, including updating without launching the game.
 - **Dalamud and plugins**: optional Dalamud support; manage plugin enablement and check for Dalamud and plugin updates without entering the game.
@@ -37,7 +37,7 @@ Before using a third-party launcher, Dalamud, or plugins, read the applicable ga
 - **Uses Proton**: replaces the bundled Wine + DXVK approach of XIVLauncher and XIVLauncherCN with an installed Proton version. Installed versions are discovered automatically, and CachyOS's proton-cachyos-slr has been tested on real hardware.
 - **Unified game-region management**: switch between China, Traditional Chinese, and Global in one launcher, with separate accounts, clients, and plugin data. Each region's Dalamud application is downloaded on demand; the package may include shared or preinstalled helper components.
 - **Plugin management outside the game**: change plugin enablement, select plugin updates, and synchronize settings between game regions without entering the game.
-- **Credential management**: manage credentials by game region, with desktop password manager or local plaintext storage and local TOTP generation.
+- **Credential management**: manage credentials by game region, with local plaintext storage and local TOTP generation.
 - **Reuse an existing Global (Steam) pfx**: retain local game settings and character configuration files when switching from the official launcher to FFXIV Super Launcher. This does not concern character progress stored on the game servers.
 - **Traditional Chinese Dalamud injection adaptation**: adjusts injection for Linux/Proton, using the same entrypoint path as Global and skipping ArgFixer from the original Traditional Chinese injection flow. Entering a character, installing plugins, and running them have been verified in game.
 - **China Dalamud branch selection**: uses the Dalamud-DailyRoutines branch and update source used by Soil, rather than the plugin blacklist policy of the ottercorp branch. This does not imply that every plugin is compatible or exempt from the game's terms of service.
@@ -50,7 +50,6 @@ Before using a third-party launcher, Dalamud, or plugins, read the applicable ga
 - An installed Proton version and the Steam Linux Runtime it requires. Consult that Proton version's documentation for its dependencies.
 - A complete client for the desired game region. **This project does not download a complete client into an empty directory.**
 - Working graphics drivers and the Vulkan support required by the selected Proton version.
-- For desktop password manager storage: an available, unlocked Secret Service–compatible keyring and `secret-tool`.
 
 The runtime package includes .NET; users do not need to install the .NET SDK separately. Consult release notes for dependencies and validation on other distributions. Working on CachyOS does not mean all distributions or sandbox environments have been tested.
 
@@ -59,11 +58,11 @@ The runtime package includes .NET; users do not need to install the .NET SDK sep
 Download the x86_64 AppImage from [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases), make it executable, and run it from a writable directory of your choice. AppImage is the only release format.
 
 
-The first-run wizard guides you through interface language, game region, Steam / Proton directories, credential storage, and whether to enable Dalamud.
+The first-run wizard guides you through interface language, game region, Steam / Proton directories, and whether to enable Dalamud.
 
 Next, configure client directories in “Language and region”. Select the game installation directory containing the `game` subdirectory; Global also requires a complete `boot` subdirectory.
 
-In “Login credential management”, use “Add account” to enter credentials and click “Save”. Return to “Game”, choose an account with “Select login name”, and click “Log in and launch”. A new China account only needs a login name: scan the QR code on first login, and quick-login credentials will be saved using the chosen storage method after authentication succeeds.
+In “Login credential management”, use “Add account” to enter credentials and click “Save”. Return to “Game”, choose an account with “Select login name”, and click “Log in and launch”. A new China account only needs a login name: scan the QR code on first login, and quick-login credentials will be saved in the region’s credential file after authentication succeeds.
 
 ## Steam and Proton
 
@@ -123,9 +122,9 @@ The default data directory is:
 
 The application honors `XDG_DATA_HOME`. Shared Steam and Proton settings are stored in the launcher data directory; accounts and Dalamud data are separated by game region.
 
-“Use desktop password manager” in “Login credential management” is checked by default. After unchecking it and clicking “Save”, credentials subsequently saved to ordinary files are stored in `credentials.json` in the corresponding game-region directory. They may contain plaintext passwords, 2FA secrets, or quick-login credentials. This preference applies to all game regions; existing credentials are not moved automatically. Do not upload or share these files.
+Credentials are stored only as plaintext in `credentials.json` inside each game-region directory. Passwords, 2FA secrets and quick-login credentials are not encrypted. The launcher creates credential files with owner-only permissions. Do not upload or share these files.
 
-The first-run choice and later changes in any game region use the same setting. After saving, reads and writes use only the selected storage backend; disabling the desktop password manager prevents old account records from calling it. If credentials are absent in the selected backend, scan again for China or save the password and optional 2FA secret again for Traditional Chinese / Global.
+
 
 A 2FA secret is different from a six-digit verification code: the secret generates codes, while a code is entered only for the current login. Do not enter a six-digit code in the secret field.
 
