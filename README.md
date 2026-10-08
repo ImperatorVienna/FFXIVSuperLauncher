@@ -93,7 +93,7 @@ The launcher checks for stable releases in the background at startup. You can al
 
 For AppImage, use **Add to applications menu** in About. After moving or renaming the file, run it once; there is no need to recreate the menu entry. Re-add the entry once when upgrading from an older direct-path release.
 
-Before checking for updates, AppImage startup creates default configuration if missing, refreshes the fixed launch script, and creates the application menu entry in that order. You can recreate it from About. After setup and after adding the menu entry, available desktop menu caches are refreshed in the background without opening a terminal. Refresh failures do not block the launcher.
+Before checking for updates, AppImage startup creates default configuration if missing, refreshes the fixed launch script, and creates the application menu entry in that order. You can recreate it from About. After setup and after adding the menu entry, available desktop menu caches are refreshed in the background without opening a terminal. Refresh failures do not block the launcher. The menu entry uses an absolute path to a persistent icon file, so it remains available after the AppImage is unmounted.
 
 | Action | Behavior |
 | --- | --- |
