@@ -125,6 +125,8 @@ The application honors `XDG_DATA_HOME`. Shared Steam and Proton settings are sto
 
 “Use desktop password manager” in “Login credential management” is checked by default. After unchecking it and clicking “Save”, credentials subsequently saved to ordinary files are stored in `credentials.json` in the corresponding game-region directory. They may contain plaintext passwords, 2FA secrets, or quick-login credentials. This preference applies to all game regions; existing credentials are not moved automatically. Do not upload or share these files.
 
+The first-run choice and later changes in any game region use the same setting. After saving, reads and writes use only the selected storage backend; disabling the desktop password manager prevents old account records from calling it. If credentials are absent in the selected backend, scan again for China or save the password and optional 2FA secret again for Traditional Chinese / Global.
+
 A 2FA secret is different from a six-digit verification code: the secret generates codes, while a code is entered only for the current login. Do not enter a six-digit code in the secret field.
 
 ## Feedback
