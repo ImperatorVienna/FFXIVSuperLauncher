@@ -89,9 +89,11 @@ When unchecked, Global uses the same shared environment settings as the other tw
 
 ## Updates
 
-The launcher checks for stable releases in the background at startup. You can also use **Check for updates** beside the version in About; there is no update-channel selector. AppImage updates require confirmation, download the complete file and verify a signed manifest and SHA256 before replacement. The new AppImage keeps its new version number in its filename in the same directory; the old version is retained as `.previous`. Steam and application-menu entries use `~/.local/share/xivlauncher-super/appimage-launcher`, which records the current AppImage path. After moving or renaming the AppImage manually, run it once to refresh this path. If multiple copies exist, the last one launched is used. Exit the game before updating; relaunch manually after installation. Accounts and settings remain separate. Failed background checks do not block game login.
+The launcher checks for stable releases in the background at startup. You can also use **Check for updates** beside the version in About; there is no update-channel selector. AppImage updates require confirmation, download the complete file and verify a signed manifest and SHA256 before replacement. The new AppImage keeps its new version number in its filename in the same directory; the old version is retained as `.previous`. Steam and application-menu entries use `~/.local/share/xivlauncher-super/appimage-launcher`, which records the current AppImage path. After moving or renaming the AppImage manually, run it once to refresh this path. If multiple copies exist, the last one launched is used. Exit the game before updating. After installation, the new AppImage opens automatically using its absolute path, independently of menu registration. Accounts and settings remain separate. Failed background checks do not block game login.
 
 For AppImage, use **Add to applications menu** in About. After moving or renaming the file, run it once; there is no need to recreate the menu entry. Re-add the entry once when upgrading from an older direct-path release.
+
+Before checking for updates, AppImage startup creates default configuration if missing, refreshes the fixed launch script, and creates the application menu entry in that order. You can recreate it from About. After setup and after adding the menu entry, available desktop menu caches are refreshed in the background without opening a terminal. Refresh failures do not block the launcher.
 
 | Action | Behavior |
 | --- | --- |
