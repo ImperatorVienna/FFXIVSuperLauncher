@@ -1,0 +1,23 @@
+[
+  {
+    "local": "src/XIVLauncher.Linux/Patching/Util/BinaryReaderHelpers.cs",
+    "upstream": "src/XIVLauncher.Common/Patching/Util/BinaryReaderHelpers.cs",
+    "commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "match": "namespace-only",
+    "copyright_note": "Preserve StackOverflow attribution; embedded snippet license review remains open"
+  },
+  {
+    "local": "src/XIVLauncher.Linux/Patching/Util/ChecksumBinaryReader.cs",
+    "upstream": "src/XIVLauncher.Common/Patching/Util/ChecksumBinaryReader.cs",
+    "commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "match": "namespace-only",
+    "copyright_note": "Retain GPL upstream lineage"
+  },
+  {
+    "local": "src/XIVLauncher.Linux/Patching/Util/Crc32.cs",
+    "upstream": "src/XIVLauncher.Common/Patching/Util/Crc32.cs",
+    "commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "match": "namespace-only",
+    "copyright_note": "Retain GPL upstream lineage"
+  }
+]

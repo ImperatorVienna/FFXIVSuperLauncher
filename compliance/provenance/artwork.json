@@ -1,0 +1,15 @@
+{
+  "file": "src/XIVLauncher.Linux/Resources/icon.png",
+  "sha256": "532cdab7d041804950a9426a57e217f6fff274abb4f20d50229d9470ff7f6b5d",
+  "dimensions": [
+    500,
+    500
+  ],
+  "alpha": "Verified non-opaque RGBA PNG",
+  "source": "https://www.pngaaa.com/detail/6354760",
+  "terms": "https://www.pngaaa.com/terms",
+  "stated_permission": "Non-commercial Use",
+  "modification": "User supplied square 500x500 version; copied byte-for-byte. No AI-generated image used.",
+  "application": "Shared Avalonia Window icon and packaged desktop icon; old Soil PNG/ICO removed.",
+  "rights_status": "User selected asset. Non-commercial website label retained; not a GPL grant or independently verified rightsholder permission."
+}

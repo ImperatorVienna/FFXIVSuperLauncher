@@ -1,0 +1,184 @@
+{
+  "index_sha256": "a62dabd1c6ef1327365b2a3fdffb806222684a746dcb8f4afd1c1f690eba5535",
+  "sections": 779,
+  "sections_with_empty_license": [],
+  "note": "Original unmodified cross-platform upstream notice index. Preserved in full; not proof all listed products ship on Linux.",
+  "copyleft_candidates": [
+    {
+      "title": "Android NDK",
+      "license_sha256": "31b13387e6bde5c7e7006b63ea762020ce583be32e4d62417584c03ac3d3f19a"
+    },
+    {
+      "title": "AXE-CORE Accessibility Audit",
+      "license_sha256": "af175b9d96ee93c21a036152e1b905b0b95304d4ae8c2c921c7609100ba8df7e"
+    },
+    {
+      "title": "common",
+      "license_sha256": "27a1d20d4e4b07b5e6846dea267b101e2138e36fd2af50c31efc78361e4e7a31"
+    },
+    {
+      "title": "core-common",
+      "license_sha256": "1917386268d739ed1e286a686c616f4a4ec597b5018f7e37dc150cae5e576aed"
+    },
+    {
+      "title": "DirectX-Shader-Compiler",
+      "license_sha256": "27a49e35d1da96eba18fba54bc882667ff0ff8c0254f16f2b6e165d605ba7df8"
+    },
+    {
+      "title": "Eigen",
+      "license_sha256": "66a3107d5ad6a058aab753eaac2047ccb2ed0e39465dd0fe5844da3e300d5172"
+    },
+    {
+      "title": "feature-delivery",
+      "license_sha256": "66372f54fa909650fd0aefa3254edd5a527ddd796677a37865c312e65f73c447"
+    },
+    {
+      "title": "ffmpeg",
+      "license_sha256": "903a6faa336b60d419bc6eb2bcffe4ca8bd9446735e5de4fcc901c80e9f22327"
+    },
+    {
+      "title": "glibc",
+      "license_sha256": "b634ab5640e258563c536e658cad87080553df6f34f62269a21d554844e58bfe"
+    },
+    {
+      "title": "googleid",
+      "license_sha256": "149cbb44703bec7b77271f74d36506b47e58fa4ed086d6ffa9222186d1e5c2ea"
+    },
+    {
+      "title": "grpc",
+      "license_sha256": "590198e3f305f2c347fde64d637c65492bbef554db6c8364e149cd375e3797ee"
+    },
+    {
+      "title": "hunspell",
+      "license_sha256": "53692a2ed6c6a2c6ec9b32dd0b820dfae91e0a1fcdf625ca9ed0bdf8705fcc4f"
+    },
+    {
+      "title": "hunspell dictionaries",
+      "license_sha256": "d63c6240d6f6330a025aade63d317d7ff04f95fc3325fe6aea3848ca452f64ea"
+    },
+    {
+      "title": "hyphenation-patterns",
+      "license_sha256": "848b839a69abf379954f0a564a0c84f5dbb2aab4acc26c41571a20c0657a4fb7"
+    },
+    {
+      "title": "ISimpleDOM COM interfaces for accessibility",
+      "license_sha256": "7a92c5e7a83b5ddcc693bb84ea8bdb842308509c1758cffdfe24717609154c75"
+    },
+    {
+      "title": "JSZip",
+      "license_sha256": "602ef1d5d3db1b23ada0b61d4230ef336012de7bc3b773d565f2b27a2757f51d"
+    },
+    {
+      "title": "libbrlapi",
+      "license_sha256": "d80c9d084ebfb50ea1ed91bfbc2410d6ce542097a32c43b00781b83adcb8c77f"
+    },
+    {
+      "title": "libsecret",
+      "license_sha256": "a1a33180d02960ab1c5de36cf20b1a2f0fe9888d83826ad263da5db52f1b183b"
+    },
+    {
+      "title": "libusbx",
+      "license_sha256": "5df07007198989c622f5d41de8d703e7bef3d0e79d62e24332ee739a452af62a"
+    },
+    {
+      "title": "Mozilla Personal Security Manager",
+      "license_sha256": "a718a32ad435b316ce3a9e871e05421d6ca784c435f8ef5715c1b6e289381f04"
+    },
+    {
+      "title": "Mozilla Windows Cert code",
+      "license_sha256": "6d29b685206b28617dd9ac13818ccc943e57df68aeea1db0f4a5539f4507a9aa"
+    },
+    {
+      "title": "Netscape Portable Runtime (NSPR)",
+      "license_sha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04"
+    },
+    {
+      "title": "plasma-wayland-protocols",
+      "license_sha256": "a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861"
+    },
+    {
+      "title": "play-services-auth",
+      "license_sha256": "ad8903ea98240584831a50d14a69fdbe8e51ea8fc3c5dfd8dc75d36bce2e9e05"
+    },
+    {
+      "title": "play-services-auth-base",
+      "license_sha256": "1ef028e5be210b604de1f42ccbf5cfacb50f26fc99f7687b21a9020a96fa5da8"
+    },
+    {
+      "title": "play-services-auth-blockstore",
+      "license_sha256": "7f1535fa8b850a830401db71bc6d2b43937bf42b20eecff7f702e99e7c0ee2ac"
+    },
+    {
+      "title": "play-services-cast",
+      "license_sha256": "a4c836d19b5622fb37c760a6ba5fc3fcd179acb792d682a52e4cc1cff0f447c5"
+    },
+    {
+      "title": "play-services-cast-framework",
+      "license_sha256": "2f1a97f976db9dbe083b16ea243cfae8037893529b2d94f27933333df1905a4c"
+    },
+    {
+      "title": "play-services-instantapps",
+      "license_sha256": "539f68e1430941f4368115c81027a402353d149cc3bcadf3eed61b979c19d669"
+    },
+    {
+      "title": "play-services-time",
+      "license_sha256": "d9c99318cb42077c0aac119f289ccef652aa91cb5006081b61c44c187ae8cea8"
+    },
+    {
+      "title": "review",
+      "license_sha256": "042dacd529faaa2a5ed1ec5857d7fb5684185568b497f3b299bc11d6ed9207a4"
+    },
+    {
+      "title": "ScreenAI Library",
+      "license_sha256": "88c1eea54f07bab1b31abc365d181f47d323d990e604f62a448b705c8b81ad24"
+    },
+    {
+      "title": "Speech Dispatcher",
+      "license_sha256": "592987e8510228d546540b84a22444bde98e48d03078d3b2eefcd889bec5ce8c"
+    },
+    {
+      "title": "symphonia",
+      "license_sha256": "c76f740d1521b9bed9ca7a04ad526c310493c62621b1341d623b431736533b30"
+    },
+    {
+      "title": "symphonia-bundle-flac",
+      "license_sha256": "c76f740d1521b9bed9ca7a04ad526c310493c62621b1341d623b431736533b30"
+    },
+    {
+      "title": "symphonia-bundle-mp3",
+      "license_sha256": "c76f740d1521b9bed9ca7a04ad526c310493c62621b1341d623b431736533b30"
+    },
+    {
+      "title": "symphonia-codec-pcm",
+      "license_sha256": "c76f740d1521b9bed9ca7a04ad526c310493c62621b1341d623b431736533b30"
+    },
+    {
+      "title": "symphonia-codec-vorbis",
+      "license_sha256": "c76f740d1521b9bed9ca7a04ad526c310493c62621b1341d623b431736533b30"
+    },
+    {
+      "title": "symphonia-common",
+      "license_sha256": "c76f740d1521b9bed9ca7a04ad526c310493c62621b1341d623b431736533b30"
+    },
+    {
+      "title": "symphonia-core",
+      "license_sha256": "c76f740d1521b9bed9ca7a04ad526c310493c62621b1341d623b431736533b30"
+    },
+    {
+      "title": "symphonia-metadata",
+      "license_sha256": "c76f740d1521b9bed9ca7a04ad526c310493c62621b1341d623b431736533b30"
+    },
+    {
+      "title": "url_parse",
+      "license_sha256": "284545e873c704952e5b1b39d457dd83a3b115a51d9f1eb5175137bd69b8fa1b"
+    },
+    {
+      "title": "v4l-utils",
+      "license_sha256": "5a7f623a50e384aaf6d2ced068339ddf93d0a50d3a0ecbe86f125b07804ecc78"
+    },
+    {
+      "title": "WebKit",
+      "license_sha256": "a661d10f8f194b1963a75bb4d308f17b078cc064624313a556902d89705f6876"
+    }
+  ]
+}

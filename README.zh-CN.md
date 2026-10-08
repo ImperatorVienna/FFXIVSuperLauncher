@@ -147,6 +147,8 @@ Dalamud 更新连接超时时，可以选择使用现有可用版本继续启动
 
 在仓库根目录执行：
 
+1.0.0 的完整启动器源码位于本仓库。原始源码归档、随包依赖的对应源码及校验文件保存在 [release-materials/1.0.0](release-materials/1.0.0)。Release 下载仅保留 AppImage 和签名更新所需的两个小文件。
+
 ```bash
 # 构建 Linux 启动器
 dotnet build src/XIVLauncher.Linux/XIVLauncher.Linux.csproj -c Release -m:1

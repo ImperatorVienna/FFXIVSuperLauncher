@@ -1,0 +1,13 @@
+{
+  "dependency_entries_with_notices": 34,
+  "helper_package_dlls_matched_to_nuget": 14,
+  "source_delivery_archives": 6,
+  "runtime_binary_and_shell_files_unchanged": 445,
+  "source_differences_from_private_0_12_1": [
+    "src/XIVLauncher.Linux/Taiwan/TaiwanGameUpdater.cs"
+  ],
+  "source_difference_scope": "Attribution comment only",
+  "source_archive_excluded_private_and_build_paths": true,
+  "runtime_tests_rerun": false,
+  "source_builds": "Reloaded.Memory, Buffers, Sigscan and Definitions succeeded; no resulting DLLs installed."
+}

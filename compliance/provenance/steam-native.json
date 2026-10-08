@@ -1,0 +1,37 @@
+{
+  "review_date": "2026-10-08",
+  "local_file": "src/XIVLauncher.Linux/Global/libsteam_api64.so",
+  "local_sha256": "f495fa43e7174afb06fb90609528224c987da32cb32c3c335e9897d016e4480b",
+  "inherited_from": "goatcorp/FFXIVQuickLauncher@40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+  "official_comparison": {
+    "repository": "ValveSoftware/source-sdk-2013",
+    "commit": "b8cfb12c0e083a2ef5b2f9f9b50f3902fa034474",
+    "path": "src/lib/public/linux64/libsteam_api.so",
+    "sha256": "c0cc3d2802e5f2463bfa0046c41d2f65a6335baaeefbba6c7dbd5681d5ca7c46",
+    "matches_current_bundle": false,
+    "license_url": "https://github.com/ValveSoftware/source-sdk-2013/blob/b8cfb12c0e083a2ef5b2f9f9b50f3902fa034474/LICENSE"
+  },
+  "sdk_redistribution_grant": "https://partner.steamgames.com/documentation/sdk_access_agreement/",
+  "grant_scope": "Section 1.1(b): SDK redistributable_bin components together with licensee software, subject to the agreement. Not an open-source grant.",
+  "remaining": [
+    "Matching upstream distribution now identified as SDK 1.53 by binary identity and history; not a direct hash comparison to a licensed official SDK download",
+    "Verify applicable SDK agreement and GPL combination/distribution basis; upstream copying alone does not supply an exception"
+  ],
+  "action": "Do not substitute an unrelated Valve repository license or silently replace the tested library",
+  "matched_upstream": {
+    "repository": "Facepunch/Facepunch.Steamworks",
+    "commit": "f91eee68a9083d0353eed7e807eac6ca67b1fe64",
+    "path": "UnityPlugin/redistributable_bin/linux64/libsteam_api.so",
+    "git_blob": "8bf6762bb35caa5309598a0168549099fd0f75eb",
+    "byte_identical": true,
+    "sdk_update_commit": "6a204680daa72a0f358376f0d3047d4da32463b0",
+    "sdk_update_message": "Redist for 1.53",
+    "xl_introduction_commit": "5e4458bb199c9c5b6b7c4543480f524ee0776de0"
+  },
+  "upstream_licensing_position": {
+    "url": "https://github.com/goatcorp/FFXIVQuickLauncher/issues/1127#issuecomment-1229814691",
+    "author": "goaaats",
+    "position": "Maintainer argues the Steamworks library qualifies as a GPL System Library, with Steam as the Major Component, especially on Steam Deck.",
+    "scope": "Evidence of upstream rationale, not an explicit additional permission or a Valve grant. Applicability to a general Linux desktop distribution remains a review question."
+  }
+}

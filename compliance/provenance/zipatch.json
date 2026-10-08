@@ -1,0 +1,226 @@
+[
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/AddDirectoryChunk.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/AddDirectoryChunk.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "5324f7508c911b0839530bbb5f3c81cb504aa4563741589fbea60c448c7d48ce",
+    "current_sha256": "fff90339fae96b1070dbb9b5212edd6653d608f8497a222bc2762e12f05f52b3",
+    "namespace_only": false
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/ApplyFreeSpaceChunk.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/ApplyFreeSpaceChunk.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "2ce11749b62972a36b37f33657d98384a0cc7a35627998bc6fcb278933fe6a81",
+    "current_sha256": "32585e063ca3cb504b9a89a499d752fb21be492035ad990897f649e48d5ea305",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/ApplyOptionChunk.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/ApplyOptionChunk.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "04844b12496d6e1eb098350bead862c54172c373ae68a4c6239878ad927aa078",
+    "current_sha256": "a44c0d356d1b7e0cf7fd91f1e9f3712c460ed0e1f854b5c2c82140afdc100bda",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/DeleteDirectoryChunk.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/DeleteDirectoryChunk.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "d4ddd449243e25dca466f6529b375d43855ad33431a605c2410fea2a4a701b79",
+    "current_sha256": "5397c563cdc835696e7a5935e903667bc4d994a20ee8e462657b28c20bb17951",
+    "namespace_only": false
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/EndOfFileChunk.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/EndOfFileChunk.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "0253067274b223e28a4a51cd1b631017a8662654f0cc5748d4426c8bc6612b53",
+    "current_sha256": "ea6ca3da8bf36a2f6805ab1161403a4b0cb37c1d92d6dd50cadcb5f658ccef74",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/FileHeaderChunk.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/FileHeaderChunk.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "1cd889af949f1c0f788233336da7a87d05f0ca973182a711f037ae810b4b4db9",
+    "current_sha256": "aa710543844c965913b887acaa0a0e69809077568f968faedf377acdc5e8987e",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/SqpkChunk.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/SqpkChunk.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "36ab2b9b50c883d3a5deb2a2b95408110004fb0141d2ec8efacbe978a9ba59c9",
+    "current_sha256": "8e8a28795b1e7198ce61644afa4f2d06179aa34e0fae7f353c46efde3ef4c513",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/SqpkCommand/SqpkAddData.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/SqpkCommand/SqpkAddData.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "ba20fe4f4abac9a3174d0f573ced94f293d186da41d6b34f35496489bb00368a",
+    "current_sha256": "78a4029b80143127120fc32c805dbda37c27b1a962a262d98489220543e8c2f6",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/SqpkCommand/SqpkDeleteData.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/SqpkCommand/SqpkDeleteData.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "6c2632b0e68e5ae2f59888066e1921aaf4c0c178de26ab98c4ca23b31526496f",
+    "current_sha256": "9a4a80f455237f84f3efa66e7d8c87f8068a57ba4a929b4c4c39b7c6187c79e8",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/SqpkCommand/SqpkExpandData.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/SqpkCommand/SqpkExpandData.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "a2e2b796d46bb407d41fbef37f17710f746bc8a124cf89b7bc60b7ab0aab0551",
+    "current_sha256": "386b06a7d9c917992fca444bb08ba4225d5676ec7b8d1d4677d6ecf09e8efc23",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/SqpkCommand/SqpkFile.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/SqpkCommand/SqpkFile.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "c5ce9b9ae5a6f6aa222cb0da41ca31de4bade951337e8a5872e864277c5c642e",
+    "current_sha256": "5f011a907ed7f770ae70d3d40dbbe76c8d5008ce3f6c0a34965f5db1edbf041d",
+    "namespace_only": false
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/SqpkCommand/SqpkHeader.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/SqpkCommand/SqpkHeader.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "60d56e9e0d845c29f291e70a97d82eb39783d3300f768e2559e275982992d773",
+    "current_sha256": "e781416668dad5551bb2b73bce890d1589e48af562153c24f85e1346295b8f1f",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/SqpkCommand/SqpkIndex.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/SqpkCommand/SqpkIndex.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "4549a12973cc08b794e061e17a9a936f901d8810693623829a463d053155cddb",
+    "current_sha256": "1e03d735d9782e4bbe33acab2e24a48b89f92a912aff591028ec6045c1c9fed2",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/SqpkCommand/SqpkPatchInfo.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/SqpkCommand/SqpkPatchInfo.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "143c550d094d0a42df90d749c104bccf4e3cbf2223d04578341bd07e56f9717a",
+    "current_sha256": "4020eb6af31d705fe06c43d6ad5bbcae796aed2c72fd26416bf9af86a204604c",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/SqpkCommand/SqpkTargetInfo.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/SqpkCommand/SqpkTargetInfo.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "729973eaa4c3fe9c97709cbd2d9e13bbc747d4309ac745625976c7c30a33f1b8",
+    "current_sha256": "8e67b3929d63f78572fae982ce6ec3e64cab99a56f01a222748e340d7d727666",
+    "namespace_only": false
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/XXXXChunk.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/XXXXChunk.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "a5bcaa8f07bce1f1077e2cddad5e9c077f94661396f2b121f9b51a2758d8f684",
+    "current_sha256": "acc4c77ee5297a3d3adb4dabc195deb0502be0c59c7f1317c4431f139104d05a",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/ZiPatchChunk.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Chunk/ZiPatchChunk.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "0b609e6a9bba4abeaa00736af7e4107179d6cbd42e67cf5af3efb2cc261b9f0c",
+    "current_sha256": "3b3d9d296905709d4b4dca2d476a5e8de56548864f3208442a821ff9dd30b2c0",
+    "namespace_only": false
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Util/AdvanceOnDispose.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Util/AdvanceOnDispose.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "2cd0296454c226882a192b87a0c7bbfa7f0b1e90fe145a3f0c954f5afa451a17",
+    "current_sha256": "0e2b90b8f0f540ee3b2a0d0cdf875c7459416276df4b1559913e2e017c45ce58",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Util/SqexFile.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Util/SqexFile.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "20ad8e4c1a99cd034ac96edfed8940779903acd38e832e2fd826ada17ee2dd19",
+    "current_sha256": "0e542b3a7a2d2606888a5c9836e4c799285aba898bb6ac6bd9eac2920a1d7225",
+    "namespace_only": false
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Util/SqexFileStream.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Util/SqexFileStream.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "db2760cfe613ba23c8e0bf4655c2bfab1255cfe09f9739dcb7270f9efd4415e5",
+    "current_sha256": "f1b3fd8661dc00ba49dfd8b5dbd241861040de8b7db72b03e4192e79430fb6db",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Util/SqexFileStreamStore.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Util/SqexFileStreamStore.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "7b65cd78ecb7ceda57b5d0e5f8dafb3849806d772442ea14a488ab355a3ef3be",
+    "current_sha256": "a9fdfa4081a8209374366866852f8064466bab3c3084eded461912f4912d9997",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Util/SqpackDatFile.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Util/SqpackDatFile.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "1d4b3211fa674daedbb00ee664316045e85bfd768baa6cf335b77df3d6bca63d",
+    "current_sha256": "74c34ba4ba8fcfa80160d7a2d13e803b28db36fb12d6937e19273a2518089b8f",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Util/SqpackFile.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Util/SqpackFile.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "c35c71b33bfbe014f50eb77676312e12386b4200f55fc1f18979debb3dd2f511",
+    "current_sha256": "2490783ef3c516ac689d4b45c107e2d69dc47249d9c58294323b8b60d3081d5e",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Util/SqpackIndexFile.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Util/SqpackIndexFile.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "b853c393cf34376d531bf87f0e9d268454d3ea232273577f5d8ec23fa19c1fbe",
+    "current_sha256": "c8e02870e63e3d9c593dca3f65cb585cbbbcce100055abc352f76b4e211701a1",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/Util/SqpkCompressedBlock.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/Util/SqpkCompressedBlock.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "afbaa1eac182ccd95c3e4766685bb37ea63f4759fca89374d414c063e4a6b5fb",
+    "current_sha256": "fe9d206a87aadc3d570dd0a5b2e09f9a023d5f76eed8f5887cb57cea719ef09d",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/ZiPatchConfig.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/ZiPatchConfig.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "818cd209a1f53d16da7fa606971cd90a55440862579e5eead39ea4749ec60e69",
+    "current_sha256": "38d09d2bb28049829cf6bce06ec76d9d3786a77a4035b5b5928cb4694fb59b90",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/ZiPatchException.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/ZiPatchException.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "719cad62a4ed814b592f2746b6c67ffaa0a86b9e3dad31992e68a838b3e406b3",
+    "current_sha256": "80384cdcb09b1e8af599c64da02ecc310184df3bef6269beaefeee76fb37ee59",
+    "namespace_only": true
+  },
+  {
+    "file": "src/XIVLauncher.Linux/Patching/ZiPatch/ZiPatchFile.cs",
+    "upstream_file": "src/XIVLauncher.Common/Patching/ZiPatch/ZiPatchFile.cs",
+    "upstream_commit": "40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6",
+    "upstream_sha256": "3f41c29273d94efc21395a03a5d3cdf34d323681c4ece346e01ffe947ca67f23",
+    "current_sha256": "d07b74f666b581a0aff171f7d54ea7d1be367c69f337f41fbd01271e759f8619",
+    "namespace_only": true
+  }
+]

@@ -1,0 +1,60 @@
+Bundled injector source/build materials — 2026-10-08
+
+Scope
+This archive covers the two pinned bundled injector targets, not all of Dalamud's
+native/game/plugin projects. The root repositories are included in full, but only
+the FfxivArgLauncher source submodule is populated: it is the only submodule used
+by these managed injector targets. Dalamud.Common is in the root repository.
+Other optional projects in those repositories require their own submodules to build.
+No need to build those unrelated targets to build the injector DLLs described here.
+NuGet packages and .NET SDK/reference assemblies are restored separately. Do not
+mistake this archive for a complete offline cache of every third-party dependency.
+
+Pinned sources
+upstream/soil: Dalamud-DailyRoutines/Dalamud 12c1e860fc85cf129470e2d1a58f8e3db883f140
+  FfxivArgLauncher e2e32129d77ec8e2e4dc340b584b13d864abc59d
+upstream/yanmu: yanmucorp/Dalamud eed420e2d1170a0804e5c6ae6f75f56cef31e0d9
+  FfxivArgLauncher 166d51223ef3270c46a5a2eeb1500fb53aa9ccad
+Original root/submodule licenses and copyright comments are preserved.
+Root archive URLs and SHA256 are listed in injector-source-inputs.json.
+
+Build verification
+Both targets built successfully in isolated source directories using .NET SDK
+10.0.401 on Linux, with their target frameworks unchanged (net10.0-windows and
+net9.0-windows). Run the following commands from this archive's root directory,
+which has no global.json; this selects the installed SDK rather than the .NET 9
+SDK policy in the yanmu subdirectory. Commands need network access for NuGet:
+
+  dotnet build upstream/soil/Dalamud.Injector/Dalamud.Injector.csproj -c Release -p:EnableWindowsTargeting=true -p:NuGetAudit=false -m:1
+  dotnet build upstream/yanmu/Dalamud.Injector/Dalamud.Injector.csproj -c Release -p:EnableWindowsTargeting=true -p:NuGetAudit=false -m:1
+
+Verified outputs: upstream/<name>/bin/Release/Dalamud.Injector.dll.
+Both builds also produce referenced assemblies. Soil produces a Windows apphost.
+Upstream style/analyzer warnings remain; no upstream source was changed to remove them.
+The builds prove the collected source target and dependencies are sufficient;
+they are NOT a claim of byte-identical reproduction of upstream signed/release DLLs.
+Git version metadata, SDK and restore/runtime patch versions can affect output.
+Do not replace the tested application bundle with these audit-build files.
+
+Local TC modification
+The tested launcher bundle uses the original upstream TC DLL identified by
+PROVENANCE.json plus the six-instruction IL modification in local-patch/PatchInjector.cs.
+The patcher verifies the target shape before changing it, preserves entrypoint
+rewriting and never edits an installed upstream addon directory.
+Build the patcher with a local Mono.Cecil assembly path (the launcher packaging
+script uses the assembly contained in Microsoft.CodeCoverage 18.7.0):
+
+  dotnet build local-patch/PatchInjector.csproj -c Release -p:CecilPath=/absolute/path/Mono.Cecil.dll -o patch-tool
+  dotnet patch-tool/PatchInjector.dll upstream/yanmu/bin/Release/Dalamud.Injector.dll patched-injector.dll
+
+The independently rebuilt DLL has different bytes from the tested original;
+launcher version/hash policy intentionally will not accept it without verification.
+Build/patch materials describe the modification; they do not bypass that safeguard.
+An exact binary source pairing is identified by the original DLL's build commit,
+PDB SourceLink and source-document hashes, recorded in PROVENANCE.json.
+
+Distribution
+Publish these materials alongside the applicable launcher binary/source release.
+The launcher source package alone does not automatically contain this separate archive.
+Complete the remaining dependency/legal review in compliance/STATUS.json before a
+public release. This audit does not declare the full launcher distribution cleared.

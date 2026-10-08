@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=FFXIV Super Launcher
+Comment=A community launcher for FINAL FANTASY XIV (FFXIV) on Linux, using Proton to run the game. It supports the China, Traditional Chinese, and Global game clients.
+Exec=xivlauncher-super
+Icon=xivlauncher-super
+Terminal=false
+Categories=Game;
+StartupWMClass=xivlauncher-super

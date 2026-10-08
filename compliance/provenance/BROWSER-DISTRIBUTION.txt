@@ -1,0 +1,45 @@
+Browser distribution review — Electron 44.5.1 Linux x64
+
+Follow the upstream distribution boundary: package the pinned original Electron
+Linux ZIP, retain LICENSE and LICENSES.chromium.html verbatim, replace only the
+example app with our own packaging/webview shell, and add source-delivery notes.
+Do not relabel Chromium's dependencies as MIT because Electron itself is MIT.
+
+The original notice index has 779 nonempty product sections. Its SHA256 and
+copyleft-text candidate list are in browser-notice-review.json. It is generated
+for multiple platforms. Android/Windows/macOS entries alone do not prove those
+components are shipped in this Linux package. Keep the full upstream index,
+rather than deleting notices based on keyword guesses.
+
+The Linux executable's ELF dependencies include libffmpeg.so, GLib/GIO/GObject,
+NSPR/NSS, GTK, ATK, Cairo, CUPS, D-Bus, Pango, X11, GBM, Expat, xcb, xkbcommon,
+udev, ALSA, AT-SPI, glibc and libgcc. In the current tar distribution libffmpeg.so
+is bundled; the other listed system libraries are supplied by the host. This
+distinction must be reviewed again if a future AppImage bundles host libraries.
+Do not use this tar-package review as automatic approval of an AppImage closure.
+
+The browser also includes upstream resources, SwiftShader and the Vulkan loader.
+They retain the complete upstream notice index. No browser executable or shared
+library was modified by the compliance work. The launcher shell uses the browser
+as a separate process, not a C#-linked replacement for its license.
+
+Pinned source entry points:
+https://github.com/electron/electron/tree/v44.5.1
+https://github.com/electron/electron/blob/v44.5.1/DEPS
+https://chromium.googlesource.com/chromium/src/+/152.0.7977.130
+https://github.com/electron/electron/blob/v44.5.1/docs/development/build-instructions-gn.md
+
+Electron's DEPS supplies Chromium and third-party revisions. Source recipients
+must follow the upstream checkout/build instructions, including recursive DEPS
+inputs; an Electron root-only archive is not a complete Chromium source checkout.
+The exact FFmpeg revision/archive and shared-library hash are recorded separately
+in webview.json, and its source archive is automatically attached to releases.
+No full browser source build or per-object correspondence audit was performed.
+Thus the source locations and intact upstream notices are evidenced, while a
+claim that every embedded browser object was independently reconstructed is not.
+
+If distributing additional browser-source copyleft components, ensure equivalent
+source access remains available under their applicable terms; links are not an
+excuse to ignore required source when an upstream location disappears. Preserve
+the pinned release/DEPS records alongside each binary. The final AppImage review
+must inventory any newly copied libraries and their source/notice requirements.

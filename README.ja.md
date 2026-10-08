@@ -147,6 +147,8 @@ Dalamud とプラグインの更新ボタンは「Dalamud とプラグイン」�
 
 リポジトリのルートで実行します。
 
+1.0.0 のランチャーの完全なソースコードは、このリポジトリにあります。元のソースアーカイブ、同梱する依存コンポーネントの対応ソース、チェックサムは [release-materials/1.0.0](release-materials/1.0.0) に保存しています。Release のダウンロードには AppImage と署名付き更新に必要な 2 つの小さなファイルのみを置きます。
+
 ```bash
 # Linux ランチャーをビルド
 dotnet build src/XIVLauncher.Linux/XIVLauncher.Linux.csproj -c Release -m:1

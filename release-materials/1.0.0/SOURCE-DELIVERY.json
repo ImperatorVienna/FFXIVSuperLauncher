@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "delivery": "Publish all listed files alongside the binary, at no additional cost.",
+  "scope": "Source delivery manifest; not a license clearance or byte-identical rebuild claim.",
+  "files": [
+    {
+      "component": "launcher",
+      "file": "xivlauncher-super-1.0.0-source.tar.gz",
+      "sha256": "9deb2eb4de4439f2b827442148ac5788a6feb2cd97ba29d00065afc823122ad6"
+    },
+    {
+      "component": "bundled injectors and local patch",
+      "file": "xivlauncher-super-1.0.0-injector-source.tar.gz",
+      "sha256": "7b7c001420062f5051c9cd1b273f6c08c59efe831e8682550972214b82026853",
+      "inputs": "compliance/injector-source-inputs.json"
+    },
+    {
+      "component": "Chromium FFmpeg",
+      "file": "chromium-ffmpeg-2b68d2babae7-source.tar.gz",
+      "sha256": "e2187d819212b72b96e2da3bbd817e79245138f4ed62d9602ad80fbddc19d06b",
+      "upstream": "https://chromium.googlesource.com/chromium/third_party/ffmpeg/+archive/2b68d2babae73714846961fb0ee47e3b3d2e39a9.tar.gz"
+    },
+    {
+      "component": "Reloaded.Memory",
+      "file": "reloaded.memory-7.0.0-source.tar.gz",
+      "sha256": "c0fb2e56f196c019a9683d835eccf91c7de6badab64ec560cf64318e1a463c20",
+      "upstream": "https://api.github.com/repos/Reloaded-Project/Reloaded.Memory/tarball/c3a7da895d44dc188ae7a488341b8a0db10db175"
+    },
+    {
+      "component": "Reloaded.Memory.Buffers",
+      "file": "reloaded.memory.buffers-2.0.0-source.tar.gz",
+      "sha256": "65c0d72aa7df80b2fe7ab5a36dec4efa15ac429b6307f1df959c446dfbdb6898",
+      "upstream": "https://api.github.com/repos/Reloaded-Project/Reloaded.Memory.Buffers/tarball/6e891b95d7b0b9402912f1d225e706d3d8ffdd6f"
+    },
+    {
+      "component": "Reloaded.Memory.SigScan",
+      "file": "reloaded.memory.sigscan-3.0.0-source.tar.gz",
+      "sha256": "a1abe5af5f0682a6ce36ff13a4a193794eb20187d7ef8c142e03eff471d97f26",
+      "upstream": "https://api.github.com/repos/Reloaded-Project/Reloaded.Memory.SigScan/tarball/bc3cd78526d49167bcad1e830cb200cc6de111e0"
+    }
+  ]
+}

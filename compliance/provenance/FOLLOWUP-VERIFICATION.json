@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-08",
+  "runtime_source_files_unchanged": 279,
+  "webview_files_byte_identical_excluding_component_notice": 77,
+  "published_dependency_entries_with_notices": 20,
+  "clean_launcher_source_build": "passed: SDK 10.0.401, 0 errors, 1 inherited xdelta3 warning",
+  "soil_injector_source_build": "passed: 0 errors, 116 upstream analyzer/style warnings",
+  "yanmu_injector_source_build": "passed: 0 errors, 117 upstream analyzer/style warnings",
+  "rebuilt_tc_il_patch_check": "passed; did not replace runtime artifact",
+  "private_0_12_1_archives": "SHA256 unchanged",
+  "source_scan": "10651 historical blobs and 366 then-current source-package files scanned using local patterns; manual review of current matches found synthetic test fixtures only. Not a complete secret-detection guarantee.",
+  "legal_scope": "Notice presence is not equivalent to permission/compatibility clearance"
+}

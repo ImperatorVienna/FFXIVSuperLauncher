@@ -1,0 +1,64 @@
+FFXIV Super Launcher — source and modification record
+Review date: 2026-10-08. This record is not a blanket redistribution clearance.
+Retain LICENSE and all existing file-level copyright and third-party notices.
+
+Inherited and modified GPL code:
+AtmoOmen/FFXIVQuickLauncher, baseline 4c3ba518ce6985ed808283d2e92bd5ed14fa3c4e
+https://github.com/AtmoOmen/FFXIVQuickLauncher
+Derived through ottercorp/FFXIVQuickLauncher, reference 2ad91d23e56cb45fe2b36f93b8a35c42e1eb8297
+https://github.com/ottercorp/FFXIVQuickLauncher
+Original lineage goatcorp/FFXIVQuickLauncher, reference 40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6
+https://github.com/goatcorp/FFXIVQuickLauncher
+Changes in this project include Linux/Avalonia presentation, shared regional services,
+Proton execution, credential storage, entrypoint integration and packaging. This does
+not replace upstream authorship with exclusive ownership by this project.
+Global/UPSTREAM.md within src/XIVLauncher.Linux records additional source references.
+ZiPatch file mapping and local differences are in compliance/provenance/zipatch.json
+and zipatch-local-changes.patch. Common GPL ancestry must not be attributed exclusively
+to the Taiwan launcher merely because its copy was consulted during development.
+
+Protocol-reference and implementation review:
+cycleapple/XIVTCLauncher, reference 016c4f3ceba01220cc3d2a0a7b6e3da8c76c3246
+https://github.com/cycleapple/XIVTCLauncher
+Taiwan authentication and captcha behavior were consulted. Public source availability
+and educational/personal-use wording do not grant general redistribution. Shared
+protocol fields are not themselves evidence of copied implementation. Development
+records and implementation similarities have been reviewed individually in
+compliance/provenance/taiwan-review.txt. It records both the independent structures
+and short expression similarities; it does not assert clean-room development or
+blanket permission. 31 shared patch files are traced separately to GPL XL sources.
+
+Third-party components:
+xdelta3 retains Joshua MacDonald copyright and Apache-2.0 license under src/native.
+Dependency license originals and their pinned sources/hashes: compliance/notices.
+Published bundles additionally contain DEPENDENCY-NOTICES.json and component licenses.
+Bundled injectors, Valve Steam API, artwork and embedded subcomponents retain
+separate rights recorded in compliance/STATUS.json. THIRD-PARTY-NOTICES.txt provides
+the attribution overview. Packaging delivers the injector source roots and direct
+submodules in addition to the local binary patcher; see SOURCE-DELIVERY.json in
+release bundles and compliance/SOURCE-DELIVERY.txt in the source tree.
+
+2026-10-08 compliance changes:
+Source archive filtering excludes research, workbooks, build output and crash logs.
+Dependency notices follow actual published dependencies. Cached Windows runtime helper
+packaging now includes the same legal documents as the download path. Launcher gameplay
+and login behavior have not been changed by these packaging corrections.
+
+Exact bundled injector revisions and AGPL notices were identified through DLL/PDB
+metadata and public source. Both source targets build, as do the four LGPL helper
+dependency assemblies. See compliance/INJECTOR-SOURCE-BUILD.txt and
+compliance/HELPER-SOURCE-BUILD.txt. Packaging now attaches those source materials
+and pinned FFmpeg sources automatically; retain all attachments with the binaries.
+
+Steam native library identity is traced to SDK 1.53 in Facepunch history. This
+project adopts original XL's distribution approach and its documented System
+Library rationale (XL issue 1127), as selected by the maintainer. This does not
+convert Valve's binary to GPL or imply a new grant by Valve. The unmodified native
+library, applicable terms and upstream explanation remain separately identified.
+
+SharpCompress and the inherited BinaryReader snippet keep their upstream code
+and original notices. Their source-level licensing questions are disclosed in
+compliance/provenance/LICENSING-DECISIONS.txt, not hidden by a root license label.
+No functional source was modified in the compliance work. The only application
+source-file edit relative to preserved 0.12.1 is an attribution comment in
+TaiwanGameUpdater.cs. Packaging, source delivery and audit tools changed separately.

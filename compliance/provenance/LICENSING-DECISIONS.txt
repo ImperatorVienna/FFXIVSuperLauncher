@@ -1,0 +1,73 @@
+Licensing follow-up — 2026-10-08
+
+This is an engineering evidence record, not a legal opinion or publication approval.
+No runtime code or tested dependency binary was changed for this review.
+
+1. Steam native library: upstream rationale found
+
+XL issue 1127 directly discusses this exact category of dependency:
+https://github.com/goatcorp/FFXIVQuickLauncher/issues/1127
+Maintainer goaaats argues that Steamworks is a System Library under GPL, treating
+Steam as the Major Component, particularly on Steam Deck:
+https://github.com/goatcorp/FFXIVQuickLauncher/issues/1127#issuecomment-1229814691
+This is material evidence of the upstream distribution rationale. It is not an
+explicit linking exception granted by all relevant copyright holders, and does
+not itself grant redistribution rights to Valve's binary. Do not describe the
+library as unlicensed merely because it is proprietary, either: Valve's SDK
+agreement contains a conditional redistributable_bin grant, separately recorded
+in steam-native.json. Whether the System Library rationale applies to this
+general Linux launcher distribution remains to be confirmed. Moving the binary
+to a different repository or downloading it later would not alone answer that.
+Other issue comments are participants' interpretations, not license amendments.
+
+2. SharpCompress: root MIT grant does not erase third-party terms
+
+The MIT root license was added via PR 23, accepted by the maintainer:
+https://github.com/adamhathcock/sharpcompress/pull/23
+That acceptance does not demonstrate permission to relicense every incorporated
+third-party implementation. Issue 167 already mentions embedded licenses:
+https://github.com/adamhathcock/sharpcompress/issues/167#issuecomment-246417127
+Issue 645 concerns a different, historical Adler32 AGPL header. The maintainer
+reported replacing it with an Apache-2.0 version and releasing the fix in 0.31.0:
+https://github.com/adamhathcock/sharpcompress/issues/645
+Our pinned 0.49.1 source has the Apache-2.0 Adler32 header; do not report the old
+Adler32 AGPL problem as a current defect. This fix does not resolve the separate
+UnRAR and MS-PL headers inventoried in DEPENDENCY-FOLLOWUP.txt.
+
+The launcher uses SharpCompress through PlatformHelpers to extract archives.
+Not calling a particular codec does not prove that codec was excluded from the
+distributed untrimmed assembly. Preserve all collected notices. Before replacing
+the dependency, first seek an applicable alternate grant or a verified source
+history explaining these headers. No such grant was found in this follow-up.
+
+3. StackOverflow helper: no automatic CC-3-to-GPL clearance
+
+The answer and its revision history identify CC BY-SA 3.0 (see STACKOVERFLOW.txt).
+Creative Commons lists GPLv3 compatibility for BY-SA 4.0, not directly for 3.0:
+https://creativecommons.org/compatible-licenses/
+CC explains that earlier licenses continue to apply to upstream contributions
+when an adaptation uses a later CC license:
+https://wiki.creativecommons.org/wiki/ShareAlike_compatibility
+Consequently, do not simply relabel the answer as 4.0/GPL or delete its credit.
+This review has not established whether the small helper is copyrightable in a
+particular jurisdiction, nor relied on a statutory exception. A separate grant
+or a minimal independently implemented replacement remains a possible resolution.
+If replacing later, preserve ChecksumBinaryReader.ReadBytes dispatch: direct
+BaseStream reads can silently bypass CRC calculation. No replacement made now.
+
+Evidence snapshots
+
+Raw public API responses are retained locally under research/compliance-followup-
+2026-10-08 and excluded from source-release packaging. Relevant files:
+FFXIVQuickLauncher-1127-comments.json, sharpcompress-645-comments.json,
+sharpcompress-23-comments.json, sharpcompress-167-comments.json,
+sharpcompress-license-issues.json and xl-steam-license-issues.json.
+Issue search results are bounded evidence, not proof that no other grant exists.
+
+Next release work
+
+Keep the private 0.12.1 archives intact. Resolve the above distribution questions,
+finish the actual Linux browser component review, replace user-supplied artwork,
+and fill final project/author/license metadata before publication. Deliver pinned
+injector and FFmpeg source materials alongside corresponding binaries. Integrity
+checks and successful compilation do not replace this permission review.

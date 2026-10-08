@@ -1,0 +1,56 @@
+上游授权与实际分发范围复核 — 2026-10-08
+
+一、Steam 原生库
+已检索 ValveSoftware 官方 GitHub 仓库清单和 Source SDK 原生库。
+官方 source-sdk-2013 的 src/lib/public/linux64/libsteam_api.so 与当前包的
+libsteam_api64.so 哈希不同；不能靠改文件名或保留库存在事实，声称精确来源已证实。
+Source SDK 自有许可证带免费分发等条件，不是 MIT/GPL，不能套用到所有 Valve 库。
+
+另找到 Valve Steamworks SDK Access Agreement：
+https://partner.steamgames.com/documentation/sdk_access_agreement/
+其中 1.1(b) 明确允许按协议将 redistributable_bin 内容与被许可软件一并分发。
+因此不是“Valve 没有任何再分发许可”，而是“有条件的 SDK 授权，非开源许可”。
+仍需确认现有二进制的准确 SDK 出处及与项目 GPL 分发的适用依据。所检视 XL 许可
+没有额外 Steamworks 链接例外，不能自行代表上游添加。没有替用户接受协议或联系 Valve。
+机器可核查记录：steam-native.json。
+
+二、注入器（不是完整 Dalamud 主程序）
+普通运行时由用户从上游下载的 Dalamud.dll 不在我们的包中，不能混算成随包分发。
+但实际发行物含 Soil 固定启动辅助组件与经过修改的繁中 Dalamud.Injector.dll。
+源码里没有 Dalamud 主程序源码，不改变随包复制 DLL 这一事实。
+
+Soil 固定辅助组件：Dalamud-DailyRoutines/Dalamud
+12c1e860fc85cf129470e2d1a58f8e3db883f140；AGPL 原文已收集。
+繁中修改注入器：yanmucorp/Dalamud
+eed420e2d1170a0804e5c6ae6f75f56cef31e0d9；AGPL 原文已收集。
+FfxivArgLauncher 子模块 e2e32129d77ec8e2e4dc340b584b13d864abc59d 为 MIT，
+Copyright (c) 2025 Odder Otter Interactive，完整通知已收集。
+
+证据：两个 DLL 的 AssemblyInformationalVersion、对应 PDB SourceLink、公开
+仓库提交相符。Soil 10 个手写 PDB 文档完全匹配；繁中 7 个经还原 CRLF 后完全
+匹配。每端另 19 项是 obj 下生成文件，不能误算成手写代码缺失。繁中 release
+正文也指明相同提交。尚未宣称实现逐字节重建。
+
+进一步按 GitHub 共同祖先比对 Injector、Injector.Boot、Common、Boot 文件：
+- 繁中 vs goatcorp 共同祖先：39 不变、10 修改、9 新增/改名；
+- 繁中 vs ottercorp 共同祖先：39 不变、10 修改、9 新增/改名；
+- Soil vs goatcorp 共同祖先：36 不变、18 修改。
+这些是历史比较数量，不代表把修改文件全部归为某一作者；改名文件也可能继承代码。
+共同祖先分别为 db314fb310a217f8efac01f269cd4c9b4c64b84e、
+c5ce4a7e705ae3a2f7c6211ab0cc9fd244ab4433、998eecd419237f6ddae977e0ef2ffdcb5cab9c33。
+下游实际保留 AGPL，因此可据其适用许可处理修改，而不需假定每行都原封不动来自 goatcorp。
+
+许可与源码修订已定位；下一步是完整归档构建所需子模块、明确构建/修改步骤并随
+二进制提供可获取的对应源码，不是要求向每位作者另索特别授权。已更新两个打包
+脚本附许可证、准确源码提交和修改说明；完整递归源码交付和干净构建仍待完成。
+逐文件比较：injector-upstream-comparison.json；版本/子模块：injectors.json。
+
+三、繁中启动器
+详见 taiwan-review.txt，逐项区分 GPL 共同来源、协议参考重实现、标准算法和
+仍需审查的短片段表达。不能把 README 致谢当成全项目再许可。
+
+四、图标
+按用户决定，发布前替换继承的 Soil 图标，待用户提供素材。当前私人归档不改动。
+需同时覆盖窗口图标、桌面入口和打包图标；若仍使用其他继承图标也逐项处理。
+
+本轮没有发布仓库、替换 Steam 库、改变认证/注入行为，也未修改已保存 0.12.1。

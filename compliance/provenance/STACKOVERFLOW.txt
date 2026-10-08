@@ -1,0 +1,27 @@
+Historical snippet attribution — verified 2026-10-08
+
+Local file: src/XIVLauncher.Linux/Patching/Util/BinaryReaderHelpers.cs
+Inherited through goatcorp/FFXIVQuickLauncher (GPL lineage); existing source link retained.
+Original answer: https://stackoverflow.com/a/15274591
+Author: Tim Williams, https://stackoverflow.com/users/2144842/tim-williams
+Posted: 2013-03-07. API answer/revision metadata identifies CC BY-SA 3.0.
+Revision GUID: 46E956DF-6498-4D11-B14B-8ACB1C661F5D
+License: https://creativecommons.org/licenses/by-sa/3.0/
+
+Matched scope: array Reverse helper, 16/32-bit big-endian BinaryReader extension
+methods and ReadBytesRequired. The local inherited file additionally has 64-bit
+methods, fixed-length string reading and a hex dump method; these are not all in
+the cited answer. Do not attribute the entire file exclusively to this answer.
+
+This resolves attribution but does not automatically resolve GPL compatibility.
+Creative Commons lists GPLv3 as compatible with BY-SA 4.0, not directly with 3.0:
+https://creativecommons.org/compatible-licenses/
+Stack Overflow's licensing page confirms the relevant date interval:
+https://stackoverflow.com/help/licensing
+
+No runtime code or source attribution was deleted in this review. Do not claim
+that adding this notice alone relicenses the copied passage under GPL. Before
+public release, establish a valid licensing basis or use a narrowly scoped
+replacement based on platform APIs, retaining historical provenance. Merely
+renaming variables is not a source-provenance fix. Old preserved private archives
+and upstream Git history must not be represented as having different origins.

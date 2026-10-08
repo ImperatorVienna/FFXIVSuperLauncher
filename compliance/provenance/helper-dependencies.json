@@ -1,0 +1,300 @@
+{
+  "scope": "Fixed CN injector dependency set; TC ships only its patched injector DLL and uses the user-installed runtime dependencies.",
+  "packages": [
+    {
+      "package": "Iced/1.17.0",
+      "files": [
+        {
+          "file": "Iced.dll",
+          "sha256": "0763eaf4a7a3a7798deb16f7138d454062868914a5226ef2bf512d3d19662714",
+          "identical_nuget_files": [
+            "lib/netstandard2.1/Iced.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "Iced-1.17.0-LICENSE.txt"
+      ],
+      "package_metadata": {
+        "authors": "iced project and contributors <https://github.com/icedland>",
+        "copyright": "Copyright (C) 2018-present iced project and contributors",
+        "license": "MIT",
+        "license_type": "expression"
+      }
+    },
+    {
+      "package": "JetBrains.Annotations/2025.2.4",
+      "files": [
+        {
+          "file": "JetBrains.Annotations.dll",
+          "sha256": "8f2c837af3f4f61b1726a2e67eafcf5bae23debd9e1de425bb5ce1d4837508d6",
+          "identical_nuget_files": [
+            "lib/netstandard2.0/JetBrains.Annotations.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "JetBrains.Annotations-2025.2.4-license.md"
+      ],
+      "package_metadata": {
+        "authors": "JetBrains",
+        "copyright": "Copyright (c) 2016-2025 JetBrains s.r.o.",
+        "license": "MIT",
+        "license_type": "expression"
+      }
+    },
+    {
+      "package": "Newtonsoft.Json/13.0.4",
+      "files": [
+        {
+          "file": "Newtonsoft.Json.dll",
+          "sha256": "a28c251dfe36d881e9e2462e171441b8b0ec156fe3f452602c9149b1b9efe05b",
+          "identical_nuget_files": [
+            "lib/net6.0/Newtonsoft.Json.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "Newtonsoft.Json-13.0.4-LICENSE.md"
+      ],
+      "package_metadata": {
+        "authors": "James Newton-King",
+        "copyright": "Copyright \u00a9 James Newton-King 2008",
+        "license": "MIT",
+        "license_type": "expression"
+      }
+    },
+    {
+      "package": "PeNet/5.1.0",
+      "files": [
+        {
+          "file": "PeNet.dll",
+          "sha256": "2c370aa3e2a89288318631fbcf91b13f0e391eca9bb60a20d42c4d7e10bbb7bf",
+          "identical_nuget_files": [
+            "lib/net8.0/PeNet.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "PeNet-5.1.0-LICENSE"
+      ],
+      "package_metadata": {
+        "authors": "Stefan Hausotte",
+        "copyright": "2017 @ Stefan Hausotte",
+        "license": "Apache-2.0",
+        "license_type": "expression"
+      }
+    },
+    {
+      "package": "PeNet.Asn1/2.0.1",
+      "files": [
+        {
+          "file": "PeNet.Asn1.dll",
+          "sha256": "5f8ffb823b4074bf4501cd0cc466cc7a46de440edf49db3cfedeaf19bbed05f2",
+          "identical_nuget_files": [
+            "lib/net7.0/PeNet.Asn1.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "PeNet.Asn1-2.0.1-LICENCE"
+      ],
+      "package_metadata": {
+        "authors": "Sergey Savchuk, Jan Jansen, Stefan Hausotte",
+        "copyright": "Copyright \u00a9 2017",
+        "license": "Apache-2.0",
+        "license_type": "expression"
+      }
+    },
+    {
+      "package": "Reloaded.Memory/7.0.0",
+      "files": [
+        {
+          "file": "Reloaded.Memory.dll",
+          "sha256": "988f4ce90636bfdc01b0491229e3ef9dc1c70495954006ada2f0ffa4cf9d1ae6",
+          "identical_nuget_files": [
+            "lib/net6.0/Reloaded.Memory.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "Reloaded.Memory-7.0.0-LICENSE"
+      ],
+      "package_metadata": {
+        "authors": "Sewer56",
+        "license": "LICENSE",
+        "license_type": "file"
+      }
+    },
+    {
+      "package": "Reloaded.Memory.Buffers/2.0.0",
+      "files": [
+        {
+          "file": "Reloaded.Memory.Buffers.dll",
+          "sha256": "b4b66e3bc0c53ee3a737b80c239b64b1bed964d808b22aab7bb386c0d383cf3d",
+          "identical_nuget_files": [
+            "lib/net6.0/Reloaded.Memory.Buffers.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "Reloaded.Memory.Buffers-2.0.0-LICENSE"
+      ],
+      "package_metadata": {
+        "authors": "Sewer56",
+        "copyright": "LGPL V3",
+        "license": "LICENSE",
+        "license_type": "file"
+      }
+    },
+    {
+      "package": "Reloaded.Memory.Sigscan/3.0.0",
+      "files": [
+        {
+          "file": "Reloaded.Memory.Sigscan.dll",
+          "sha256": "1d981c3862eff204f841fedb108397e7083c191d30a29fe653450ff529b6852f",
+          "identical_nuget_files": [
+            "lib/net6.0/Reloaded.Memory.Sigscan.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "Reloaded.Memory.Sigscan-3.0.0-LICENSE.md"
+      ],
+      "package_metadata": {
+        "authors": "Sewer56",
+        "copyright": "LGPL V3",
+        "license": "LICENSE.md",
+        "license_type": "file"
+      }
+    },
+    {
+      "package": "Reloaded.Memory.Sigscan.Definitions/1.0.0",
+      "files": [
+        {
+          "file": "Reloaded.Memory.Sigscan.Definitions.dll",
+          "sha256": "605f708a7fa829efbf644d70b738ad900c11768a6c38a2edd324f6d11a47eb2b",
+          "identical_nuget_files": [
+            "lib/netcoreapp3.1/Reloaded.Memory.Sigscan.Definitions.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "Reloaded.Memory.Sigscan.Definitions-1.0.0-LICENSE.md"
+      ],
+      "package_metadata": {
+        "authors": "Sewer56",
+        "copyright": "LGPL V3",
+        "license": "LICENSE.md",
+        "license_type": "file"
+      }
+    },
+    {
+      "package": "Serilog/4.3.0",
+      "files": [
+        {
+          "file": "Serilog.dll",
+          "sha256": "9fbf7441a9bdc9459652dc66e18f008040651f14cb8d7a7bb806ac4a8b722d10",
+          "identical_nuget_files": [
+            "lib/net9.0/Serilog.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "Serilog-4.3.0-LICENSE"
+      ],
+      "package_metadata": {
+        "authors": "Serilog Contributors",
+        "copyright": "Copyright \u00a9 Serilog Contributors",
+        "license": "Apache-2.0",
+        "license_type": "expression"
+      }
+    },
+    {
+      "package": "Serilog.Sinks.Async/2.1.0",
+      "files": [
+        {
+          "file": "Serilog.Sinks.Async.dll",
+          "sha256": "1031cd50ee3f0d62bbfdad3e07de0e953f26b90edac475e1b06fc65d2b42619c",
+          "identical_nuget_files": [
+            "lib/net8.0/Serilog.Sinks.Async.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "Serilog.Sinks.Async-2.1.0-LICENSE"
+      ],
+      "package_metadata": {
+        "authors": "Jezz Santos,Serilog Contributors",
+        "license": "Apache-2.0",
+        "license_type": "expression"
+      }
+    },
+    {
+      "package": "Serilog.Sinks.Console/6.1.1",
+      "files": [
+        {
+          "file": "Serilog.Sinks.Console.dll",
+          "sha256": "dc88002ddd9f5fd0ffec9a6568ef89954671f60f2c9161593ee78932538c1e3e",
+          "identical_nuget_files": [
+            "lib/net8.0/Serilog.Sinks.Console.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "Serilog.Sinks.Console-6.1.1-LICENSE"
+      ],
+      "package_metadata": {
+        "authors": "Serilog Contributors",
+        "license": "Apache-2.0",
+        "license_type": "expression"
+      }
+    },
+    {
+      "package": "Serilog.Sinks.File/7.0.0",
+      "files": [
+        {
+          "file": "Serilog.Sinks.File.dll",
+          "sha256": "4f4282671c2ac68284b4dc99f7a76eac9cbd4e659978cef642cff9e6c01b676d",
+          "identical_nuget_files": [
+            "lib/net9.0/Serilog.Sinks.File.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "Serilog.Sinks.File-7.0.0-LICENSE"
+      ],
+      "package_metadata": {
+        "authors": "Serilog Contributors",
+        "license": "Apache-2.0",
+        "license_type": "expression"
+      }
+    },
+    {
+      "package": "System.Security.Cryptography.Pkcs/8.0.1",
+      "files": [
+        {
+          "file": "System.Security.Cryptography.Pkcs.dll",
+          "sha256": "d8e4b733fbaec1fe0e808fd6391479f190b170df03e309c5f07dc85445447d22",
+          "identical_nuget_files": [
+            "runtimes/win/lib/net8.0/System.Security.Cryptography.Pkcs.dll"
+          ]
+        }
+      ],
+      "notices": [
+        "System.Security.Cryptography.Pkcs-8.0.1-THIRD-PARTY-NOTICES.TXT",
+        "System.Security.Cryptography.Pkcs-8.0.1-LICENSE.TXT"
+      ],
+      "package_metadata": {
+        "authors": "Microsoft",
+        "copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
+        "license": "MIT",
+        "license_type": "expression"
+      }
+    }
+  ],
+  "lgpl_sources": "../helper-dependency-source-inputs.json",
+  "source_match": "Published version tags with matching project versions; not a byte-identical rebuild assertion.",
+  "asn1_license": "v2.0.0 and v2.0.2 license files byte-identical; package 2.0.1 declares Apache-2.0.",
+  "build_verification": "See HELPER-SOURCE-BUILD.txt"
+}

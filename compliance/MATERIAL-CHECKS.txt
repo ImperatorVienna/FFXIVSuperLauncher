@@ -1,0 +1,32 @@
+Offline audit material checks
+
+From the repository root:
+
+  python3 scripts/check-compliance-materials.py
+
+Also check locally preserved private archives and collected source materials:
+
+  python3 scripts/check-compliance-materials.py --source-materials artifacts/compliance-source-inputs --preserved artifacts/preserved-0.12.1
+
+These optional paths are intentionally not required in a public source checkout.
+The check verifies pinned notice hashes, the native Steam library identity, and,
+when requested, the two final source-material archives and private 0.12.1 backups.
+It performs no downloads, mutations, account operations or publishing.
+
+Exit 0 means the requested integrity checks passed. It DOES NOT mean permission
+to distribute has been established. Use --require-release-clearance to also
+require the manually reviewed STATUS.json public_release_cleared flag; the
+current status intentionally produces exit 2. Missing/corrupt materials produce
+exit 1. This script does not change the private build workflow and is not yet a
+complete verifier of final AppImage release contents.
+
+Validated on 2026-10-08: all 21 requested hashes passed; tampered and absent notice
+fixtures were rejected; absent release clearance returned 2. All 279 previously
+recorded runtime source-file hashes remained unchanged. No game/account tests
+were necessary or performed for these documentation/packaging checks.
+
+Later same-day extension: added fixed helper package notices and three LGPL
+source archives. The full local check now verifies 39 files. End-to-end packaging
+verified 34 dependency entries, six source attachments, and 445 unchanged runtime
+binary/shell files. See provenance/RELEASE-MATERIAL-VERIFICATION.json. The earlier
+21-file result above describes the earlier scope, not the current total.

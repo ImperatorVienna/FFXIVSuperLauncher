@@ -1,0 +1,44 @@
+Dependency follow-up — 2026-10-08
+
+MicroCom.Runtime 0.11.0:
+Package declares MIT and Copyright 2021 Nikita Tsukanov. Original MIT text was
+collected from the repository's sole LICENSE creation commit, 4b8a38f773c109bad558ee3713d9f16d80776e42.
+Its license history contains no later changes. This documents license continuity,
+not an unproven exact source-build revision of the binary package.
+
+goaaats.Steamworks 2.3.4:
+Package declares MIT and points to Facepunch/Facepunch.Steamworks. XL commit
+5e4458bb199c9c5b6b7c4543480f524ee0776de0 explicitly calls it a compile/NuGet
+release based on the chippy branch. Original Facepunch Studios LTD MIT notice
+collected at f91eee68a9083d0353eed7e807eac6ca67b1fe64. This does not license Valve
+native libraries. Exact managed package rebuild has not been claimed.
+The Linux Steam API git blob is identical to that branch's redistributable_bin
+copy, whose introducing commit 6a204680daa72a0f358376f0d3047d4da32463b0 states
+"Redist for 1.53". See steam-native.json; GPL combination basis remains unresolved.
+
+SharpCompress 0.49.1:
+Exact package repository commit 1d9fd83a73db0144df3d2844133cf1b1f3699c7c obtained.
+Root/package metadata say MIT, but source headers also contain Apache-2.0,
+JCraft/BSD notices, Microsoft Public License notices and UnRAR restrictions.
+28 original top-of-file notices plus the original reference/unrar/license.txt
+were collected in notices/SharpCompress-0.49.1-EMBEDDED-NOTICES.txt.
+These headers are in the source tree compiled by the SDK project, not only in
+unrelated documentation. Determine whether any are obsolete/relicensed or need
+separate treatment before declaring the dependency wholly MIT/GPL-compatible.
+No package upgrade, substitution or change to extraction behavior was made.
+
+Electron 44.5.1:
+Existing LICENSE and LICENSES.chromium.html retained without deletions. The latter
+contains 779 product sections, including cross-platform entries; it is not an
+assertion that 779 distinct products are shipped in the Linux binary.
+DEPS pins Chromium 152.0.7977.130, which pins FFmpeg
+2b68d2babae73714846961fb0ee47e3b3d2e39a9. Exact FFmpeg source archive collected,
+including configurations, BUILD.gn, ffmpeg_generated.gni and licenses. The actual
+libffmpeg.so has LGPL 2.1-or-later identification strings. Full LGPL text and
+source provenance now accompany future webview packaging. Other Chromium/native
+component coverage and a source build of the browser remain unverified; do not
+claim that an MIT Electron notice alone covers everything.
+
+Current review follows actual bundled components. Build tools, restore-only
+packages and runtime-downloaded user addons are separately scoped. Collecting
+notices is not by itself proof that every combination/distribution term is satisfied.

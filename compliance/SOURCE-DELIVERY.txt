@@ -1,0 +1,45 @@
+FFXIV Super Launcher — source delivery
+
+For a binary release, provide every archive in SOURCE-DELIVERY.json through
+links on the release page, without an additional charge. For 1.0.0, the unchanged
+archives are stored in the repository under release-materials/1.0.0; the release
+notes link to that directory. Do not rely solely on GitHub's
+automatically generated source.zip: required injector submodules and third-party
+source archives are separate materials. Preserve the archives and their hashes
+for each distributed binary version. A downstream mirror must carry the sources
+or provide equivalent access as allowed by the applicable licenses.
+
+The launcher source archive includes build/packaging scripts, provenance, original
+notices and the TC injector modification. The injector source archive includes
+both upstream roots and their required FfxivArgLauncher submodule sources. Follow
+BUILD.txt in that archive. Source matching and verification limits are recorded;
+no byte-identical reconstruction of every upstream binary is claimed.
+
+Reloaded.Memory, Reloaded.Memory.Buffers, Reloaded.Memory.Sigscan and its Definitions
+assembly are unmodified LGPLv3 shared libraries used by the fixed CN helper.
+Their version-source archives accompany the release. SigScan's archive contains
+both Sigscan 3.0.0 and Definitions 1.0.0 projects. Retain the LGPL texts, as well as
+the GPLv3 text at the root of this package. Users may modify/rebuild these libraries
+and replace the corresponding DLLs under Tools/cn-launch-support/injector; this
+project adds no license restriction on debugging such modifications. Packaging
+hash checks identify the tested upstream inputs, not a grant to relicense them.
+Upstream generated sources/build projects are retained. These are source archives,
+not a complete offline NuGet/SDK mirror. See provenance/helper-dependencies.json.
+
+Electron's original LICENSE and LICENSES.chromium.html remain under Tools/webview.
+The separately supplied FFmpeg source matches the pinned Chromium revision;
+Tools/webview/SOURCE-PROVENANCE.json records its hash and origin. libffmpeg.so is
+a separate shared library and may be replaced with a compatible rebuilt version.
+The application adds no restriction on reverse engineering for debugging LGPL
+library modifications. Actual browser rebuilds have not been certified.
+
+Runtime-downloaded game files, full Dalamud installations and user plugins are
+not part of the launcher distribution. Their download sources and rights remain
+separate. The two fixed bundled injector components ARE part of the distribution
+and are covered by the explicit source delivery above.
+
+Developer command: scripts/package-linux.sh now prepares these materials
+automatically. SOURCE_MATERIAL_CACHE can contain colon-separated directories of
+the pinned input archives; missing archives are downloaded from recorded public
+upstream URLs and checked against SHA256 before use. Hash mismatches stop packaging.
+This source delivery mechanism does not publish a GitHub release.

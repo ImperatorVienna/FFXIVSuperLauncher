@@ -1,0 +1,14 @@
+FFXIV Super Launcher 1.0.0 — original release materials
+
+These are unchanged archives from the released plaintext-only 1.0.0.
+SOURCE-DELIVERY.json identifies the launcher and bundled dependency sources.
+Additional AppImage runtime sources: type2-runtime-source.tar.gz, fuse-3.15.0.tar.xz,
+and squashfuse-0.5.2.tar.gz.
+SHA256SUMS preserves the original checksums, including the AppImage, which remains
+on the GitHub Release rather than in Git. The signed update metadata is retained
+both here for provenance and on the Release for existing updater compatibility.
+
+The launcher source tree is also expanded at the repository root for development.
+Its runtime source is unchanged; repository documentation describes the new layout.
+Earlier RELEASE-0.x notes inside the original source archive are historical
+records, not extra runtime versions. They are omitted from the working tree.

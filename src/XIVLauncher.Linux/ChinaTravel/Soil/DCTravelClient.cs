@@ -1,0 +1,429 @@
+using System.Collections.Frozen;
+using System.Net;
+using System.Text.Json.Nodes;
+using Serilog;
+using XIVLauncher.Common.Constant;
+using XIVLauncher.Login;
+using XIVLauncher.Login.Workflow;
+
+namespace XIVLauncher.DCTravel;
+
+public partial class DCTravelClient : IDisposable
+{
+    public LoginSessionRefreshContext? LoginSessionRefreshContext          { get; private set; }
+
+    /// <summary>
+    ///     运行时检测到维护 (非初始化阶段), 供外部服务层启动恢复。
+    ///     可能在任意线程触发, 订阅方需自行调度回 UI 线程。
+    /// </summary>
+    public event Action? MaintenanceDetected;
+
+    public DCTravelMaintenanceState MaintenanceState
+    {
+        get => (DCTravelMaintenanceState)Interlocked.CompareExchange(ref maintenanceState, 0, 0);
+        set => Interlocked.Exchange(ref maintenanceState, (int)value);
+    }
+
+    private const string BASE_URL               = "ff14bjz.sdo.com";
+    private const string DOMAIN                 = "sdo.com";
+    private const int    KEEP_ALIVE_MIN_MINUTES = 10;
+    private const int    KEEP_ALIVE_MAX_MINUTES = 20;
+
+    private static readonly Uri BaseUri = new UriBuilder(Uri.UriSchemeHttps, BASE_URL).Uri;
+
+    private static readonly FrozenDictionary<string, string> DefaultHeaders =
+        new Dictionary<string, string>
+        {
+            ["Accept"]             = "application/json",
+            ["Accept-Encoding"]    = "gzip, deflate, br, zstd",
+            ["Accept-Language"]    = "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            ["Content-Type"]       = "application/json",
+            ["Priority"]           = "u=1, i",
+            ["Sec-Ch-Ua"]          = "\"Microsoft Edge\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"",
+            ["Sec-Ch-Ua-Mobile"]   = "?0",
+            ["Sec-Ch-Ua-Platform"] = "\"Windows\"",
+            ["Sec-Fetch-Dest"]     = "empty",
+            ["Sec-Fetch-Mode"]     = "cors",
+            ["Sec-Fetch-Site"]     = "same-origin",
+            ["User-Agent"]         = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0"
+        }.ToFrozenDictionary();
+
+    private bool IsInitialized =>
+        Volatile.Read(ref initializedState) == 1;
+
+    private readonly HttpClient      httpClient;
+    private readonly CookieContainer cookieContainer;
+
+    private string ticket           = string.Empty;
+    private int    initializedState;
+    private int    maintenanceState = (int)DCTravelMaintenanceState.Normal;
+    private int    keepAliveRunning;
+    private int    disposeState;
+    private Task?  sessionRecoveryTask;
+    private CancellationTokenSource lifetimeCts = new();
+
+    public DCTravelClient(string nSessionID, HttpMessageHandler? transport = null)
+    {
+        cookieContainer = new();
+        if (!string.IsNullOrEmpty(nSessionID))
+            cookieContainer.Add(new Cookie("nsessionid", nSessionID, "/", DOMAIN));
+        cookieContainer.Add(new Cookie("CAS_LOGIN_STATE",        "1", "/", DOMAIN));
+        cookieContainer.Add(new Cookie("SECURE_CAS_LOGIN_STATE", "1", "/", DOMAIN));
+        cookieContainer.Add(new Cookie("isLogin",                "1", "/", DOMAIN));
+
+        var handler = new HttpClientHandler
+        {
+            CookieContainer        = cookieContainer,
+            UseCookies             = true,
+            AllowAutoRedirect      = true,
+            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+        };
+        httpClient = new HttpClient(transport ?? handler)
+        {
+            Timeout = TimeSpan.FromSeconds(30)
+        };
+
+        foreach (var (key, value) in DefaultHeaders)
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation(key, value);
+    }
+
+    public void BindLoginSessionRefresh(LoginSessionRefreshContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        LoginSessionRefreshContext = context;
+    }
+
+    public void BeginSession()
+    {
+        var current = Volatile.Read(ref lifetimeCts);
+        if (!current.IsCancellationRequested)
+            return;
+
+        var replacement = new CancellationTokenSource();
+        var previous    = Interlocked.Exchange(ref lifetimeCts, replacement);
+        previous.Dispose();
+    }
+
+    public void EndSession()
+    {
+        Volatile.Read(ref lifetimeCts).Cancel();
+    }
+
+    public void Dispose()
+    {
+        if (Interlocked.Exchange(ref disposeState, 1) != 0)
+            return;
+
+        lifetimeCts.Cancel();
+        lifetimeCts.Dispose();
+        httpClient.Dispose();
+    }
+
+    #region 查询超域旅行页面
+
+    public async Task MigrationConfirmOrder(string orderId, bool confirmed) =>
+        _ = await GetRequestData
+            (
+                "api/gmallgateway/migrationConfirmOrder",
+                DCTravelAPIType.Order,
+                new Dictionary<string, string>
+                {
+                    ["orderId"]     = string.IsNullOrWhiteSpace(orderId) ? throw new ArgumentException("orderId 不能为空或空白字符", nameof(orderId)) : orderId,
+                    ["confirmType"] = confirmed ? "1" : "0"
+                }
+            );
+
+    #endregion
+
+    private static JsonObject EnsureReturnCode(JsonNode? node)
+    {
+        if (node is not JsonObject root)
+            throw new DCTravelAPIException("API 响应不是有效的 JSON 对象");
+
+        var returnCode = root["return_code"]?.GetValue<int>() ?? int.MinValue;
+
+        if (returnCode != 0)
+        {
+            var message = root["return_message"]?.GetValue<string>() ?? "unknown";
+            throw new DCTravelAPIException($"API 调用失败, 返回码: {returnCode}, 消息: {message}", returnCode, message)
+            {
+                IsEnvelopeRejected = true
+            };
+        }
+
+        return root;
+    }
+
+    private static Uri BuildRequestUri(string api, IReadOnlyDictionary<string, string>? parameters)
+    {
+        var requestUri = new Uri(BaseUri, api);
+        if (parameters is not { Count: > 0 })
+            return requestUri;
+
+        var queryString = string.Join
+        (
+            "&",
+            parameters
+                .Where(item => !string.IsNullOrWhiteSpace(item.Key))
+                .Select(item => $"{Uri.EscapeDataString(item.Key)}={Uri.EscapeDataString(item.Value ?? string.Empty)}")
+        );
+        var uriBuilder = new UriBuilder(requestUri)
+        {
+            Query = queryString
+        };
+        return uriBuilder.Uri;
+    }
+
+    private void SetInitialized(bool value) =>
+        Volatile.Write(ref initializedState, value ? 1 : 0);
+
+    private async Task<JsonNode> GetRequestData
+    (
+        string                               api,
+        DCTravelAPIType                      type,
+        IReadOnlyDictionary<string, string>? parameters        = null,
+        bool                                 ignoreInitialized = false
+    )
+    {
+        if (!ignoreInitialized && !IsInitialized)
+            throw new DCTravelAPIException("DcTraveler 未初始化, 请先调用 GetValidCookie()");
+
+        // Submission endpoints are not idempotent: never retry them automatically after an ambiguous response.
+        var mutation = api.EndsWith("travelOrder") || api.EndsWith("travelBack") || api.EndsWith("migrationConfirmOrder");
+        var MAX_ATTEMPTS = mutation ? 1 : 3;
+
+        var requestUri       = BuildRequestUri(api, parameters);
+        var sessionRecovered = false;
+        var cancellationToken = Volatile.Read(ref lifetimeCts).Token;
+
+        for (var attempt = 1; attempt <= MAX_ATTEMPTS; attempt++)
+        {
+            try
+            {
+                using var request = CreateRequest(requestUri, type);
+                using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                var       content  = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new DCTravelAPIException
+                    (
+                        $"HTTP 请求失败, 状态码: {(int)response.StatusCode} ({response.StatusCode})",
+                        (int)response.StatusCode
+                    );
+                }
+
+                var root = EnsureReturnCode(JsonNode.Parse(content));
+                return root["data"] ?? throw new DCTravelAPIException("API 响应缺少 'data' 字段");
+            }
+            catch (DCTravelAPIException ex)
+                when (ex.IsEnvelopeRejected
+                      && !ex.IsServiceMaintenance
+                      && !ignoreInitialized
+                      && !mutation
+                      && !sessionRecovered
+                      && !cancellationToken.IsCancellationRequested)
+            {
+                sessionRecovered = true;
+                Log.Warning(ex, "[DCTravelClient] 会话被服务端拒绝, 尝试重建会话后重试");
+                await EnsureSessionRecovered().ConfigureAwait(false);
+            }
+            catch (DCTravelAPIException ex) when (ex.IsServiceMaintenance)
+            {
+                // 维护期间不重试, 直接抛出; 同时更新状态以便 UI 与 RPC 控制器感知
+                MaintenanceState = DCTravelMaintenanceState.UnderMaintenance;
+                SetInitialized(false);
+                MaintenanceDetected?.Invoke();
+                throw;
+            }
+            catch (DCTravelAPIException ex) when (ex.IsNetworkTimeout && attempt < MAX_ATTEMPTS)
+            {
+                var delay = TimeSpan.FromMilliseconds(200 * attempt);
+                Log.Warning(ex, "[DCTravelClient] 请求超时, 将在 {DelayMilliseconds}ms 后重试, 尝试次数: {Attempt}", delay.TotalMilliseconds, attempt);
+                await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+            }
+            catch (HttpRequestException ex) when (attempt < MAX_ATTEMPTS)
+            {
+                var delay = TimeSpan.FromMilliseconds(200 * attempt);
+                Log.Warning(ex, "[DCTravelClient] HTTP 传输错误, 将在 {DelayMilliseconds}ms 后重试, 尝试次数: {Attempt}", delay.TotalMilliseconds, attempt);
+                await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+            }
+            catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested && attempt < MAX_ATTEMPTS)
+            {
+                var delay = TimeSpan.FromMilliseconds(200 * attempt);
+                Log.Warning(ex, "[DCTravelClient] HTTP 请求因超时取消, 将在 {DelayMilliseconds}ms 后重试, 尝试次数: {Attempt}", delay.TotalMilliseconds, attempt);
+                await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        throw new DCTravelAPIException("多次尝试后获取请求数据失败");
+    }
+
+    private HttpRequestMessage CreateRequest(Uri requestUri, DCTravelAPIType type)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        request.Headers.Referrer = new Uri(ResolveReferer(type));
+        return request;
+    }
+
+    private string ResolveReferer(DCTravelAPIType type) =>
+        type switch
+        {
+            DCTravelAPIType.Travel           => Links.DC_TRAVEL_PAGE_URL,
+            DCTravelAPIType.TravelWithTicket => $"{Links.DC_TRAVEL_PAGE_URL}?ticket={ticket}",
+            DCTravelAPIType.Order            => new Uri(BaseUri, "orderList").ToString(),
+            _                                => BaseUri.ToString()
+        };
+
+    #region 初始化 认证
+
+    /// <summary>
+    ///     单飞地重建会话: 多个请求 (保活与插件 RPC) 同时遭遇会话失效时, 仅发起一次 <see cref="GetValidCookie"/>,
+    ///     其余调用复用同一 Task。SSO ticket 单次有效, 避免并发刷新相互覆盖。无锁实现。
+    /// </summary>
+    private Task EnsureSessionRecovered()
+    {
+        var existing = Volatile.Read(ref sessionRecoveryTask);
+        if (existing is { IsCompleted: false })
+            return existing;
+
+        var fresh    = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var observed = Interlocked.CompareExchange(ref sessionRecoveryTask, fresh.Task, existing);
+        if (!ReferenceEquals(observed, existing))
+            return observed ?? Task.CompletedTask;
+
+        _ = RunSessionRecoveryAsync(fresh);
+        return fresh.Task;
+    }
+
+    private async Task RunSessionRecoveryAsync(TaskCompletionSource completion)
+    {
+        try
+        {
+            await GetValidCookie().ConfigureAwait(false);
+            Log.Information("[DCTravelClient] 会话已重建");
+            completion.SetResult();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "[DCTravelClient] 重建会话失败");
+            completion.SetException(ex);
+        }
+    }
+
+    public async Task GetValidCookie()
+    {
+        if (await InitTravelPage())
+        {
+            Log.Information("[DCTravelClient] 成功初始化超域旅行页面");
+            SetInitialized(true);
+            return;
+        }
+
+        // 维护期间不浪费 SSO ticket —— ticket 刷新也无法绕过维护
+        if (MaintenanceState == DCTravelMaintenanceState.UnderMaintenance)
+            throw new DCTravelAPIException("超域旅行服务维护中, 无法初始化", -10339180);
+
+        Log.Information("[DCTravelClient] 首次初始化超域旅行页面未通过, 刷新 ticket 后重试");
+        var refreshDcTravelSessionIdFunc = LoginSessionRefreshContext?.RefreshDcTravelSessionIdAsync ?? throw new DCTravelAPIException("未配置 RefreshDcTravelSessionIdFunc");
+        ticket = await refreshDcTravelSessionIdFunc().ConfigureAwait(false);
+        await ValidateTicket().ConfigureAwait(false);
+
+        if (await InitTravelPage().ConfigureAwait(false))
+        {
+            Log.Information("[DCTravelClient] 成功初始化超域旅行页面");
+            SetInitialized(true);
+            return;
+        }
+
+        throw new DCTravelAPIException("验证 ticket 后初始化超域旅行页面失败");
+    }
+
+    public async Task KeepCookieAlive()
+    {
+        if (Interlocked.Exchange(ref keepAliveRunning, 1) == 1)
+        {
+            return;
+        }
+
+        var cancellationToken = Volatile.Read(ref lifetimeCts).Token;
+
+        try
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                if (!IsInitialized)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(false);
+                    continue;
+                }
+
+                try
+                {
+                    Log.Information("Cookie 保活中");
+                    await QueryGroupListTravelSource().ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "保活 Cookie 时出错, 重建会话亦未成功");
+                }
+
+                var randomDelay = TimeSpan.FromMinutes(Random.Shared.Next(KEEP_ALIVE_MIN_MINUTES, KEEP_ALIVE_MAX_MINUTES));
+                Log.Information("下次 Cookie 保活将在 {RandomDelay} 分钟后进行", randomDelay);
+                await Task.Delay(randomDelay, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // ignored
+        }
+        finally
+        {
+            Interlocked.Exchange(ref keepAliveRunning, 0);
+
+            var currentLifetime = Volatile.Read(ref lifetimeCts);
+            if (cancellationToken.IsCancellationRequested && !currentLifetime.IsCancellationRequested)
+                _ = KeepCookieAlive();
+        }
+    }
+
+    public async Task<bool> InitTravelPage()
+    {
+        //https://ff14bjz.sdo.com/api/orderserivce/pageInit?migrationType=4
+        try
+        {
+            _ = await GetRequestData("api/orderserivce/pageInit", DCTravelAPIType.TravelWithTicket, new Dictionary<string, string> { { "migrationType", "4" } }, true);
+            MaintenanceState = DCTravelMaintenanceState.Normal;
+            return true;
+        }
+        catch (DCTravelAPIException ex)
+        {
+            if (ex.IsServiceMaintenance)
+            {
+                Log.Warning(ex, "[DCTravelClient] 超域旅行服务维护中: {Message}", ex.ReturnMessage);
+                MaintenanceState = DCTravelMaintenanceState.UnderMaintenance;
+            }
+            else
+            {
+                // 非维护错误 (如 Cookie 过期): 清除维护标记, 让上层区分"仍在维护"与"维护已结束但会话失效"
+                MaintenanceState = DCTravelMaintenanceState.Normal;
+            }
+
+            return false;
+        }
+    }
+
+    public async Task ValidateTicket()
+    {
+        if (string.IsNullOrWhiteSpace(ticket))
+            throw new DCTravelAPIException("Ticket 为空");
+
+        _ = await GetRequestData("api/gmallinter/validateTicket", DCTravelAPIType.TravelWithTicket, new Dictionary<string, string> { { "ticket", ticket } }, true);
+    }
+
+    #endregion
+}

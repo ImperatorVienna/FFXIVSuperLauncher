@@ -1,0 +1,68 @@
+{
+  "review_date": "2026-10-08",
+  "public_release_cleared": false,
+  "preserved_private_version": "0.12.1",
+  "completed": [
+    "Preserved private source and binary archives with SHA256",
+    "Recorded ZiPatch GPL upstream mapping and local differences",
+    "Collected six pinned original license/notice files",
+    "Restricted source archive scope",
+    "Inventoried published rather than all restored managed dependencies",
+    "Included Windows runtime notices on cached helper packaging path",
+    "Pinned Soil and yanmucorp injector commits using DLL metadata, SourceLink and all handwritten PDB document hashes",
+    "Compared injector/loading source files with goatcorp and ottercorp merge-base history",
+    "Added exact-revision AGPL injector and MIT FfxivArgLauncher notices to helper packaging",
+    "Traced three shared patch utilities to the GPL XL upstream",
+    "Collected MicroCom, Facepunch wrapper and two Microsoft.Extensions original notices",
+    "Matched bundled native Steam library to Facepunch SDK 1.53 redistributable history",
+    "Assembled injector source archive with the direct source submodules actually required by both targets",
+    "Both pinned injector targets built from collected source; TC IL patch applied successfully to rebuilt DLL",
+    "Clean extracted launcher source archive built successfully",
+    "Collected exact Chromium FFmpeg source archive and full LGPL text",
+    "Scanned 10651 historical blobs and current source package for selected secret patterns; current candidates verified as synthetic tests",
+    "Confirmed no runtime source changes in this follow-up",
+    "Located XL maintainer discussion of Steam System Library rationale; recorded scope without treating it as an explicit license exception",
+    "Collected 14 fixed CN injector package dependency notices and matched each bundled DLL to its NuGet package bytes",
+    "Collected version-tag sources for four Reloaded LGPL assemblies in three repositories; all four built without editing upstream source",
+    "Integrated corresponding-source attachments and delivery manifest into packaging and CI artifacts",
+    "Preserved all 779 original Chromium notice sections; no empty license sections found; documented Linux shared-library boundary",
+    "Applied user-supplied 500x500 transparent icon after compliance snapshot; window/resource/desktop changes are separate from the earlier no-functional-change audit."
+  ],
+  "open_issues": [
+    {
+      "id": "xl-tw-provenance",
+      "status": "review-completed-with-findings",
+      "action": "31 shared patch files traced to GPL XL, with original external snippet attribution separately recorded. Taiwan protocol/user-flow and standard-algorithm implementations reviewed individually; no blanket xl_tw license claimed. Short hex/Base32 expression similarity and lack of clean-room history remain disclosed in taiwan-review.txt; do not characterize the entire Taiwan backend as unlicensed copied xl_tw code."
+    },
+    {
+      "id": "injector-corresponding-source",
+      "status": "delivery-integrated",
+      "action": "Packaging now automatically includes injector roots/required submodules, local patch source, FFmpeg and Reloaded version-source attachments. Helper managed dependencies have individual notices. Sources build-tested as recorded; no byte-identical upstream binary rebuild claimed."
+    },
+    {
+      "id": "steam-native",
+      "status": "upstream-approach-adopted",
+      "action": "User selected the original XL distribution approach. Preserve the tested SDK 1.53 redistributable, Valve terms and XL issue 1127 System Library rationale. This is an adopted project distribution rationale, not a new Valve grant or a formal legal opinion. No runtime rewrite planned for this item."
+    },
+    {
+      "id": "artwork",
+      "status": "replacement-installed-rights-recorded",
+      "action": "User-supplied transparent 500x500 PNG installed for windows and desktop packaging; old Soil PNG/ICO removed. PNGAAA non-commercial label and source recorded in artwork.json; do not label the image GPL or unrestricted."
+    },
+    {
+      "id": "dependency-coverage",
+      "status": "open",
+      "action": "All main and fixed CN helper package entries have collected notice files. Original Electron/Chromium notices retained in full, linked system libraries distinguished from bundled files; source locations and buildable LGPL helper sources recorded. SharpCompress UnRAR/MS-PL source-level questions remain disclosed, rather than treating its root MIT notice as a blanket grant."
+    },
+    {
+      "id": "historical-attribution",
+      "status": "author-and-license-confirmed",
+      "action": "Tim Williams StackOverflow answer 15274591 is CC BY-SA 3.0; attribution is confirmed but direct GPL compatibility is not established. Preserve source unchanged pending a licensing basis or minimal replacement decision."
+    },
+    {
+      "id": "release-delivery",
+      "status": "open",
+      "action": "Repository ImperatorVienna/FFXIVSuperLauncher and maintainer ImperatorVienna are configured; About UI and replacement artwork are included. Four README languages uploaded; source and public releases are not published. AppImage is the sole planned distribution format; final build/additional dependency inventory remains pending. 0.12.10 is a private regression-test package; existing rights findings remain unchanged."
+    }
+  ]
+}

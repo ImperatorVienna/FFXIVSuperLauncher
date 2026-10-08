@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Product>XIVLauncher.Common</Product>
+        <AssemblyTitle>XIVLauncher.Common</AssemblyTitle>
+        <Description>Common components for XIVLauncher.</Description>
+        <VersionPrefix>1.0.0</VersionPrefix>
+        <Nullable>enable</Nullable>
+
+        <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+
+        <LangVersion>latest</LangVersion>
+        <Deterministic>true</Deterministic>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\XIVLauncher.Common.Http\XIVLauncher.Common.Http.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Downloader"/>
+
+        <PackageReference Include="Newtonsoft.Json"/>
+
+
+
+
+        <PackageReference Include="Serilog"/>
+        <PackageReference Include="SharpCompress"/>
+
+
+    </ItemGroup>
+</Project>

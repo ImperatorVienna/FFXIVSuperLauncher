@@ -1,0 +1,39 @@
+Bundled CN helper dependencies — source verification, 2026-10-08
+
+All 14 package DLLs in the fixed CN injector were SHA256-identical to at least
+one runtime asset in their declared NuGet package versions. The actual list,
+hashes, matching package paths and notices are in provenance/helper-dependencies.json.
+This extends the launcher dependency inventory; it is not inferred from the
+full Dalamud application's much larger dependency graph.
+
+Original licenses were copied from the packages when available; otherwise from
+the package's repository commit or published version tag. PeNet.Asn1 2.0.1 has
+no exact tag: its package declares Apache-2.0; the full license is identical in
+v2.0.0 and v2.0.2. That limited continuity inference is explicitly recorded.
+
+Unmodified LGPL source archives and hashes are listed in
+helper-dependency-source-inputs.json. Upstream tags contain no git submodules.
+Three upstream repositories cover four assemblies; SigScan includes the
+Definitions 1.0.0 project. This review pins the version tags, not an unproven
+exact source-revision match inferred from an assembly version alone.
+
+Build checks completed using .NET SDK 10.0.401, Release configuration, without
+editing upstream source. Run from each unpacked root, setting NUGET_PACKAGES to
+a writable package cache if desired. Dependencies/reference packs require restore.
+
+Reloaded.Memory 7.0.0:
+  dotnet build Source/Reloaded.Memory/Reloaded.Memory.csproj -c Release -p:TargetFrameworks=net6.0 -p:GeneratePackageOnBuild=false -p:NuGetAudit=false -m:1
+  Result: 0 errors, 8 upstream XML documentation warnings.
+
+Reloaded.Memory.Buffers 2.0.0:
+  dotnet build Source/Reloaded.Memory.Buffers/Reloaded.Memory.Buffers.csproj -c Release -p:TargetFrameworks=net6.0 -p:GeneratePackageOnBuild=false -p:NuGetAudit=false -m:1
+  Result: 0 errors, 0 warnings.
+
+Reloaded.Memory.Sigscan 3.0.0 and Definitions 1.0.0:
+  dotnet build Reloaded.Memory.Sigscan/Reloaded.Memory.Sigscan.csproj -c Release -f net6.0 -p:GeneratePackageOnBuild=false -p:NuGetAudit=false -m:1
+  Result: 0 errors; 1 upstream old-target trimming warning. Definitions resolves
+  to its original netcoreapp3.1 target; do not force all projects to net6.0.
+
+The generated libraries were not installed in the launcher or used to replace
+the tested originals. These checks demonstrate buildable source delivery, not
+byte-identical reproduction or gameplay verification of rebuilt libraries.

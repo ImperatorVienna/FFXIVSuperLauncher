@@ -1,0 +1,29 @@
+[
+  {
+    "component": "Reloaded.Memory",
+    "version": "7.0.0",
+    "revision": "c3a7da895d44dc188ae7a488341b8a0db10db175",
+    "url": "https://api.github.com/repos/Reloaded-Project/Reloaded.Memory/tarball/c3a7da895d44dc188ae7a488341b8a0db10db175",
+    "archive": "reloaded.memory-7.0.0-source.tar.gz",
+    "sha256": "c0fb2e56f196c019a9683d835eccf91c7de6badab64ec560cf64318e1a463c20",
+    "basis": "Published upstream version tag; no byte-identical rebuild asserted"
+  },
+  {
+    "component": "Reloaded.Memory.Buffers",
+    "version": "2.0.0",
+    "revision": "6e891b95d7b0b9402912f1d225e706d3d8ffdd6f",
+    "url": "https://api.github.com/repos/Reloaded-Project/Reloaded.Memory.Buffers/tarball/6e891b95d7b0b9402912f1d225e706d3d8ffdd6f",
+    "archive": "reloaded.memory.buffers-2.0.0-source.tar.gz",
+    "sha256": "65c0d72aa7df80b2fe7ab5a36dec4efa15ac429b6307f1df959c446dfbdb6898",
+    "basis": "Published upstream version tag; no byte-identical rebuild asserted"
+  },
+  {
+    "component": "Reloaded.Memory.SigScan",
+    "version": "3.0.0",
+    "revision": "bc3cd78526d49167bcad1e830cb200cc6de111e0",
+    "url": "https://api.github.com/repos/Reloaded-Project/Reloaded.Memory.SigScan/tarball/bc3cd78526d49167bcad1e830cb200cc6de111e0",
+    "archive": "reloaded.memory.sigscan-3.0.0-source.tar.gz",
+    "sha256": "a1abe5af5f0682a6ce36ff13a4a193794eb20187d7ef8c142e03eff471d97f26",
+    "basis": "Published upstream version tag; no byte-identical rebuild asserted"
+  }
+]

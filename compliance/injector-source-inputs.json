@@ -1,0 +1,38 @@
+[
+  {
+    "name": "soil-root",
+    "repository": "https://github.com/Dalamud-DailyRoutines/Dalamud",
+    "commit": "12c1e860fc85cf129470e2d1a58f8e3db883f140",
+    "url": "https://api.github.com/repos/Dalamud-DailyRoutines/Dalamud/tarball/12c1e860fc85cf129470e2d1a58f8e3db883f140",
+    "archive": "soil-source.tar.gz",
+    "sha256": "46eebf7842525578272675a8ff11f2c94b2b3bc4f224499356a17562ff2023db",
+    "destination": "upstream/soil"
+  },
+  {
+    "name": "soil-arg",
+    "repository": "https://github.com/ottercorp/FfxivArgLauncher",
+    "commit": "e2e32129d77ec8e2e4dc340b584b13d864abc59d",
+    "url": "https://api.github.com/repos/ottercorp/FfxivArgLauncher/tarball/e2e32129d77ec8e2e4dc340b584b13d864abc59d",
+    "archive": "arg-soil.tar.gz",
+    "sha256": "d350d8bdb03932592d836a48bda8c0d994d7e6b2e7af8846191c793e6edb4c8b",
+    "destination": "upstream/soil/lib/FfxivArgLauncher"
+  },
+  {
+    "name": "yanmu-root",
+    "repository": "https://github.com/yanmucorp/Dalamud",
+    "commit": "eed420e2d1170a0804e5c6ae6f75f56cef31e0d9",
+    "url": "https://api.github.com/repos/yanmucorp/Dalamud/tarball/eed420e2d1170a0804e5c6ae6f75f56cef31e0d9",
+    "archive": "yanmu-source.tar.gz",
+    "sha256": "98f6de5584fa9cfc8fa281a0b8a7f924e446c329ec9e0a3d787f45cb15661e35",
+    "destination": "upstream/yanmu"
+  },
+  {
+    "name": "yanmu-arg",
+    "repository": "https://github.com/ottercorp/FfxivArgLauncher",
+    "commit": "166d51223ef3270c46a5a2eeb1500fb53aa9ccad",
+    "url": "https://api.github.com/repos/ottercorp/FfxivArgLauncher/tarball/166d51223ef3270c46a5a2eeb1500fb53aa9ccad",
+    "archive": "arg-yanmu.tar.gz",
+    "sha256": "a57ddb7ef4a45da6faa952f0d6532748fc3bbe4cf0a3637821e6a5d4545eed45",
+    "destination": "upstream/yanmu/lib/FfxivArgLauncher"
+  }
+]

@@ -20,7 +20,7 @@ The bundled browser is shared by official pages and web verification; it is inde
 
 - **Three game regions**: a shared graphical interface and Proton launch workflow, with separate client directories, account credentials, Dalamud, and plugin data.
 - **Proton support**: discovers installed versions in system locations and Steam libraries, with manual path selection. Tested on Arch Linux–based CachyOS with proton-cachyos-slr.
-- **Account management**: add, select, edit, and delete accounts by game region; store credentials in a local plaintext files.
+- **Account management**: add, select, edit, and delete accounts by game region; store credentials in local plaintext files.
 - **Verification codes**: manual code entry and local TOTP generation for Traditional Chinese and Global accounts. Global accounts require OTP only if it is enabled on the account.
 - **Game updates**: check and install patches for the selected game region, including updating without launching the game.
 - **Dalamud and plugins**: optional Dalamud support; manage plugin enablement and check for Dalamud and plugin updates without entering the game.
@@ -146,6 +146,8 @@ The on-screen log is concise; “About” shows the full diagnostic log path. Be
 Requires the .NET 10 SDK, a C compiler, Python 3, Git, and `7z`. Building and packaging may download NuGet dependencies, pinned helper components, and corresponding source code.
 
 Run from the repository root:
+
+The complete 1.0.0 launcher source is in this repository. The original source archives, bundled dependency sources and checksums are retained in [release-materials/1.0.0](release-materials/1.0.0). Release downloads contain the AppImage and the two small files required for signed updates.
 
 ```bash
 # Build the Linux launcher

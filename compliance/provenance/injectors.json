@@ -1,0 +1,486 @@
+[
+  {
+    "component": "soil",
+    "release": "26-10-05-02",
+    "repository": "https://github.com/Dalamud-DailyRoutines/Dalamud",
+    "commit": "12c1e860fc85cf129470e2d1a58f8e3db883f140",
+    "license_file": "compliance/notices/soil-Dalamud-12c1e860fc85-LICENSE",
+    "license": "AGPL version 3 text retained at exact commit; component-specific licenses also apply",
+    "evidence": [
+      "AssemblyInformationalVersion",
+      "PDB SourceLink",
+      "PDB handwritten source document checksums"
+    ],
+    "pdb_documents": [
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/AppContainerHelper.cs",
+        "pdb_sha256": "ea399b13e54f5661420679c6c2a151a65d2802ec0ba10bfb1055fda1b7d4fbd6",
+        "result": "exact"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/AppContainerLaunchContext.cs",
+        "pdb_sha256": "7544fcd119455b691e35fcaccd4ca41a0f90122b09ba926f949e2cee96c29b56",
+        "result": "exact"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/ExistingProcess.cs",
+        "pdb_sha256": "9076f6da9ecd984df217a3f82abeb0b836f8e19e43c88d6e172411f394bc6883",
+        "result": "exact"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/GameStart.cs",
+        "pdb_sha256": "ef2e00e3417def377fdb24f21240a891acd8b44e26346f313945a203edea3fcc",
+        "result": "exact"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/GlobalSuppressions.cs",
+        "pdb_sha256": "31291f20130e66b11cb5088d9497e2b4423d735756209ec8ee505b9084bb5c32",
+        "result": "exact"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/GrantResult.cs",
+        "pdb_sha256": "c4be21fad127284fec6f1252db5c253259a184c6c67172361052f459968534bd",
+        "result": "exact"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/Injector.cs",
+        "pdb_sha256": "aa615f62884170b82832f33d1cea2d017f9cfeeb81d14578ed43ae3a2a2f870a",
+        "result": "exact"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/LegacyBlowfish.cs",
+        "pdb_sha256": "0ee53f89480b9d88988b282ba140ffcfd4927deed3693458f9ab1c88e73eedea",
+        "result": "exact"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/Program.cs",
+        "pdb_sha256": "b2ada41ebafb0f8f3fa414518d15fe8621ddbe3a803a871c0d9619ccd6f2b0ff",
+        "result": "exact"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/SandboxConfiguration.cs",
+        "pdb_sha256": "b039b71e279a2c2038a6859284f2363b10677ee88c3b081d37583b2ff63d64ae",
+        "result": "exact"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+        "pdb_sha256": "93d67476196ebfc80d1d7d8844b91146cfd678d105f5ce635eb900ca40610c9b",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Dalamud.Injector.AssemblyInfo.cs",
+        "pdb_sha256": "bba75b97a4bc23996b4fb9c1f4ce0492e70c0515967dc7f267492c7167b3f7ef",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.BOOL.g.cs",
+        "pdb_sha256": "3bac44c77e00df982f219a927fb134f3b2f33a1705d4b6df4aa26836deb5acb2",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.CsWin32Stamp.g.cs",
+        "pdb_sha256": "b000f275236689faed9b648a19f407d1e947afd79dfca69476db53c544638b7b",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.DUPLICATE_HANDLE_OPTIONS.g.cs",
+        "pdb_sha256": "9964f54cd5d422ac6da9bbc35ae2d27edadc9d0176f52d5b8d77cc8a1dcb2430",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.FARPROC.g.cs",
+        "pdb_sha256": "69004b33276bcd8962a900087a03e37f3a8123413bb71cfb301a4747d36ff3ce",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.FreeLibrarySafeHandle.g.cs",
+        "pdb_sha256": "2b855bac3cd7ca4c879e6f33804e32183e7a738d004028c35ee75efcfe42feba",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.HANDLE.g.cs",
+        "pdb_sha256": "3265fc1b5c79b95fcc5676dfa26bf98bb7b38cefa9fd4bcc539b0ef501c8856b",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.HINSTANCE.g.cs",
+        "pdb_sha256": "ad34f055be8854ef6086767a8de3fe578c6b723dd26f1bee603d854bcf546f92",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.HMODULE.g.cs",
+        "pdb_sha256": "4ee4168d6ede8cb65e05afe8b403dca85c09de3a02a738034e80df63b98d20ab",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.HWND.g.cs",
+        "pdb_sha256": "2ff027245b03df014dc15c9de6cf5a09a14c9a58b06f473bf8961623e2fbb515",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.MESSAGEBOX_RESULT.g.cs",
+        "pdb_sha256": "2c3a46f43e4c46684f5e5e7d395e14d86c2287c5a9c3ae5a7f5da7e16dcd374a",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.MESSAGEBOX_STYLE.g.cs",
+        "pdb_sha256": "ee4943d7bcbffff87fa197f7177abfc73973f3dd68e0772bf5afd3155c68a428",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.PCSTR.g.cs",
+        "pdb_sha256": "9fbede6735a9927f7af580afbb746ad875dbdb8fa7ae46ec1a1dc1556a72e832",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.PCWSTR.g.cs",
+        "pdb_sha256": "39385a51f1d475ee49afd5b8e69d6b4f780e0262e782c42e4f8032e0350c4fca",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.PInvoke.KERNEL32.dll.g.cs",
+        "pdb_sha256": "bfd7a7c51f4946687550b6f7210e25dd54f5a1902d576ed089bbdbe8bad3b4be",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.PInvoke.USER32.dll.g.cs",
+        "pdb_sha256": "544e8b90542884a4f140e8cbf1c385d05d4528b7ccd37a18c864fbda158c7683",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.SECURITY_ATTRIBUTES.g.cs",
+        "pdb_sha256": "5b266697f0aee5ebfcce9a2970853507fb53c3e5a30fd03121bfb6460e5f1ef4",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "soil",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.WAIT_EVENT.g.cs",
+        "pdb_sha256": "efe0285253e5092bec769dde99b4bab828361bd85cd8167e221eb29ff17f543a",
+        "result": "generated-or-missing"
+      }
+    ],
+    "submodules": [
+      {
+        "path": "lib/FFXIVClientStructs",
+        "repository": "https://github.com/Dalamud-DailyRoutines/FFXIVClientStructs.git",
+        "commit": "5b5af29306c146801bae73adedcd6d0e193ee1ee"
+      },
+      {
+        "path": "lib/Nomade040-nmd",
+        "repository": "https://github.com/Nomade040/nmd.git",
+        "commit": "33ac3b62c7d1eb28ae6b71d4dd78aa133ef96488"
+      },
+      {
+        "path": "lib/TsudaKageyu-minhook",
+        "repository": "https://github.com/TsudaKageyu/minhook.git",
+        "commit": "4a455528f61b5a375b1f9d44e7d296d47f18bb18"
+      },
+      {
+        "path": "lib/FfxivArgLauncher",
+        "repository": "https://github.com/ottercorp/FfxivArgLauncher.git",
+        "commit": "e2e32129d77ec8e2e4dc340b584b13d864abc59d"
+      },
+      {
+        "path": "lib/cimgui",
+        "repository": "https://github.com/goatcorp/gc-cimgui",
+        "commit": "ecd32e56fe2f1d9072e01a090bc447b4f932e5d4"
+      },
+      {
+        "path": "lib/cimplot",
+        "repository": "https://github.com/goatcorp/gc-cimplot",
+        "commit": "75fd5126118954d276057051a313d0118ad6cc3d"
+      },
+      {
+        "path": "lib/cimguizmo",
+        "repository": "https://github.com/goatcorp/gc-cimguizmo",
+        "commit": "60c332cfdf306d78ad6a3663c63c0b94f8fcfc48"
+      },
+      {
+        "path": "lib/Hexa.NET.ImGui",
+        "repository": "https://github.com/goatcorp/Hexa.NET.ImGui.git",
+        "commit": "53ae49bc558aa8ba9f4fad3515aa17fab99d7ffa"
+      },
+      {
+        "path": "lib/Lumina.Excel",
+        "repository": "https://github.com/Dalamud-DailyRoutines/Lumina.Excel.git",
+        "commit": "ba9aa59b1866c1669117eeb1941f15f0643c847d"
+      },
+      {
+        "path": "lib/Lumina",
+        "repository": "https://github.com/Dalamud-DailyRoutines/Lumina",
+        "commit": "194aa886826acc41f01cb26f0215f3c91200e633"
+      },
+      {
+        "path": "lib/mimalloc",
+        "repository": "https://github.com/microsoft/mimalloc.git",
+        "commit": "76d3f8a934f9761e4ee75fa8b071e58d482f2758"
+      },
+      {
+        "path": "lib/libdeflate",
+        "repository": "https://github.com/ebiggers/libdeflate.git",
+        "commit": "b122c8be1d78b19f6d0a6efc5bb79bfcbb30dd51"
+      }
+    ],
+    "source_archive_sha256": "46eebf7842525578272675a8ff11f2c94b2b3bc4f224499356a17562ff2023db",
+    "corresponding_source_delivery": "Root archive plus sole required source submodule FfxivArgLauncher collected in separate injector source archive; both injector targets built successfully. Unrelated Dalamud projects/submodules are outside these targets.",
+    "modification": "No changes to bundled injector assembly; selected files only"
+  },
+  {
+    "component": "yanmu",
+    "release": "26-10-03-01",
+    "repository": "https://github.com/yanmucorp/Dalamud",
+    "commit": "eed420e2d1170a0804e5c6ae6f75f56cef31e0d9",
+    "license_file": "compliance/notices/yanmu-Dalamud-eed420e2d117-LICENSE",
+    "license": "AGPL version 3 text retained at exact commit; component-specific licenses also apply",
+    "evidence": [
+      "AssemblyInformationalVersion",
+      "PDB SourceLink",
+      "PDB handwritten source document checksums",
+      "release body commit"
+    ],
+    "pdb_documents": [
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/EntryPoint.cs",
+        "pdb_sha256": "a9e1bc0dde6687cbb9b3288f1d121fca74e64fca3f1e1d708b1459a6bacd965c",
+        "result": "crlf-exact"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/ExistingProcess.cs",
+        "pdb_sha256": "0a7e7b6d40e14ca1464d2a60f3916c978ded398f814ddaadfb42dc6ea6b85a5c",
+        "result": "crlf-exact"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/GameStart.cs",
+        "pdb_sha256": "327e0d25e064e2adbe121a3ed599cd3b4b3ce4dbfd6f3c1cfd0925c57280a880",
+        "result": "crlf-exact"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/GlobalSuppressions.cs",
+        "pdb_sha256": "428ddc52c989a25a56ca7cbbc1a904e1c0f28bbe83d76645a09a6dbadd992928",
+        "result": "crlf-exact"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/Injector.cs",
+        "pdb_sha256": "68c4ab07cf09b15c8fcc69a239baf5196ecab61945ad001e49050e6282e6f5ef",
+        "result": "crlf-exact"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/LegacyBlowfish.cs",
+        "pdb_sha256": "fbff005113bd232c076d11ea944771abd00695373002d6c45dc737de49c321cc",
+        "result": "crlf-exact"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/NativeAclFix.cs",
+        "pdb_sha256": "b57f8fba17aa522bf42a65696f59afa463a750b40557f77d2cda9a5afe23ab29",
+        "result": "crlf-exact"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/.NETCoreApp,Version=v9.0.AssemblyAttributes.cs",
+        "pdb_sha256": "9e76499c4e5cb623ad4889eaa99b1a53d9c970efcf902d8b096e78a19ee4285d",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Dalamud.Injector.AssemblyInfo.cs",
+        "pdb_sha256": "f0e2783728cf4c072537ec1839917309100998ba0343433da57d7d2799f0a8a2",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.BOOL.g.cs",
+        "pdb_sha256": "52390c9e3cc0a751c621d7f80dcf0b2f1740e486",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.CsWin32Stamp.g.cs",
+        "pdb_sha256": "5c069fa7c9283a3799a2160062d176328eb4893c",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.DUPLICATE_HANDLE_OPTIONS.g.cs",
+        "pdb_sha256": "7838bea432ccca039d50e39b020a0baf23f5d1ba",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.FARPROC.g.cs",
+        "pdb_sha256": "84d97da910a755ca095bc8b15553b007a8b25d13",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.FreeLibrarySafeHandle.g.cs",
+        "pdb_sha256": "39e7a68ed581e222ebdce0cad5ffe30da53ddea4",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.HANDLE.g.cs",
+        "pdb_sha256": "53a3f4bdfbd23fe6e216c7cfb64628d8cb08dda3",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.HINSTANCE.g.cs",
+        "pdb_sha256": "fc6019aa06cb6dfce0993961fb1ef25c351af9b5",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.HMODULE.g.cs",
+        "pdb_sha256": "eac99125a441d3bd32672756e255f21cf5b4b959",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.HWND.g.cs",
+        "pdb_sha256": "9e40a97534297098e51120c61f617002cffc1d53",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.MESSAGEBOX_RESULT.g.cs",
+        "pdb_sha256": "cbb3582008cf7a54ec73a26c00aeb2f87475f83f",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.MESSAGEBOX_STYLE.g.cs",
+        "pdb_sha256": "db225eb725f30dc303d1a6023322a93c0fbbb445",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.PCSTR.g.cs",
+        "pdb_sha256": "af74efe99743ef6783a80b3f52d0c0ec67e77257",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.PCWSTR.g.cs",
+        "pdb_sha256": "d4643dae9e1d21d49e57f3c8945b96391a8b3cbb",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.PInvoke.KERNEL32.dll.g.cs",
+        "pdb_sha256": "cefa3e93caef0e80d1283b7a56e368f5216ed675",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.PInvoke.USER32.dll.g.cs",
+        "pdb_sha256": "4fc9301472c06da9a6ffed0915b70cb1518ce329",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.SECURITY_ATTRIBUTES.g.cs",
+        "pdb_sha256": "094659d993d70c249ab1b5e219e1d72141d6d34e",
+        "result": "generated-or-missing"
+      },
+      {
+        "component": "yanmu",
+        "path": "Dalamud.Injector/obj/Release/Microsoft.Windows.CsWin32/Microsoft.Windows.CsWin32.SourceGenerator/Windows.Win32.WAIT_EVENT.g.cs",
+        "pdb_sha256": "2533b4d939fe4e2863198d36eb4440f662bb62cb",
+        "result": "generated-or-missing"
+      }
+    ],
+    "submodules": [
+      {
+        "path": "lib/FFXIVClientStructs",
+        "repository": "https://github.com/Dalamud-DailyRoutines/FFXIVClientStructs.git",
+        "commit": "e95eb0de74e54be840b15097ef65b6b252ba3c6f"
+      },
+      {
+        "path": "lib/Nomade040-nmd",
+        "repository": "https://github.com/Nomade040/nmd.git",
+        "commit": "33ac3b62c7d1eb28ae6b71d4dd78aa133ef96488"
+      },
+      {
+        "path": "lib/TsudaKageyu-minhook",
+        "repository": "https://github.com/TsudaKageyu/minhook.git",
+        "commit": "4a455528f61b5a375b1f9d44e7d296d47f18bb18"
+      },
+      {
+        "path": "lib/FfxivArgLauncher",
+        "repository": "https://github.com/ottercorp/FfxivArgLauncher.git",
+        "commit": "166d51223ef3270c46a5a2eeb1500fb53aa9ccad"
+      },
+      {
+        "path": "lib/cimgui",
+        "repository": "https://github.com/goatcorp/gc-cimgui",
+        "commit": "27c8565f631b004c3266373890e41ecc627f775b"
+      },
+      {
+        "path": "lib/cimplot",
+        "repository": "https://github.com/goatcorp/gc-cimplot",
+        "commit": "939f8f36deebd895f6cda522ee4bb2b798920935"
+      },
+      {
+        "path": "lib/cimguizmo",
+        "repository": "https://github.com/goatcorp/gc-cimguizmo",
+        "commit": "dbad4fdb4d465e1f48d20c4c54a20925095297b0"
+      },
+      {
+        "path": "lib/Hexa.NET.ImGui",
+        "repository": "https://github.com/goatcorp/Hexa.NET.ImGui.git",
+        "commit": "53ae49bc558aa8ba9f4fad3515aa17fab99d7ffa"
+      },
+      {
+        "path": "lib/Lumina",
+        "repository": "https://github.com/Dalamud-DailyRoutines/Lumina.git",
+        "commit": "2305d222f4a3d31c9b918ad026d709c9cb5f6d6a"
+      }
+    ],
+    "source_archive_sha256": "98f6de5584fa9cfc8fa281a0b8a7f924e446c329ec9e0a3d787f45cb15661e35",
+    "corresponding_source_delivery": "Root archive plus sole required source submodule FfxivArgLauncher collected in separate injector source archive; both injector targets built successfully. Unrelated Dalamud projects/submodules are outside these targets.",
+    "modification": {
+      "project": "FFXIV Super Launcher",
+      "description": "Bypass the six IL instructions constructing/calling ArgFixer in the entrypoint path; do not alter the installed upstream file.",
+      "patcher": "tools/tc-entrypoint/PatchInjector.cs",
+      "original_sha256": "fea73493a4517d81057740a5812305729a09bc52e34b7e888a8e740a832bb820",
+      "patched_sha256": "e03ca94e7a0f94cdf1068f9b2bfc33fb9f9e23bc98099f806cdbd0d2b883a381",
+      "recorded_date": "2026-10-08",
+      "first_development_release": "0.10.9-entrypoint.1"
+    }
+  }
+]

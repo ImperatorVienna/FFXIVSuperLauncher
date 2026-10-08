@@ -1,0 +1,27 @@
+name: Linux Bug Report
+description: 报告 Linux / Proton 启动器问题。
+labels: [bug]
+body:
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤与预期行为
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Linux 发行版、桌面与 X11/Wayland
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: 启动器、Proton 和 Steam Runtime 版本
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志或截图
+      description: 请移除账号、密码及登录票据。

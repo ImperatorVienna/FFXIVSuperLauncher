@@ -1,0 +1,1 @@
+for (const [index, button] of [...document.querySelectorAll('button')].entries()) { button.textContent=window.toolbarLabels[index]; button.addEventListener('click', () => window.official.action(button.dataset.action)); }

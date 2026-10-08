@@ -1,0 +1,64 @@
+using Newtonsoft.Json;
+using XIVLauncher.Common.Util;
+
+namespace XIVLauncher.Login.Client;
+
+public class LoginResponse
+{
+    [JsonProperty("error_type")]
+    public int ErrorType;
+
+    [JsonProperty("return_code")]
+    public int ReturnCode;
+
+    [JsonProperty("data")]
+    public LoginResponseData Data = null!;
+
+    public class LoginResponseData
+    {
+        [JsonProperty("failReason")]
+        public string FailReason = null!;
+
+        [JsonProperty("nextAction")]
+        public int NextAction;
+
+        [JsonProperty("guid")]
+        public string Guid = null!;
+
+        [JsonProperty("dynamicKey")]
+        public string DynamicKey = null!;
+
+        [JsonConverter(typeof(MaskMiddleConverter))]
+        [JsonProperty("ticket")]
+        public string Ticket = null!;
+
+        [JsonConverter(typeof(MaskMiddleConverter))]
+        [JsonProperty("sndaId")]
+        public string SndaID = null!;
+
+        [JsonConverter(typeof(MaskMiddleConverter))]
+        [JsonProperty("tgt")]
+        public string Tgt = null!;
+
+        [JsonConverter(typeof(MaskMiddleConverter))]
+        [JsonProperty("autoLoginSessionKey")]
+        public string QuickLoginSecret = null!;
+
+        [JsonProperty("autoLoginMaxAge")]
+        public int QuickLoginMaxAge;
+
+        [JsonConverter(typeof(MaskMiddleConverter))]
+        [JsonProperty("inputUserId")]
+        public string InputUserID = null!;
+
+        [JsonConverter(typeof(MaskMiddleConverter))]
+        [JsonProperty("accountArray")]
+        public List<string> AccountArray = null!;
+
+        [JsonConverter(typeof(MaskMiddleConverter))]
+        [JsonProperty("sndaIdArray")]
+        public List<string> SndaIDArray = null!;
+
+
+    }
+}

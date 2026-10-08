@@ -1,0 +1,58 @@
+FFXIV Super Launcher — third-party attribution
+
+The launcher is a modified Linux branch of XIVLauncher. Preserve LICENSE (GNU
+GPL version 3), SOURCES.txt and existing file-level notices. The project does not
+claim exclusive authorship of inherited code or ownership of upstream branding.
+
+Launcher icon: user-supplied 500x500 transparent PNG, attributed to
+https://www.pngaaa.com/detail/6354760 (page label: Non-commercial Use).
+The image is separately licensed; the launcher's GPL does not relicense it.
+Original rightsholder permission has not been independently established. Source,
+modification and SHA256 are recorded in compliance/provenance/artwork.json.
+
+Launcher lineage: goatcorp/FFXIVQuickLauncher, ottercorp/FFXIVQuickLauncher and
+AtmoOmen/FFXIVQuickLauncher. Exact reference revisions and changes are in SOURCES.txt.
+cycleapple/XIVTCLauncher was a reference for Taiwan protocol and user-flow work;
+it has not granted a blanket license to its entire repository. Its GPL-derived
+ZiPatch lineage and our protocol reimplementations are separately documented.
+
+Inherited BinaryReader helpers retain a reference to Tim Williams' StackOverflow
+answer 15274591 (2013-03-07, CC BY-SA 3.0):
+https://stackoverflow.com/a/15274591
+https://stackoverflow.com/users/2144842/tim-williams
+https://creativecommons.org/licenses/by-sa/3.0/
+The 64-bit/string/dump additions are not all part of that answer. See
+compliance/provenance/STACKOVERFLOW.txt; attribution does not itself relicense code.
+
+xdelta3: Joshua MacDonald; original Apache-2.0 license and notices are under
+src/native/xdelta3 in source distributions and Tools/LICENSE.xdelta3 in binaries.
+
+Bundled injector components: Dalamud-DailyRoutines/Dalamud and yanmucorp/Dalamud,
+derived from the goatcorp/ottercorp Dalamud lineage, retain their AGPLv3 license.
+FfxivArgLauncher: Copyright 2025 Odder Otter Interactive, MIT.
+Only the fixed helper/adapter components are bundled, not a complete Dalamud
+installation. Source archives, the TC modification and build instructions are
+identified in SOURCE-DELIVERY.json and compliance/INJECTOR-SOURCE-BUILD.txt.
+
+Steamworks native library: Valve Corporation. It is not covered by the managed
+Facepunch wrapper's MIT license or this project's GPL license. The preserved
+Steam SDK distribution basis and upstream System Library rationale are recorded
+in compliance/provenance/steam-native.json and LICENSING-DECISIONS.txt.
+
+Electron/Chromium: retain Tools/webview/LICENSE and LICENSES.chromium.html in full.
+The latter includes the original component copyright and license texts; it is
+not reduced to Electron's MIT license. FFmpeg source and LGPL text are supplied
+separately. Our browser shell source is under packaging/webview.
+
+.NET runtime and managed/native package libraries retain their own licenses.
+Published bundles contain a generated DEPENDENCY-NOTICES.json and full texts in
+licenses/. This includes both the Linux launcher and the fixed CN helper package
+dependencies. Reloaded.Memory libraries retain LGPLv3 and their corresponding
+version-source archives. SharpCompress's original embedded notices are retained
+in addition to its root MIT license; source-level questions are recorded rather
+than silently relabeled.
+
+See compliance/notices/sources.json for original URLs, revisions and SHA256.
+COMPLIANCE-STATUS.json in the binary (compliance/STATUS.json in source) records
+review state. Presence of a license text is not a claim that every possible use
+or redistribution is permitted. No upstream party's endorsement is implied.

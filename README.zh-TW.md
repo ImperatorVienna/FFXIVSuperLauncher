@@ -147,6 +147,8 @@ Dalamud 更新連線逾時時，可以選擇使用現有可用版本繼續啟動
 
 在儲存庫根目錄執行：
 
+1.0.0 的完整啟動器原始碼位於本倉庫。原始碼封存檔、隨附相依元件的對應原始碼及校驗檔案保存在 [release-materials/1.0.0](release-materials/1.0.0)。Release 下載僅保留 AppImage 和簽章更新所需的兩個小檔案。
+
 ```bash
 # 建置 Linux 啟動器
 dotnet build src/XIVLauncher.Linux/XIVLauncher.Linux.csproj -c Release -m:1

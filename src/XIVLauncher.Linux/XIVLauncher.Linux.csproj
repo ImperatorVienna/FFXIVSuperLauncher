@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>xivlauncher-super</AssemblyName>
+    <Product>FFXIV Super Launcher</Product>
+    <Version>1.0.0</Version>
+    <RootNamespace>XIVLauncher.Linux</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/icon.png" />
+    <None Include="Resources/icon.png" Link="icon.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <EmbeddedResource Include="../../packaging/linux/xivlauncher-super.desktop" LogicalName="Desktop.Entry" />
+    <EmbeddedResource Include="../../LICENSE" LogicalName="About.LICENSE" />
+    <EmbeddedResource Include="../../THIRD-PARTY-NOTICES.txt" LogicalName="About.THIRD-PARTY-NOTICES.txt" />
+    <EmbeddedResource Include="Resources/Locales/*.json" />
+    <EmbeddedResource Include="Resources/Diagnostics.en.json" WithCulture="false" />
+    <EmbeddedResource Include="Resources/Status.en.json" WithCulture="false" />
+    <InternalsVisibleTo Include="XIVLauncher.Linux.Tests" />
+    <PackageReference Include="goaaats.Steamworks" />
+    <None Include="Global/libsteam_api64.so" Link="libsteam_api64.so" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <PackageReference Include="Avalonia.X11" />
+    <PackageReference Include="Avalonia.Skia" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <ProjectReference Include="../XIVLauncher.Common.Unix/XIVLauncher.Common.Unix.csproj" />
+    <ProjectReference Include="../XIVLauncher.GamePatchV3/XIVLauncher.GamePatchV3.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <XdeltaOutput>$(MSBuildProjectDirectory)/obj/native/xdelta3</XdeltaOutput>
+    <XdeltaSource>$(MSBuildProjectDirectory)/../native/xdelta3/xdelta3.c</XdeltaSource>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(XdeltaOutput)" Link="Tools/xdelta3" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="BuildLinuxXdelta" BeforeTargets="BeforeBuild" Inputs="$(XdeltaSource);$(MSBuildProjectFullPath)" Outputs="$(XdeltaOutput)">
+    <MakeDir Directories="$(MSBuildProjectDirectory)/obj/native" />
+    <Exec Command="cc -std=gnu11 -O2 -DXD3_MAIN=1 -DXD3_POSIX=1 -DXD3_WIN32=0 -DXD3_STDIO=0 -DSIZEOF_SIZE_T=8 -DSIZEOF_UNSIGNED_LONG=8 -DSIZEOF_UNSIGNED_LONG_LONG=8 -DSIZEOF_UNSIGNED_INT=4 -DEXTERNAL_COMPRESSION=0 -DHAVE_CONFIG_H=0 &quot;$(XdeltaSource)&quot; -o &quot;$(XdeltaOutput)&quot;" />
+  </Target>
+</Project>

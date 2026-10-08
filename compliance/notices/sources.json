@@ -1,0 +1,229 @@
+[
+  {
+    "component": "Avalonia-11.3.22",
+    "source": "https://raw.githubusercontent.com/AvaloniaUI/Avalonia/627ae9ef921621e27e7aa58df2796fbadb50af88/licence.md",
+    "file": "Avalonia-11.3.22-licence.md",
+    "sha256": "213814d306090074d234d760239ff0f67eb9b8d20eefb4d5631bb39dbe0b769b",
+    "revision": "627ae9ef921621e27e7aa58df2796fbadb50af88"
+  },
+  {
+    "component": "Serilog-4.3.1",
+    "source": "https://raw.githubusercontent.com/serilog/serilog/5625030e8f8fceca2e3180575aba174751ef7add/LICENSE",
+    "file": "Serilog-4.3.1-LICENSE",
+    "sha256": "73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68",
+    "revision": "5625030e8f8fceca2e3180575aba174751ef7add"
+  },
+  {
+    "component": "SharpCompress-0.49.1",
+    "source": "https://raw.githubusercontent.com/adamhathcock/sharpcompress/1d9fd83a73db0144df3d2844133cf1b1f3699c7c/LICENSE.txt",
+    "file": "SharpCompress-0.49.1-LICENSE.txt",
+    "sha256": "b7ca2b6174cee11afe41d78b48527e3d7659a4435c25019a4a5e072299a2f8ed",
+    "revision": "1d9fd83a73db0144df3d2844133cf1b1f3699c7c"
+  },
+  {
+    "component": "Tmds.DBus.Protocol-0.21.3",
+    "source": "https://raw.githubusercontent.com/tmds/Tmds.DBus/8cb04f66c330b64244e996ff68f685f27f7381a0/COPYING",
+    "file": "Tmds.DBus.Protocol-0.21.3-COPYING",
+    "sha256": "aca3b49277abcc7886ccb2f115603a9f5b15fc3f96019a10c00f2974098b210c",
+    "revision": "8cb04f66c330b64244e996ff68f685f27f7381a0"
+  },
+  {
+    "component": "dotnet-runtime-win-10.0.1",
+    "source": "https://raw.githubusercontent.com/dotnet/runtime/v10.0.1/LICENSE.TXT",
+    "file": "dotnet-runtime-win-10.0.1-LICENSE.TXT",
+    "sha256": "cfc21f5e8bd655ae997eec916138b707b1d290b83272c02a95c9f821b8c87310",
+    "revision": "v10.0.1"
+  },
+  {
+    "component": "dotnet-runtime-win-10.0.1",
+    "source": "https://raw.githubusercontent.com/dotnet/runtime/v10.0.1/THIRD-PARTY-NOTICES.TXT",
+    "file": "dotnet-runtime-win-10.0.1-THIRD-PARTY-NOTICES.TXT",
+    "sha256": "66f1d4e44973185519bb4aa8a9718eb22fc7af2cc532e3ae9cfc4c127ee7fc54",
+    "revision": "v10.0.1"
+  },
+  {
+    "component": "soil-Dalamud-26-10-05-02",
+    "source": "https://raw.githubusercontent.com/Dalamud-DailyRoutines/Dalamud/12c1e860fc85cf129470e2d1a58f8e3db883f140/LICENSE",
+    "file": "soil-Dalamud-12c1e860fc85-LICENSE",
+    "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
+    "revision": "12c1e860fc85cf129470e2d1a58f8e3db883f140"
+  },
+  {
+    "component": "yanmu-Dalamud-26-10-03-01",
+    "source": "https://raw.githubusercontent.com/yanmucorp/Dalamud/eed420e2d1170a0804e5c6ae6f75f56cef31e0d9/LICENSE",
+    "file": "yanmu-Dalamud-eed420e2d117-LICENSE",
+    "sha256": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
+    "revision": "eed420e2d1170a0804e5c6ae6f75f56cef31e0d9"
+  },
+  {
+    "component": "FfxivArgLauncher-e2e32129d77ec8e2e4dc340b584b13d864abc59d",
+    "source": "https://raw.githubusercontent.com/ottercorp/FfxivArgLauncher/e2e32129d77ec8e2e4dc340b584b13d864abc59d/LICENSE",
+    "file": "FfxivArgLauncher-e2e32129d77e-LICENSE",
+    "sha256": "076149bc5adb9df809c71f45ee49f1cc5117be3df518a1c0a523d18a09bfd097",
+    "revision": "e2e32129d77ec8e2e4dc340b584b13d864abc59d"
+  },
+  {
+    "component": "MicroCom.Runtime-0.11.0",
+    "file": "MicroCom.Runtime-0.11.0-LICENSE",
+    "source": "https://raw.githubusercontent.com/kekekeks/MicroCom/4b8a38f773c109bad558ee3713d9f16d80776e42/LICENSE",
+    "revision": "4b8a38f773c109bad558ee3713d9f16d80776e42",
+    "sha256": "6ee769c9ac4dac9abb16b98b1341e9528ff9f4ab685481410d3376d14148f3a9",
+    "scope": "Original project license; not a claim of byte-identical managed library rebuild"
+  },
+  {
+    "component": "goaaats.Steamworks-2.3.4",
+    "file": "goaaats.Steamworks-2.3.4-LICENSE",
+    "source": "https://raw.githubusercontent.com/Facepunch/Facepunch.Steamworks/f91eee68a9083d0353eed7e807eac6ca67b1fe64/LICENSE",
+    "revision": "f91eee68a9083d0353eed7e807eac6ca67b1fe64",
+    "sha256": "c9a7aa9850977ab2540729a3dee4d482786e1ab735556648fd671870853678c2",
+    "scope": "Original project license; not a claim of byte-identical managed library rebuild"
+  },
+  {
+    "component": "FfxivArgLauncher-166d51223ef3270c46a5a2eeb1500fb53aa9ccad",
+    "file": "FfxivArgLauncher-166d51223ef3-LICENSE",
+    "source": "https://raw.githubusercontent.com/ottercorp/FfxivArgLauncher/166d51223ef3270c46a5a2eeb1500fb53aa9ccad/LICENSE",
+    "revision": "166d51223ef3270c46a5a2eeb1500fb53aa9ccad",
+    "sha256": "076149bc5adb9df809c71f45ee49f1cc5117be3df518a1c0a523d18a09bfd097"
+  },
+  {
+    "component": "Electron-44.5.1-FFmpeg",
+    "file": "Electron-44.5.1-FFmpeg-COPYING.LGPLv2.1",
+    "source": "https://chromium.googlesource.com/chromium/third_party/ffmpeg/+/2b68d2babae73714846961fb0ee47e3b3d2e39a9/COPYING.LGPLv2.1",
+    "revision": "2b68d2babae73714846961fb0ee47e3b3d2e39a9",
+    "sha256": "246041b6ecf9bc32d718a62c57877c78b5eb397b6467e74ed7ae2626ab189c30"
+  },
+  {
+    "component": "SharpCompress-0.49.1",
+    "file": "SharpCompress-0.49.1-EMBEDDED-NOTICES.txt",
+    "source": "https://github.com/adamhathcock/sharpcompress/tree/1d9fd83a73db0144df3d2844133cf1b1f3699c7c",
+    "revision": "1d9fd83a73db0144df3d2844133cf1b1f3699c7c",
+    "sha256": "43d597be970492967bda3725f6d5340dce894b3b5589746ce1ab394e820c13b8",
+    "scope": "Collected source headers and reference unrar license; rights review remains open"
+  },
+  {
+    "component": "Microsoft.Extensions.Logging.Abstractions-10.0.8",
+    "source": "https://raw.githubusercontent.com/dotnet/dotnet/94ea82652cdd4e0f8046b5bd5becbd11461482ca/LICENSE.TXT",
+    "file": "Microsoft.Extensions.Logging.Abstractions-10.0.8-LICENSE.TXT",
+    "revision": "94ea82652cdd4e0f8046b5bd5becbd11461482ca",
+    "sha256": "ae48df11a335dc1a615f4f938b69cba73bcf4485c4f97af49b38efb0f216353b"
+  },
+  {
+    "component": "Microsoft.Extensions.DependencyInjection.Abstractions-10.0.8",
+    "source": "https://raw.githubusercontent.com/dotnet/dotnet/94ea82652cdd4e0f8046b5bd5becbd11461482ca/LICENSE.TXT",
+    "file": "Microsoft.Extensions.DependencyInjection.Abstractions-10.0.8-LICENSE.TXT",
+    "revision": "94ea82652cdd4e0f8046b5bd5becbd11461482ca",
+    "sha256": "ae48df11a335dc1a615f4f938b69cba73bcf4485c4f97af49b38efb0f216353b"
+  },
+  {
+    "component": "Iced-1.17.0",
+    "file": "Iced-1.17.0-LICENSE.txt",
+    "source": "https://api.nuget.org/v3-flatcontainer/iced/1.17.0/iced.1.17.0.nupkg",
+    "sha256": "93a47598376fd3f276b631e75149340087153c6ff1635a53c5790249e9124e2d",
+    "scope": "Original file from the pinned NuGet package bundled by the CN helper"
+  },
+  {
+    "component": "Newtonsoft.Json-13.0.4",
+    "file": "Newtonsoft.Json-13.0.4-LICENSE.md",
+    "source": "https://api.nuget.org/v3-flatcontainer/newtonsoft.json/13.0.4/newtonsoft.json.13.0.4.nupkg",
+    "sha256": "b98a397897ff55f76cddc380041507a95a896b2946e0188703bf0496793d6516",
+    "scope": "Original file from the pinned NuGet package bundled by the CN helper"
+  },
+  {
+    "component": "Reloaded.Memory-7.0.0",
+    "file": "Reloaded.Memory-7.0.0-LICENSE",
+    "source": "https://api.nuget.org/v3-flatcontainer/reloaded.memory/7.0.0/reloaded.memory.7.0.0.nupkg",
+    "sha256": "7d3a95e5e06978064ed3f8e2b7c8f845e7fd8a405294727cc708f94cb83b8059",
+    "scope": "Original file from the pinned NuGet package bundled by the CN helper"
+  },
+  {
+    "component": "Reloaded.Memory.Buffers-2.0.0",
+    "file": "Reloaded.Memory.Buffers-2.0.0-LICENSE",
+    "source": "https://api.nuget.org/v3-flatcontainer/reloaded.memory.buffers/2.0.0/reloaded.memory.buffers.2.0.0.nupkg",
+    "sha256": "7d3a95e5e06978064ed3f8e2b7c8f845e7fd8a405294727cc708f94cb83b8059",
+    "scope": "Original file from the pinned NuGet package bundled by the CN helper"
+  },
+  {
+    "component": "Reloaded.Memory.Sigscan-3.0.0",
+    "file": "Reloaded.Memory.Sigscan-3.0.0-LICENSE.md",
+    "source": "https://api.nuget.org/v3-flatcontainer/reloaded.memory.sigscan/3.0.0/reloaded.memory.sigscan.3.0.0.nupkg",
+    "sha256": "670dafc74a109636cf1220105c22a355241dd0142935e185e8604defc19cf954",
+    "scope": "Original file from the pinned NuGet package bundled by the CN helper"
+  },
+  {
+    "component": "Reloaded.Memory.Sigscan.Definitions-1.0.0",
+    "file": "Reloaded.Memory.Sigscan.Definitions-1.0.0-LICENSE.md",
+    "source": "https://api.nuget.org/v3-flatcontainer/reloaded.memory.sigscan.definitions/1.0.0/reloaded.memory.sigscan.definitions.1.0.0.nupkg",
+    "sha256": "670dafc74a109636cf1220105c22a355241dd0142935e185e8604defc19cf954",
+    "scope": "Original file from the pinned NuGet package bundled by the CN helper"
+  },
+  {
+    "component": "System.Security.Cryptography.Pkcs-8.0.1",
+    "file": "System.Security.Cryptography.Pkcs-8.0.1-THIRD-PARTY-NOTICES.TXT",
+    "source": "https://api.nuget.org/v3-flatcontainer/system.security.cryptography.pkcs/8.0.1/system.security.cryptography.pkcs.8.0.1.nupkg",
+    "sha256": "b60b2912da28eaa6518593c9e2efb5334ee062d3c42e80d8fdfa806b3dc52977",
+    "scope": "Original file from the pinned NuGet package bundled by the CN helper"
+  },
+  {
+    "component": "System.Security.Cryptography.Pkcs-8.0.1",
+    "file": "System.Security.Cryptography.Pkcs-8.0.1-LICENSE.TXT",
+    "source": "https://api.nuget.org/v3-flatcontainer/system.security.cryptography.pkcs/8.0.1/system.security.cryptography.pkcs.8.0.1.nupkg",
+    "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b",
+    "scope": "Original file from the pinned NuGet package bundled by the CN helper"
+  },
+  {
+    "component": "JetBrains.Annotations-2025.2.4",
+    "file": "JetBrains.Annotations-2025.2.4-license.md",
+    "source": "https://raw.githubusercontent.com/JetBrains/JetBrains.Annotations/332ebae986c8887bdbcd5525bdadbf962b1b56a3/license.md",
+    "revision": "332ebae986c8887bdbcd5525bdadbf962b1b56a3",
+    "sha256": "f2b4cfa16e46cef7fbf49c00563cb5db53d76108c56ee770beb65b5ef03a5fbb",
+    "scope": "Package repository revision or published version tag; PeNet.Asn1 uses preceding v2.0.0 license, continuity checked separately"
+  },
+  {
+    "component": "PeNet-5.1.0",
+    "file": "PeNet-5.1.0-LICENSE",
+    "source": "https://raw.githubusercontent.com/secana/PeNet/e6e436158c06c8c35c7e52744ceb7de6cf20b5e6/LICENSE",
+    "revision": "e6e436158c06c8c35c7e52744ceb7de6cf20b5e6",
+    "sha256": "62882b0184d26e077554ddf2eaf453b7a264811a34c00d932332bfbbd7b8e9ed",
+    "scope": "Package repository revision or published version tag; PeNet.Asn1 uses preceding v2.0.0 license, continuity checked separately"
+  },
+  {
+    "component": "PeNet.Asn1-2.0.1",
+    "file": "PeNet.Asn1-2.0.1-LICENCE",
+    "source": "https://raw.githubusercontent.com/secana/asn1/ccedd2f0aa018e95c04fb605134a69f3ddd79e70/LICENCE",
+    "revision": "ccedd2f0aa018e95c04fb605134a69f3ddd79e70",
+    "sha256": "4ea493634949d19872eda98586cf7e78eb297cd63d29166856cde74137a42fdc",
+    "scope": "Package repository revision or published version tag; PeNet.Asn1 uses preceding v2.0.0 license, continuity checked separately"
+  },
+  {
+    "component": "Serilog-4.3.0",
+    "file": "Serilog-4.3.0-LICENSE",
+    "source": "https://raw.githubusercontent.com/serilog/serilog/726e29c5b172aa8813285be1ad8cc728fd531eab/LICENSE",
+    "revision": "726e29c5b172aa8813285be1ad8cc728fd531eab",
+    "sha256": "73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68",
+    "scope": "Package repository revision or published version tag; PeNet.Asn1 uses preceding v2.0.0 license, continuity checked separately"
+  },
+  {
+    "component": "Serilog.Sinks.Async-2.1.0",
+    "file": "Serilog.Sinks.Async-2.1.0-LICENSE",
+    "source": "https://raw.githubusercontent.com/serilog/serilog-sinks-async/5c6e5df7dffe5535978475c9ce8c5c6fb1cc9dca/LICENSE",
+    "revision": "5c6e5df7dffe5535978475c9ce8c5c6fb1cc9dca",
+    "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+    "scope": "Package repository revision or published version tag; PeNet.Asn1 uses preceding v2.0.0 license, continuity checked separately"
+  },
+  {
+    "component": "Serilog.Sinks.Console-6.1.1",
+    "file": "Serilog.Sinks.Console-6.1.1-LICENSE",
+    "source": "https://raw.githubusercontent.com/serilog/serilog-sinks-console/b3cb1f042f5636161b831fa8816d70d865a5eec4/LICENSE",
+    "revision": "b3cb1f042f5636161b831fa8816d70d865a5eec4",
+    "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+    "scope": "Package repository revision or published version tag; PeNet.Asn1 uses preceding v2.0.0 license, continuity checked separately"
+  },
+  {
+    "component": "Serilog.Sinks.File-7.0.0",
+    "file": "Serilog.Sinks.File-7.0.0-LICENSE",
+    "source": "https://raw.githubusercontent.com/serilog/serilog-sinks-file/23c732a8658a0df2a5434fe69b0011800b14f0da/LICENSE",
+    "revision": "23c732a8658a0df2a5434fe69b0011800b14f0da",
+    "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+    "scope": "Package repository revision or published version tag; PeNet.Asn1 uses preceding v2.0.0 license, continuity checked separately"
+  }
+]

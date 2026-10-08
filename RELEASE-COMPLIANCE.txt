@@ -1,0 +1,111 @@
+FFXIV Super Launcher — 发布许可核查
+核查日期：2026-10-08
+对象：0.11.5 源码与实际发行目录；后续发行渠道暂定 AUR + AppImage。
+状态：准备中，存在未解决的授权及对应源码问题，不代表已获准公开发布。
+后续完整审计及证据：research/license-audit-2026-10-08/AUDIT.txt；以下为较早的初步核查。
+
+一、参考项目及许可证据
+
+1. goatcorp/FFXIVQuickLauncher
+   https://github.com/goatcorp/FFXIVQuickLauncher
+   本地参考提交：40ed6e93e7eb73e1c18f4d4871e05f32ab5fd2c6
+   本地 LICENSE：GNU GPL v3 正文。国际区认证、Steam ticket/加密代码及 Unix 参考实现。
+   Global/UPSTREAM.md 已记录一部分复制和改动范围。
+2. ottercorp/FFXIVQuickLauncher
+   https://github.com/ottercorp/FFXIVQuickLauncher
+   本地参考提交：2ad91d23e56cb45fe2b36f93b8a35c42e1eb8297
+   本地 LICENSE：GNU GPL v3 正文。中国区实现的历史来源。
+3. AtmoOmen/FFXIVQuickLauncher (Soil)
+   https://github.com/AtmoOmen/FFXIVQuickLauncher
+   本地基线提交：4c3ba518ce6985ed808283d2e92bd5ed14fa3c4e
+   本地 LICENSE：GNU GPL v3 正文。当前工程基础、中国区登录、更新和超域传送等。
+   以上三个提交是本地参考/基线，不等于我们修改后发行版的提交。
+   不能仅根据 GPL 正文末尾的示例授权就认定项目选择了“or later”；PKGBUILD
+   当前 GPL-3.0-or-later 的标注仍需核对实际授权声明和文件级许可。
+4. cycleapple/XIVTCLauncher (xl_tw)
+   https://github.com/cycleapple/XIVTCLauncher
+   本地参考提交：016c4f3ceba01220cc3d2a0a7b6e3da8c76c3246
+   本地 HEAD 没有 LICENSE/COPYING/NOTICE 文件；README.md 末尾仅写
+   “本專案以原樣提供，僅供教育和個人使用。”
+   README_en.md: “This project is provided as-is for educational and personal use.”
+   这不是明确的通用开源再分发许可，不可因仓库公开或受 GPL 项目启发而自动套用 GPL。
+   2026-10-08 澄清：用户确认设计目标为参考协议流程、自行实现。参考思路与复制
+   受保护代码必须区分；不能仅因阅读过 xl_tw 或出现 adapted from 注释就要求授权。
+   当前 TaiwanLogin 使用自己的 HttpClient/JSON、取消、脱敏与错误处理，并与原版
+   登录流程有实质差别。接口 URL、字段和调用顺序相同不单独证明复制其代码。
+   TaiwanGameUpdater.cs 的改编注释需要溯源核实，不能独自作为授权阻塞证据。
+   共享 ZiPatch 中有内容同时见于 xl 和 xl_tw；例如 ZiPatchFile.cs 与 xl 的差别
+   仅 BOM 和命名空间，SqexFile.cs 主要增加本项目路径安全及 Unix 路径处理。
+   不能把共同上游代码误算成 xl_tw 独有贡献。
+   待办改为：逐文件区分协议参考、来自 GPL 共同上游的代码、xl_tw 独有代码。
+   只有确实保留其独有受保护实现且无兼容授权时，才需要授权或替换。不能仅换名
+   或机械重写后声称独立实现。当前尚未完成全部文件的来源判定。
+
+二、随包二进制及素材
+
+必须区别“用户从上游下载”和“我们已经装进发行包”两种情况。
+
+- Tools/cn-launch-support：Soil 26-10-05-02 的固定注入器子集、依赖和 Windows
+  .NET 10.0.1。并非没有随包分发 Dalamud 相关代码。需找到确切源仓库/提交、
+  许可证、子模块及构建材料。NOTICE 链接到启动器仓库不能替代注入器来源。
+- Tools/tc-entrypoint/Dalamud.Injector.dll：来自 yanmucorp/Dalamud 26-10-03-01，
+  我们修改了 ArgFixer 调用。已有原始/修改后 SHA256 和 PatchInjector.cs。
+  仅提供二进制补丁器不等于提供完整对应源码：仍需与原始二进制对应的源代码、
+  适用许可证、构建及补丁步骤，显著标记改动者/项目、修改日期及改动内容。
+- goatcorp/Dalamud 当前上游 LICENSE 为 AGPL v3；必须按实际打包分支及版本核对，
+  不应以当前 master 的许可证直接代替历史版本证据。不能把全部 Dalamud 写成 GPL。
+  GPL/AGPL 的聚合、链接及派生关系需按真实边界判断；单独进程并不是自动豁免。
+- cn-launch-support 的缓存运行时打包分支没有复制 dotnet-LICENSE/THIRDPARTYNOTICES；
+  0.11.5 实际目录缺少这两项专属文件。应使缓存与下载路径输出相同的法律材料。
+- 主程序自包含 .NET、Skia/HarfBuzz 原生库、Avalonia 等：NuGet 依赖列表不能代替
+  完整第三方声明。需覆盖运行时包、native assets 及内嵌子依赖，保留原版权文本。
+- 当前通知生成器枚举全部 restore libraries，可能列入未分发的构建/其他平台包，
+  同时遗漏实际分发的运行时和独立二进制。需改成发行目录清单与依赖图双向核对。
+- Tools/webview：已附 Electron LICENSE 与 LICENSES.chromium.html，仍需核对固定
+  Electron 版本及 FFmpeg 等组件的实际许可和对应源码义务，不能只写 Electron MIT。
+- libsteam_api64.so：Global/UPSTREAM.md 记录从 xl 原样复制。Steamworks 托管包装器
+  的 MIT 不等于 Valve 原生 SDK 库也是 MIT/GPL。需核实 SDK 来源和适用再分发条款。
+- xdelta3：当前 vendored 源文件头及 LICENSE 均为 Apache-2.0，保留 Joshua MacDonald
+  版权和完整许可证。已修正通知生成器误写 GPL 的说明；0.11.5 旧归档未被重写。
+- logo.png、dalamud_icon.ico 等：需逐个核实作者、授权及商标使用边界；代码许可证
+  不能在没有证据时自动覆盖所有游戏/项目品牌素材。无法确认时使用自有可授权素材。
+- AppImage：构建后新增的 AppImage runtime、随带系统库及潜在更新器也必须纳入清单。
+
+三、公开发布前必须完成的交付
+
+[ ] 完成 xl_tw 文件级来源核查；仅对实际使用且无法追溯至获许可上游的独有实现解决授权。
+[ ] 锁定 Soil/繁中注入器的准确源码版本、许可证及可获取的构建输入。
+[ ] 核对 Steam API、图标以及原生/运行时依赖的再分发许可。
+[ ] 保留上游版权、许可证和 NOTICE；不要全部换成我们自己的版权。
+[ ] 增加来源/修改记录（项目、提交、路径、修改内容、相关日期），保留适用文件头。
+[ ] 确定总体许可与 SPDX 标注，独立组件保留自身许可；不统一改成 MIT 或加入
+    “禁止商用/禁止修改/禁止再分发”等与 GPL 权利相抵触的额外限制。
+[ ] 每个二进制版本配套可取得的对应源码，包括构建/安装脚本、必要补丁和依赖来源。
+    GitHub 自动生成的源码 zip 可能漏掉子模块/外部原生源码；下载 DLL 的脚本不能
+    自行取代该 DLL 的对应源码。无需机械追求字节完全一致，但要提供修改和构建所需材料。
+[ ] 对在线发布采用 GPLv3 6(d) 的等价源码获取方式：同一 Release 附完整源码或清楚
+    标出可等价获取的对应源码位置，并维持可用。只放上游主页或最新主分支不够。
+    不应无必要地采用另一种“至少三年书面要约”履约方式。
+[ ] 根据 GPL 第 5(d) 条和所继承界面情况审查交互法律提示；“关于”提供方便查看的
+    来源、版权、无担保、许可和对应源码入口是本项目拟采用的落实方式。
+[ ] AUR 配方、AppImage 同版本使用一致的源码和通知；AUR 指向我们自己的发布地址，
+    不是 AtmoOmen 上游地址。AUR 中仅有 PKGBUILD 不代替所分发二进制的源码义务。
+[ ] 清理公开源码包：排除研究临时材料、用户校对工作表、本机路径及任何私人数据；
+    不得遗漏受许可约束的必要源码。现有 git ls-files --others 打包方式需收紧范围。
+[ ] 在干净环境验证源码可构建、法律文件确实进入两种包、来源链接/版本对应正确。
+
+四、已做与未做
+
+已核对四份本地仓库的基线、xl_tw README 条款、实际 0.11.5 包内法律文件，记录问题；
+修正未来打包时 xdelta3 的错误许可描述，记录 AUR + AppImage 策略。
+没有联系上游、发出授权请求、上传代码或提交 AUR；没有将未查明组件宣称为已合规。
+本清单是针对当前工程的发布准备审计，不是已经完成全部许可手续的证明。
+
+参考原文
+GNU GPL v3: https://www.gnu.org/licenses/gpl-3.0.html （第 1、4、5、6、7、13 条）
+GNU AGPL v3: https://www.gnu.org/licenses/agpl-3.0.html
+goatcorp/Dalamud: https://github.com/goatcorp/Dalamud/blob/master/LICENSE
+yanmucorp/Dalamud: https://github.com/yanmucorp/Dalamud
+XIVTCLauncher README: https://github.com/cycleapple/XIVTCLauncher/blob/main/README_en.md
+Apache-2.0: https://www.apache.org/licenses/LICENSE-2.0
+GitHub licensing: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository

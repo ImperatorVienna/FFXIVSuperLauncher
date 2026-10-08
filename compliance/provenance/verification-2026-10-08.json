@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "Both helper packaging scripts completed successfully using pinned cached inputs",
+    "Bundled helper DLL/EXE hashes unchanged from accepted 0.12.1",
+    "Preserved 0.12.1 archive SHA256 verification passed",
+    "All collected notice hashes verified"
+  ],
+  "unchanged_binary_count": 206,
+  "runtime_tests": "Not rerun: no runtime behavior changes, only source attribution comment and packaging/legal files"
+}

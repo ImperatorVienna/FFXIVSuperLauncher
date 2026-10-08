@@ -1,0 +1,135 @@
+--- normalized-upstream/src/XIVLauncher.Common/Patching/ZiPatch/Chunk/AddDirectoryChunk.cs
++++ src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/AddDirectoryChunk.cs
+@@ -22,7 +22,7 @@
+ 
+         public override void ApplyChunk(ZiPatchConfig config)
+         {
+-            Directory.CreateDirectory(config.GamePath + DirName);
++            Directory.CreateDirectory(XIVLauncher.Linux.Patching.ZiPatch.Util.SqexFile.Resolve(config.GamePath, DirName));
+         }
+ 
+         public override string ToString()
+--- normalized-upstream/src/XIVLauncher.Common/Patching/ZiPatch/Chunk/DeleteDirectoryChunk.cs
++++ src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/DeleteDirectoryChunk.cs
+@@ -1,6 +1,5 @@
+ using System;
+ using System.IO;
+-using Serilog;
+ using XIVLauncher.Linux.Patching.Util;
+ 
+ namespace XIVLauncher.Linux.Patching.ZiPatch.Chunk
+@@ -25,11 +24,11 @@
+         {
+             try
+             {
+-                Directory.Delete(config.GamePath + DirName);
++                Directory.Delete(XIVLauncher.Linux.Patching.ZiPatch.Util.SqexFile.Resolve(config.GamePath, DirName));
+             }
+-            catch (Exception e)
++            catch (Exception)
+             {
+-                Log.Debug(e, "Ran into {This}, failed at deleting the dir", this);
++                // 忽略刪除失敗
+                 throw;
+             }
+         }
+--- normalized-upstream/src/XIVLauncher.Common/Patching/ZiPatch/Chunk/SqpkCommand/SqpkFile.cs
++++ src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/SqpkCommand/SqpkFile.cs
+@@ -96,7 +96,7 @@
+                     break;
+ 
+                 case OperationKind.MakeDirTree:
+-                    Directory.CreateDirectory(config.GamePath + "/" + TargetFile.RelativePath);
++                    Directory.CreateDirectory(SqexFile.Resolve(config.GamePath, TargetFile.RelativePath));
+                     break;
+             }
+         }
+--- normalized-upstream/src/XIVLauncher.Common/Patching/ZiPatch/Chunk/SqpkCommand/SqpkTargetInfo.cs
++++ src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/SqpkCommand/SqpkTargetInfo.cs
+@@ -8,7 +8,7 @@
+         // Only Platform is used on recent patcher versions
+         public new static string Command = "T";
+ 
+-        // US/EU/JP are Global
++        // NA/EU/JP are Global
+         // ZH seems to also be Global
+         // KR is unknown
+         public enum RegionId : short
+--- normalized-upstream/src/XIVLauncher.Common/Patching/ZiPatch/Chunk/ZiPatchChunk.cs
++++ src/XIVLauncher.Linux/Patching/ZiPatch/Chunk/ZiPatchChunk.cs
+@@ -68,7 +68,7 @@
+                     memoryStream.SetLength(maxLen);
+ 
+                 // Read into MemoryStream's inner buffer
+-                reader.BaseStream.Read(memoryStream.GetBuffer(), 0, readSize);
++                reader.BaseStream.ReadExactly(memoryStream.GetBuffer(), 0, readSize);
+ 
+                 BinaryReader binaryReader;
+ 
+--- normalized-upstream/src/XIVLauncher.Common/Patching/ZiPatch/Util/SqexFile.cs
++++ src/XIVLauncher.Linux/Patching/ZiPatch/Util/SqexFile.cs
+@@ -17,19 +17,19 @@
+         }
+ 
+         public SqexFileStream? OpenStream(string basePath, FileMode mode, int tries = 5, int sleeptime = 1) =>
+-            SqexFileStream.WaitForStream($@"{basePath}/{RelativePath}", mode, tries, sleeptime);
++            SqexFileStream.WaitForStream(Resolve(basePath, RelativePath), mode, tries, sleeptime);
+ 
+         public SqexFileStream OpenStream(SqexFileStreamStore store, string basePath, FileMode mode,
+                                          int tries = 5, int sleeptime = 1) =>
+-            store.GetStream($@"{basePath}/{RelativePath}", mode, tries, sleeptime);
++            store.GetStream(Resolve(basePath, RelativePath), mode, tries, sleeptime);
+ 
+         public void Delete(SqexFileStreamStore? store, string basePath, int tries = 5, int sleeptime = 1)
+         {
+-            var path = $"{basePath}/{this.RelativePath}";
++            var path = Resolve(basePath, this.RelativePath);
+ 
+             while (File.Exists(path))
+             {
+-                store?.CloseStream($"{basePath}/{this.RelativePath}");
++                store?.CloseStream(Resolve(basePath, this.RelativePath));
+ 
+                 try
+                 {
+@@ -50,9 +50,19 @@
+ 
+         public void CreateDirectoryTree(string basePath)
+         {
+-            var dirName = Path.GetDirectoryName($@"{basePath}/{RelativePath}");
++            var dirName = Path.GetDirectoryName(Resolve(basePath, RelativePath));
+             if (dirName != null)
+                 Directory.CreateDirectory(dirName);
++        }
++
++        public static string Resolve(string root, string relative)
++        {
++            root = Path.GetFullPath(root).TrimEnd('/');
++            var path = Path.GetFullPath(Path.Combine(root, relative.Replace('\\', '/').TrimStart('/')));
++            if (!path.StartsWith(root + "/", StringComparison.Ordinal)) throw new IOException("补丁路径超出游戏目录。");
++            for (var p = path; p != root; p = Path.GetDirectoryName(p)!)
++                if (new FileInfo(p).LinkTarget != null || new DirectoryInfo(p).LinkTarget != null) throw new IOException("补丁目标包含符号链接。");
++            return path;
+         }
+ 
+         public override string ToString() => RelativePath;
+@@ -64,8 +74,8 @@
+         {
+             var xpacPath = GetExpansionFolder((byte)expansionId);
+ 
+-            var sqpack = $@"{fullPath}\sqpack\{xpacPath}";
+-            var movie = $@"{fullPath}\movie\{xpacPath}";
++            var sqpack = Path.Combine(fullPath, "sqpack", xpacPath);
++            var movie = Path.Combine(fullPath, "movie", xpacPath);
+ 
+             var files = Enumerable.Empty<string>();
+ 
+@@ -75,7 +85,7 @@
+             if (Directory.Exists(movie))
+                 files = files.Concat(Directory.GetFiles(movie));
+ 
+-            return files;
++            return files.Select(file => Path.GetRelativePath(fullPath, file));
+         }
+     }
+ }
