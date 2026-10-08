@@ -12,7 +12,9 @@ A community launcher for FINAL FANTASY XIV (FFXIV) on **Linux**, using **Proton*
 
 Maintained by **[ImperatorVienna](https://github.com/ImperatorVienna)**, this project builds on the source code and experience of [XIVLauncher](https://github.com/goatcorp/FFXIVQuickLauncher), [XIVLauncherCN](https://github.com/ottercorp/FFXIVQuickLauncher), and [XIVLauncherCN (Soil)](https://github.com/AtmoOmen/FFXIVQuickLauncher), with reference to [XIVTCLauncher](https://github.com/cycleapple/XIVTCLauncher) for the Traditional Chinese login protocol and feature design. It is an independently maintained community derivative, not an official release of Square Enix, Shengqu Games, or USERJOY, nor maintained or endorsed by those upstream projects. Original copyright and license notices are retained.
 
-> **Supported platform: x86_64 Linux.** Obtain release files, release notes, and checksums from [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases). An AUR package is not yet available.
+> **Supported platform: x86_64 Linux.** Obtain release files, release notes, and checksums from [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases).
+
+The bundled browser is shared by official pages and web verification; it is independent of the regional sign-in backends.
 
 ## Features
 
@@ -31,7 +33,7 @@ Before using a third-party launcher, Dalamud, or plugins, read the applicable ga
 
 ## Project highlights
 
-- **Built for Linux**: only x86_64 Linux is maintained. Windows, macOS, ARM, and 32-bit x86 are not supported. AppImage distribution simplifies deployment on Linux desktops, including immutable systems; consult release notes for compatibility details. An AUR package is not yet available.
+- **Built for Linux**: only x86_64 Linux is maintained. Windows, macOS, ARM, and 32-bit x86 are not supported. AppImage distribution simplifies deployment on Linux desktops, including immutable systems; consult release notes for compatibility details.
 - **Uses Proton**: replaces the bundled Wine + DXVK approach of XIVLauncher and XIVLauncherCN with an installed Proton version. Installed versions are discovered automatically, and CachyOS's proton-cachyos-slr has been tested on real hardware.
 - **Unified game-region management**: switch between China, Traditional Chinese, and Global in one launcher, with separate accounts, clients, and plugin data. Each region's Dalamud application is downloaded on demand; the package may include shared or preinstalled helper components.
 - **Plugin management outside the game**: change plugin enablement, select plugin updates, and synchronize settings between game regions without entering the game.
@@ -54,23 +56,14 @@ The runtime package includes .NET; users do not need to install the .NET SDK sep
 
 ### AppImage
 
-Download the x86_64 AppImage from [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases), make it executable, and run it. Keep a fixed path and filename, such as `~/Applications/xivlauncher-super.AppImage`, to preserve the registered Steam entry.
+Download the x86_64 AppImage from [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases), make it executable, and run it from a writable directory of your choice. AppImage is the only release format.
 
-### Archive package
-
-Extract the archive into a permanent location. The extracted folder is always named `xivlauncher-super`. Enter it and run:
-
-```bash
-./xivlauncher-super
-```
 
 The first-run wizard guides you through interface language, game region, Steam / Proton directories, credential storage, and whether to enable Dalamud.
 
 Next, configure client directories in “Language and region”. Select the game installation directory containing the `game` subdirectory; Global also requires a complete `boot` subdirectory.
 
 In “Login credential management”, use “Add account” to enter credentials and click “Save”. Return to “Game”, choose an account with “Select login name”, and click “Log in and launch”. A new China account only needs a login name: scan the QR code on first login, and quick-login credentials will be saved using the chosen storage method after authentication succeeds.
-
-**An AUR package is not yet available.** Its name and installation instructions will be added here when available.
 
 ## Steam and Proton
 
@@ -86,7 +79,7 @@ In “Compatibility tools settings”, check “Register as a Steam compatibilit
 
 This provides a Steam launch entry; **it does not enable Steam account authentication**. Authentication is still controlled by “My CDKey was purchased on Steam”.
 
-Keep the launcher's installation path unchanged after registration. Updating at the same path avoids leaving the registered entry pointing to an old directory.
+Steam uses the stable launcher script. After moving or renaming the AppImage, run it once to refresh its location. When upgrading from an older direct-path release, re-register Steam once.
 
 ### Compatibility environment / pfx
 
@@ -96,7 +89,9 @@ When unchecked, Global uses the same shared environment settings as the other tw
 
 ## Updates
 
-**The launcher does not update itself automatically.** Close it before replacing the AppImage, and preserve executable permissions. For an archive package, follow the release notes to replace the program directory while retaining the installation path. Accounts and settings are stored in a separate data directory. Once an AUR package is available, it can be updated through the appropriate package management tool.
+The launcher checks for stable releases in the background at startup. You can also use **Check for updates** beside the version in About; there is no update-channel selector. AppImage updates require confirmation, download the complete file and verify a signed manifest and SHA256 before replacement. The new AppImage keeps its new version number in its filename in the same directory; the old version is retained as `.previous`. Steam and application-menu entries use `~/.local/share/xivlauncher-super/appimage-launcher`, which records the current AppImage path. After moving or renaming the AppImage manually, run it once to refresh this path. If multiple copies exist, the last one launched is used. Exit the game before updating; relaunch manually after installation. Accounts and settings remain separate. Failed background checks do not block game login.
+
+For AppImage, use **Add to applications menu** in About. After moving or renaming the file, run it once; there is no need to recreate the menu entry. Re-add the entry once when upgrading from an older direct-path release.
 
 | Action | Behavior |
 | --- | --- |
@@ -196,3 +191,5 @@ Launcher code is distributed under the [GNU GPL version 3](LICENSE). Third-party
 The current icon was supplied by the maintainer and comes from [PNGAAA](https://www.pngaaa.com/detail/6354760), whose page is marked “Non-commercial Use”. This is not a GPL license granted by this project for the icon, nor independent confirmation that the original copyright holder permits redistribution. See the [artwork provenance record](compliance/provenance/artwork.json).
 
 See the [release checklist](compliance/RELEASE-CHECKLIST.txt) for distribution materials and licensing review records.
+
+If you believe that code, dependencies or artwork in this project infringes your rights, please contact the maintainer through GitHub Issues with the affected location and supporting rights information. The maintainer will investigate and discuss appropriate removal or replacement. Do not post sensitive personal information in public issues.

@@ -12,7 +12,9 @@
 
 本專案由 **[ImperatorVienna](https://github.com/ImperatorVienna)** 維護，基於 [XIVLauncher](https://github.com/goatcorp/FFXIVQuickLauncher)、[XIVLauncherCN](https://github.com/ottercorp/FFXIVQuickLauncher) 和 [XIVLauncherCN (Soil)](https://github.com/AtmoOmen/FFXIVQuickLauncher) 的原始碼與經驗繼續開發，並參考 [XIVTCLauncher](https://github.com/cycleapple/XIVTCLauncher) 的繁中區登入協定與功能設計。這是獨立維護的社群衍生專案，並非 Square Enix、Shengqu Games、USERJOY 的官方發行版本，也並非由上述上游專案維護或背書。原作者的版權與授權聲明均予以保留。
 
-> **支援平台：x86_64 Linux。** 請從 [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases) 頁面取得發行檔案、版本說明與校驗值。AUR 套件尚待提供。
+> **支援平台：x86_64 Linux。** 請從 [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases) 頁面取得發行檔案、版本說明與校驗值。
+
+內建瀏覽器由官方頁面與網頁驗證共用，獨立於各遊戲區服的登入模組。
 
 ## 功能
 
@@ -31,7 +33,7 @@
 
 ## 特色
 
-- **專為 Linux 平台打造**：僅維護 x86_64 Linux，不提供 Windows、macOS、ARM 或 32 位元 x86 版本。採用 AppImage 散布，便於在包括不可變系統在內的 Linux 桌面上部署；具體相容情況以發行說明為準。AUR 套件尚待提供。
+- **專為 Linux 平台打造**：僅維護 x86_64 Linux，不提供 Windows、macOS、ARM 或 32 位元 x86 版本。採用 AppImage 散布，便於在包括不可變系統在內的 Linux 桌面上部署；具體相容情況以發行說明為準。
 - **使用 Proton 方案**：移除了 XIVLauncher 和 XIVLauncherCN 內附的 Wine + DXVK 方案，改為呼叫已安裝的 Proton。啟動器可自動尋找已安裝的 Proton，已使用 CachyOS 的 proton-cachyos-slr 進行實機驗證。
 - **各遊戲區服統一管理**：同一個啟動器即可切換登入中國區、繁中區和國際區，各自儲存帳號、用戶端與外掛資料。各遊戲區服的 Dalamud 主程式依需要下載；執行套件中可能包含共用或預先安裝的輔助元件。
 - **遊戲外管理外掛**：無須進入遊戲即可調整外掛啟用狀態、選擇更新外掛，或在遊戲區服之間同步設定。
@@ -54,23 +56,14 @@
 
 ### AppImage
 
-從 [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases) 頁面下載 x86_64 AppImage，賦予執行權限後執行。建議使用固定路徑和檔名，例如 `~/Applications/xivlauncher-super.AppImage`，以保留 Steam 註冊入口。
+從 [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases) 下載 x86_64 AppImage，賦予執行權限後執行，可放在自行選擇的可寫入目錄。僅提供 AppImage 發行套件。
 
-### 壓縮執行套件
-
-如使用壓縮執行套件，請將其解壓縮至長期保留的目錄。解壓縮後的資料夾固定命名為 `xivlauncher-super`，進入該資料夾執行：
-
-```bash
-./xivlauncher-super
-```
 
 首次設定精靈會引導選擇介面語言、遊戲區服、Steam / Proton 目錄、憑證儲存方式及是否啟用 Dalamud。
 
 之後在「語言和區服」中設定用戶端目錄。應選擇包含 `game` 子資料夾的遊戲安裝目錄；國際區還需要完整的 `boot` 子資料夾。
 
 在「登入憑證管理」中透過「新增帳戶」填寫憑證，點擊「儲存」後，返回「遊戲」頁面，透過「選擇登入名稱」選擇帳號，再點擊「登入並啟動」。中國區新帳號只需填寫登入名稱，首次登入時掃描 QR 碼，成功後依所選儲存方式儲存快捷憑證。
-
-**AUR 套件尚待提供。** 上線後將在此補充套件名稱與安裝說明。
 
 ## Steam 與 Proton
 
@@ -86,7 +79,7 @@
 
 這項功能提供 Steam 啟動入口，**不等於啟用 Steam 帳號驗證**。帳號驗證仍由「我的 CDKey 購買自 Steam」控制。
 
-註冊後請保留啟動器的安裝路徑；更新時繼續使用相同路徑，可避免註冊入口指向舊目錄。
+Steam 使用固定啟動指令稿。手動移動或重新命名 AppImage 後，執行一次即可更新路徑。從舊版直接路徑註冊方式升級時，請重新註冊一次。
 
 ### compatibility environment / pfx
 
@@ -96,7 +89,9 @@
 
 ## 更新方式
 
-**啟動器本身沒有自動更新功能。** 請關閉啟動器後，以新版 AppImage 替換原檔案並保留執行權限；使用壓縮執行套件時，依發行說明替換程式目錄並保持安裝路徑不變。帳號和設定儲存在獨立的資料目錄中。AUR 套件提供後，可透過相應套件管理工具更新。
+啟動器每次開啟時會在背景檢查穩定版，也可點擊「關於」版本號旁的「檢查更新」；不提供更新通道選擇。AppImage 更新須經使用者確認，完整下載後驗證清單簽章及 SHA256，再替換原檔案。更新檔案保存在原目錄，檔名使用新版版本號，舊版保留為 `.previous`。Steam 和應用程式選單透過 `~/.local/share/xivlauncher-super/appimage-launcher` 啟動。手動移動或重新命名 AppImage 後，請雙擊執行一次以自動更新路徑；之後即可繼續從 Steam 或應用程式選單啟動。有多個副本時，以最後執行的檔案為準。請退出遊戲後更新，安裝後手動重新開啟啟動器。帳號和設定獨立儲存，背景檢查失敗不會阻塞遊戲登入。
+
+在「關於」中點擊「加入應用程式選單」。手動移動或重新命名後執行一次即可，無須重新加入選單入口。從舊版直接路徑入口升級時，請重新加入一次。
 
 | 操作 | 行為 |
 | --- | --- |
@@ -196,3 +191,5 @@ bash scripts/package-linux.sh artifacts/local-build
 目前圖示由維護者提供，來源頁面為 [PNGAAA](https://www.pngaaa.com/detail/6354760)，該頁面標示「非商業使用」。這不是本專案對圖示的 GPL 授權，也不代表已獨立確認原版權持有人允許再次散布；相關紀錄請參閱[圖示來源說明](compliance/provenance/artwork.json)。
 
 散布材料及授權審查紀錄請參閱[發行清單](compliance/RELEASE-CHECKLIST.txt)。
+
+如您認為本專案中的程式碼、依賴或素材侵犯了您的權利，請透過 GitHub Issues 聯絡維護者，並提供相關內容的位置及權利依據。維護者將查證並溝通處理，必要時移除或替換相關內容。請勿在公開 Issue 中提交個人敏感資訊。
