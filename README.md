@@ -1,194 +1,198 @@
 <p align="center">
-  <img src="src/XIVLauncher.Linux/Resources/icon.png" width="128" height="128" alt="FFXIV Super Launcher 图标">
+  <img src="src/XIVLauncher.Linux/Resources/icon.png" width="128" height="128" alt="FFXIV Super Launcher icon">
+</p>
+
+<p align="center">
+  <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.ja.md">日本語</a> · <strong>English</strong>
 </p>
 
 # FFXIV Super Launcher
 
-面向 **Linux** 平台，通过 **Proton** 运行游戏的社区版 FINAL FANTASY XIV（以下简称 FFXIV）启动器，支持**中国区、繁中区和国际区**游戏客户端。
+A community launcher for FINAL FANTASY XIV (FFXIV) on **Linux**, using **Proton** to run the game. It supports the **China, Traditional Chinese, and Global** game clients.
 
-本项目由 **[ImperatorVienna](https://github.com/ImperatorVienna)** 维护，基于 [XIVLauncher](https://github.com/goatcorp/FFXIVQuickLauncher)、[XIVLauncherCN](https://github.com/ottercorp/FFXIVQuickLauncher) 和 [XIVLauncherCN (Soil)](https://github.com/AtmoOmen/FFXIVQuickLauncher) 的源码与经验继续开发，并参考 [XIVTCLauncher](https://github.com/cycleapple/XIVTCLauncher) 的繁中区登录协议与功能设计。它是独立维护的社区衍生项目，不是 Square Enix、Shengqu Games、USERJOY 的官方发行版本，也并非由上述上游项目维护或背书。原作者的版权与许可证声明予以保留。
+Maintained by **[ImperatorVienna](https://github.com/ImperatorVienna)**, this project builds on the source code and experience of [XIVLauncher](https://github.com/goatcorp/FFXIVQuickLauncher), [XIVLauncherCN](https://github.com/ottercorp/FFXIVQuickLauncher), and [XIVLauncherCN (Soil)](https://github.com/AtmoOmen/FFXIVQuickLauncher), with reference to [XIVTCLauncher](https://github.com/cycleapple/XIVTCLauncher) for the Traditional Chinese login protocol and feature design. It is an independently maintained community derivative, not an official release of Square Enix, Shengqu Games, or USERJOY, nor maintained or endorsed by those upstream projects. Original copyright and license notices are retained.
 
-> **支持平台：x86_64 Linux。** 请从[Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases) 页面获取发行文件、版本说明与校验值。AUR 包尚待提供。
+> **Supported platform: x86_64 Linux.** Obtain release files, release notes, and checksums from [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases). An AUR package is not yet available.
 
-## 功能
+## Features
 
-- **三个游戏区服**：共用前端图形界面和 Proton 启动流程，分别管理客户端目录、账户凭据、Dalamud 和插件数据。
-- **Proton 支持**：扫描系统与 Steam 游戏库中的已安装版本，支持手动指定路径；已在基于 Arch Linux 的 CachyOS / proton-cachyos-slr 环境中进行实机测试。
-- **账户管理**：按游戏区服添加、选择、编辑和删除账户；可使用 Linux 桌面密码管理器或普通文件保存凭据。
-- **验证码**：繁中区与国际区支持手动输入验证码和本地 TOTP 自动生成。国际区仅在账户已启用 OTP 时需要填写。
-- **游戏更新**：检查并安装对应游戏区服的客户端补丁，也可以只更新游戏而不启动。
-- **Dalamud 和插件**：可选启用 Dalamud；无需进入游戏即可管理插件启用状态，并检查 Dalamud 与插件更新。
-- **跨游戏区服同步**：通过“同步 Dalamud 设置”“同步已安装插件”和“同步插件设置”分别同步所选类别；选择来源游戏区服并勾选一个或多个目标后，点击“同步到所选游戏区服”；仅覆盖勾选目标的对应内容。
-- **Steam 集成**：支持国际区 Steam 版账户登录；可手动注册为 Steam compatibility tool 以通过 Steam 打开启动器记录游戏时长。
-- **界面与公告**：支持简体中文、繁體中文、日本語、English；显示对应游戏区服的官方活动与公告，并提供官方页面入口。
-- **中国区超域传送**：支持提交传送、查询历史和返回原区，可在完成后启动游戏。
+- **Three game regions**: a shared graphical interface and Proton launch workflow, with separate client directories, account credentials, Dalamud, and plugin data.
+- **Proton support**: discovers installed versions in system locations and Steam libraries, with manual path selection. Tested on Arch Linux–based CachyOS with proton-cachyos-slr.
+- **Account management**: add, select, edit, and delete accounts by game region; store credentials in a Linux desktop password manager or ordinary files.
+- **Verification codes**: manual code entry and local TOTP generation for Traditional Chinese and Global accounts. Global accounts require OTP only if it is enabled on the account.
+- **Game updates**: check and install patches for the selected game region, including updating without launching the game.
+- **Dalamud and plugins**: optional Dalamud support; manage plugin enablement and check for Dalamud and plugin updates without entering the game.
+- **Cross-region synchronization**: use “Sync Dalamud settings”, “Sync installed plugins”, and “Sync plugin settings” to sync individual categories. Select a source region and one or more destinations, then click “Sync to selected game regions”. Only the selected destinations are overwritten.
+- **Steam integration**: supports Global (Steam) accounts; optionally register as a Steam compatibility tool to open the launcher through Steam and track playtime.
+- **Interface and news**: supports 简体中文, 繁體中文, 日本語, and English; displays official events and announcements for the selected game region and provides links to official pages.
+- **China cross-data-center travel**: submit travel requests, view history, and return to the original data center, with an option to launch the game when finished.
 
-使用第三方启动器、Dalamud 和插件前，请阅读游戏相关服务条款并自行评估使用风险。Dalamud 默认关闭，项目不提供账号安全或插件可用性保证。
+Before using a third-party launcher, Dalamud, or plugins, read the applicable game terms of service and assess the risks. Dalamud is disabled by default. This project does not guarantee account safety or plugin availability.
 
-## 特色
+## Project highlights
 
-- **专为 Linux 平台打造**：仅维护 x86_64 Linux，不提供 Windows、macOS、ARM 或 32 位 x86 版本。采用 AppImage 分发，便于在包括不可变系统在内的 Linux 桌面上部署；具体兼容情况以发行说明为准。AUR 包尚待提供。
-- **使用 Proton 兼容性方案**：移除了 XIVLauncher 和 XIVLauncherCN 的自带 Wine + DXVK 方案，改为调用已安装的 Proton。启动器可自动发现已安装的 Proton，已使用 CachyOS 的 proton-cachyos-slr 进行实机验证。
-- **各区服统一管理**：同一个启动器即可切换登录中国区、繁中区和国际区，各自保存账户、客户端与插件数据，各游戏区服的 Dalamud 主程序按需下载；运行包中可包含共用或预置的辅助组件。
-- **游戏外管理插件**：无需进入游戏即可调整插件启用状态、选择更新插件，或在游戏区服之间同步设置。
-- **凭据管理**：按区服管理账户登录凭据，支持桌面密码管理器或本地明文存储，及本地 TOTP 生成。
-- **国际区可复用 Steam 版已有的 pfx**：便于从官方启动器切换到 FFXIV Super Launcher 后继承原 pfx 中已有的本地游戏设置和角色配置文件（不涉及服务器保存的角色进度）。
-- **繁中区 Dalamud 注入适配**：针对 Linux／Proton 环境调整注入流程，采用与国际区一致的 entrypoint 路径，并跳过原繁中注入流程中的 ArgFixer；已通过进入角色及安装、运行插件的实机验证。
-- **中国区 Dalamud 分支选择**：采用 Soil 使用的 Dalamud-DailyRoutines 分支及更新源，不沿用 ottercorp 分支的插件黑名单策略；这不代表所有插件均兼容或不受游戏服务条款约束。
+- **Built for Linux**: only x86_64 Linux is maintained. Windows, macOS, ARM, and 32-bit x86 are not supported. AppImage distribution simplifies deployment on Linux desktops, including immutable systems; consult release notes for compatibility details. An AUR package is not yet available.
+- **Uses Proton**: replaces the bundled Wine + DXVK approach of XIVLauncher and XIVLauncherCN with an installed Proton version. Installed versions are discovered automatically, and CachyOS's proton-cachyos-slr has been tested on real hardware.
+- **Unified game-region management**: switch between China, Traditional Chinese, and Global in one launcher, with separate accounts, clients, and plugin data. Each region's Dalamud application is downloaded on demand; the package may include shared or preinstalled helper components.
+- **Plugin management outside the game**: change plugin enablement, select plugin updates, and synchronize settings between game regions without entering the game.
+- **Credential management**: manage credentials by game region, with desktop password manager or local plaintext storage and local TOTP generation.
+- **Reuse an existing Global (Steam) pfx**: retain local game settings and character configuration files when switching from the official launcher to FFXIV Super Launcher. This does not concern character progress stored on the game servers.
+- **Traditional Chinese Dalamud injection adaptation**: adjusts injection for Linux/Proton, using the same entrypoint path as Global and skipping ArgFixer from the original Traditional Chinese injection flow. Entering a character, installing plugins, and running them have been verified in game.
+- **China Dalamud branch selection**: uses the Dalamud-DailyRoutines branch and update source used by Soil, rather than the plugin blacklist policy of the ottercorp branch. This does not imply that every plugin is compatible or exempt from the game's terms of service.
 
-## 安装与首次使用
+## Installation and first use
 
-### 运行条件
+### Requirements
 
-- x86_64 Linux 图形桌面。
-- 已安装的 Proton，以及该版本所需的 Steam Linux Runtime；具体依赖以所选 Proton 的说明为准。
-- 对应游戏区服的完整客户端。**本项目不提供从空文件夹下载完整客户端的功能。**
-- 正常工作的图形驱动及所选 Proton 所需的 Vulkan 支持。
-- 如选择桌面密码管理器，需要可用且已解锁的 Secret Service 兼容密钥环，以及 `secret-tool`。
+- An x86_64 Linux graphical desktop.
+- An installed Proton version and the Steam Linux Runtime it requires. Consult that Proton version's documentation for its dependencies.
+- A complete client for the desired game region. **This project does not download a complete client into an empty directory.**
+- Working graphics drivers and the Vulkan support required by the selected Proton version.
+- For desktop password manager storage: an available, unlocked Secret Service–compatible keyring and `secret-tool`.
 
-运行包包含 .NET 运行时，普通用户无须另外安装 .NET SDK。其他发行版的依赖与验证情况以具体发行说明为准；能够在 CachyOS 运行不代表所有发行版或沙箱环境都已通过测试。
+The runtime package includes .NET; users do not need to install the .NET SDK separately. Consult release notes for dependencies and validation on other distributions. Working on CachyOS does not mean all distributions or sandbox environments have been tested.
 
 ### AppImage
 
-从[Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases) 页面下载 x86_64 AppImage，赋予执行权限后运行。建议使用固定路径和文件名保存，例如 `~/Applications/xivlauncher-super.AppImage`，便于保留 Steam 注册入口。
+Download the x86_64 AppImage from [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases), make it executable, and run it. Keep a fixed path and filename, such as `~/Applications/xivlauncher-super.AppImage`, to preserve the registered Steam entry.
 
-### 压缩运行包
+### Archive package
 
-如使用压缩运行包，将其解压到长期保留的目录。解压后的文件夹固定命名为 `xivlauncher-super`，进入该文件夹运行：
+Extract the archive into a permanent location. The extracted folder is always named `xivlauncher-super`. Enter it and run:
 
 ```bash
 ./xivlauncher-super
 ```
 
-首次配置向导会引导选择界面语言、游戏区服、Steam / Proton 目录、凭据保存方式及是否启用 Dalamud。
+The first-run wizard guides you through interface language, game region, Steam / Proton directories, credential storage, and whether to enable Dalamud.
 
-之后在“语言和区服”中设置客户端目录。应选择包含 `game` 子目录的游戏安装目录；国际区还需完整的 `boot` 子目录。
+Next, configure client directories in “Language and region”. Select the game installation directory containing the `game` subdirectory; Global also requires a complete `boot` subdirectory.
 
-在“登录凭据管理”中通过“添加账号”填写凭据，点击“保存”后，返回“游戏”页面，通过“选择登录名”选择账号，再点击“登录并启动”。中国区新账户只需填写登录名，首次登录时扫码，成功后按所选存储方式保存快捷凭据。
+In “Login credential management”, use “Add account” to enter credentials and click “Save”. Return to “Game”, choose an account with “Select login name”, and click “Log in and launch”. A new China account only needs a login name: scan the QR code on first login, and quick-login credentials will be saved using the chosen storage method after authentication succeeds.
 
-**AUR 包尚待提供。** 上线后将在此补充包名与安装说明。
+**An AUR package is not yet available.** Its name and installation instructions will be added here when available.
 
-## Steam 与 Proton
+## Steam and Proton
 
-### Steam 授权账户
+### Steam-authorized accounts
 
-如果国际区账户的 CDKey 来自 Steam，请勾选“我的 CDKey 购买自 Steam”，并在登录前确保 Steam 客户端已经登录且正在运行。
+If your Global account's CDKey was purchased on Steam, check “My CDKey was purchased on Steam” and ensure that the Steam client is signed in and running before logging in.
 
-启动器不会要求填写或保存 Steam 账户密码（仅通过 Steam 验证 CDKey 所有权，登录账户仍然是 Square Enix 账户）。
+The launcher does not request or store your Steam password. Steam is used to verify CDKey ownership; the game login account remains your Square Enix account.
 
-### 从 Steam 启动本启动器
+### Launching this launcher through Steam
 
-在“兼容性工具设置”中勾选“注册为 Steam compatibility tool（可随时关闭）”，即可注册 **FFXIV Super Launcher**。重新启动 Steam 后，在 Steam 库中的 FFXIV 游戏属性中选择该 compatibility tool。取消勾选即可移除注册。
+In “Compatibility tools settings”, check “Register as a Steam compatibility tool (can be disabled at any time)” to register **FFXIV Super Launcher**. Restart Steam, then select this compatibility tool in FFXIV's properties in your Steam library. Uncheck the option to remove the registration.
 
-这项功能提供 Steam 启动入口，**不等于开启 Steam 账户认证**。账户认证仍由“我的 CDKey 购买自 Steam”控制。
+This provides a Steam launch entry; **it does not enable Steam account authentication**. Authentication is still controlled by “My CDKey was purchased on Steam”.
 
-注册后请保留启动器的安装路径；更新时继续使用同一路径，可以避免注册入口指向旧目录。
+Keep the launcher's installation path unchanged after registration. Updating at the same path avoids leaving the registered entry pointing to an old directory.
 
-### compatibility environment / pfx
+### Compatibility environment / pfx
 
-默认使用“兼容性工具设置”中的“Proton 数据目录（自动在此创建 pfx，建议独立使用）”。国际区可勾选“国际区使用 Steam 已有 pfx”，复用已安装 Steam 版 FFXIV 的既有环境，以使用其中已有的本地游戏设置。
+By default, the launcher uses “Proton data directory (pfx is created here automatically; a dedicated directory is recommended)” in “Compatibility tools settings”. For Global, check “Use an existing Steam pfx for Global (Steam)” to reuse an existing Global (Steam) environment and its local game settings.
 
-未启用该选项时，国际区与另外两个游戏区服沿用共用环境设置。已有 Steam 环境的选择不等于迁移或同步插件配置。
+When unchecked, Global uses the same shared environment settings as the other two game regions. Selecting an existing Steam environment does not migrate or synchronize plugin configurations.
 
-## 更新方式
+## Updates
 
-**启动器本体没有自动更新功能。** 请关闭启动器后，以新版 AppImage 替换原文件并保留执行权限；使用压缩运行包时，按发行说明替换程序目录并保持安装路径不变。账户和设置保存在独立的数据目录中。AUR 包提供后，可通过相应包管理工具更新。
+**The launcher does not update itself automatically.** Close it before replacing the AppImage, and preserve executable permissions. For an archive package, follow the release notes to replace the program directory while retaining the installation path. Accounts and settings are stored in a separate data directory. Once an AUR package is available, it can be updated through the appropriate package management tool.
 
-| 操作 | 行为 |
+| Action | Behavior |
 | --- | --- |
-| 登录并启动 | 账户认证成功后检查游戏更新；启用 Dalamud 时再检查其更新，随后启动游戏 |
-| 检查并更新游戏 | 仅更新当前游戏区服客户端；中国区、繁中区无须先登录，国际区需要账户认证，但不会启动游戏 |
-| 检查并更新 Dalamud | 手动检查当前游戏区服的 Dalamud |
-| 检查并更新插件 | 按插件记录的来源仓库检查更新，供用户选择安装 |
+| Log in and launch | After successful account authentication, checks game updates and, if enabled, Dalamud updates, then launches the game |
+| Check for updates and update the game | Updates only the selected region's game client; China and Traditional Chinese do not require login, while Global requires authentication without launching the game |
+| Check for updates and update Dalamud | Manually checks Dalamud for the selected game region |
+| Check for updates and update plugins | Checks the recorded source repository of each plugin and lets you select updates to install |
 
-Dalamud 更新连接超时时，可以选择使用现有可用版本继续启动，或禁用 Dalamud 后启动。选择禁用会保存该设置，之后需要手动重新启用；现有版本缺失或不兼容时，跳过更新不保证能够启动。
+If a Dalamud update connection times out, you can continue with an existing usable version or disable Dalamud and launch. Disabling is saved, so you must enable it manually later. Skipping an update does not guarantee a successful launch if the local version is missing or incompatible.
 
-以上两个 Dalamud 和插件更新按钮位于“Dalamud 和插件”页面。该页面还提供“刷新插件启用状态”和“应用插件启用状态”；修改勾选状态后需点击后者保存，下次启动游戏生效。
+The Dalamud and plugin update buttons are on “Dalamud and plugins”. This page also provides “Refresh plugin enablement states” and “Apply plugin enablement states”. After changing the checkboxes, click the latter to save; changes take effect the next time you launch the game.
 
-跨游戏区服同步插件前，请确认目标游戏区服的 Dalamud API 与插件版本兼容。同步会覆盖所选目标的数据。目前不要把繁中区插件 DLL 与其他游戏区服的版本直接混用。
+Before syncing plugins between game regions, check compatibility with the destination's Dalamud API and plugin versions. Synchronization overwrites the selected destinations. For now, do not mix Traditional Chinese plugin DLLs with those of the other game regions.
 
-## 设置与凭据
+## Settings and credentials
 
-默认数据目录为：
+The default data directory is:
 
 ```text
 ~/.local/share/xivlauncher-super/
-├── ffxiv_cn/     # 中国区数据
-├── ffxiv_tc/     # 繁中区数据
-├── ffxiv/        # 国际区数据
-├── compatdata/  # 默认共用环境，内部包含 pfx
-└── logs/        # 诊断日志
+├── ffxiv_cn/     # China data
+├── ffxiv_tc/     # Traditional Chinese data
+├── ffxiv/        # Global data
+├── compatdata/  # Default shared environment, containing pfx
+└── logs/        # Diagnostic logs
 ```
 
-程序遵循 `XDG_DATA_HOME`。Steam 与 Proton 等共用设置保存在启动器数据目录中，账户与 Dalamud 数据按游戏区服隔离。
+The application honors `XDG_DATA_HOME`. Shared Steam and Proton settings are stored in the launcher data directory; accounts and Dalamud data are separated by game region.
 
-“登录凭据管理”中的“使用桌面密码管理器”默认勾选。取消勾选并点击“保存”后，后续保存的普通文件凭据位于对应游戏区服目录的 `credentials.json`，其中可能包含明文密码、2FA 密钥或快捷登录凭据。此设置对所有游戏区服生效，已有凭据不会自动搬运。请勿上传或分享这些文件。
+“Use desktop password manager” in “Login credential management” is checked by default. After unchecking it and clicking “Save”, credentials subsequently saved to ordinary files are stored in `credentials.json` in the corresponding game-region directory. They may contain plaintext passwords, 2FA secrets, or quick-login credentials. This preference applies to all game regions; existing credentials are not moved automatically. Do not upload or share these files.
 
-2FA 密钥与六位验证码不同：密钥用于生成验证码，验证码仅在当前登录时输入。不要把六位验证码填入密钥字段。
+A 2FA secret is different from a six-digit verification code: the secret generates codes, while a code is entered only for the current login. Do not enter a six-digit code in the secret field.
 
-## 问题反馈
+## Feedback
 
-请通过 [GitHub Issues](https://github.com/ImperatorVienna/FFXIVSuperLauncher/issues) 提交问题和功能建议。“关于”页面预留了“加入 Discord”按钮，目前禁用；社群建立后将在后续版本启用。
+Submit bugs and feature requests through [GitHub Issues](https://github.com/ImperatorVienna/FFXIVSuperLauncher/issues). “About” includes a disabled “Join Discord” button; it will be enabled in a later version after the community is established.
 
-反馈时请尽量提供：
+Please include:
 
-- 启动器版本、Linux 发行版、桌面环境和 Proton 版本。
-- 当前游戏区服，以及直接启动还是通过 Steam compatibility tool 启动。
-- 复现步骤、预期行为、实际行为和错误发生时间。
-- 必要的截图或相关诊断日志。
+- Launcher version, Linux distribution, desktop environment, and Proton version.
+- Game region and whether you launch directly or through the Steam compatibility tool.
+- Reproduction steps, expected behavior, actual behavior, and the time of the error.
+- Relevant screenshots or diagnostic logs.
 
-界面日志保持简洁，完整诊断日志路径可在“关于”页面查看。提交前请检查日志和截图，移除账户信息、登录票据、密码、2FA 密钥及二维码等敏感内容。
+The on-screen log is concise; “About” shows the full diagnostic log path. Before submitting logs or screenshots, remove sensitive information such as account details, login tickets, passwords, 2FA secrets, and QR codes.
 
-## 从源码构建
+## Building from source
 
-需要 .NET 10 SDK、C 编译器、Python 3、Git 和 `7z`。构建及打包可能需要下载 NuGet 依赖、固定版本的辅助组件和对应源码。
+Requires the .NET 10 SDK, a C compiler, Python 3, Git, and `7z`. Building and packaging may download NuGet dependencies, pinned helper components, and corresponding source code.
 
-在仓库根目录执行：
+Run from the repository root:
 
 ```bash
-# 构建 Linux 启动器
+# Build the Linux launcher
 dotnet build src/XIVLauncher.Linux/XIVLauncher.Linux.csproj -c Release -m:1
 
-# 运行离线测试
+# Run offline tests
 dotnet test src/XIVLauncher.Linux.Tests/XIVLauncher.Linux.Tests.csproj \
   -c Release -m:1 --filter "Category!=Network"
 
-# 检查已记录的许可材料
+# Check recorded licensing materials
 python3 scripts/check-compliance-materials.py
 
-# 生成运行包和对应源码附件
+# Generate the runtime package and corresponding-source attachments
 bash scripts/package-linux.sh
 ```
 
-默认输出到 `artifacts/linux/`。再次打包时需使用新的输出目录，例如：
+The default output directory is `artifacts/linux/`. Use a fresh directory for subsequent builds, for example:
 
 ```bash
 bash scripts/package-linux.sh artifacts/local-build
 ```
 
-完整打包会同时生成许可证、依赖声明、对应源码附件、`SOURCE-DELIVERY.json` 与校验文件。重新分发时，请保留相关声明，并按适用许可证一并提供对应源码。详情见[源码交付说明](compliance/SOURCE-DELIVERY.txt)。
+Full packaging generates licenses, dependency notices, corresponding-source attachments, `SOURCE-DELIVERY.json`, and checksums. When redistributing, retain the notices and provide corresponding source as required by the applicable licenses. See the [source delivery guide](compliance/SOURCE-DELIVERY.txt).
 
-## 关于页面
+## About page
 
-“关于”显示启动器版本、维护者及上游致谢，并提供“GitHub 仓库”“报告问题”“维护者主页”“查看许可证”“第三方声明”“源码与来源记录”和“图标来源”入口。网页链接通过内置浏览器打开，并保留“在系统浏览器中打开”按钮；许可证和第三方声明可在启动器内离线查看。完整诊断日志路径仅在此选项卡下显示，位于底部日志框上方。
+“About” displays the launcher version, maintainer, and upstream acknowledgements, with links for “GitHub repository”, “Report an issue”, “Maintainer profile”, “View license”, “Third-party notices”, “Source and provenance”, and “Icon source”. Web links open in the built-in browser, which retains “Open in system browser”; licenses and third-party notices can be viewed offline within the launcher. The full diagnostic log path appears only on this tab, immediately above the bottom log panel.
 
-## 上游与致谢
+## Upstream projects and acknowledgements
 
-本项目建立在以下项目及其贡献者的工作之上：
+This project builds on the work of these projects and their contributors:
 
-- [goatcorp / FFXIVQuickLauncher](https://github.com/goatcorp/FFXIVQuickLauncher)：原始 XIVLauncher，以及国际区认证、补丁等实现。
-- [ottercorp / FFXIVQuickLauncher](https://github.com/ottercorp/FFXIVQuickLauncher)：中国区适配与相关实现。
-- [AtmoOmen / FFXIVQuickLauncher](https://github.com/AtmoOmen/FFXIVQuickLauncher)：中国区 Soil 分支，本项目构建之初的主要参考对象。
-- [cycleapple / XIVTCLauncher](https://github.com/cycleapple/XIVTCLauncher)：繁中区登录协议与功能设计参考；不代表其整个仓库均按本项目许可证授权。
-- [goatcorp / Dalamud](https://github.com/goatcorp/Dalamud)、[Dalamud-DailyRoutines / Dalamud](https://github.com/Dalamud-DailyRoutines/Dalamud)、[yanmucorp / Dalamud](https://github.com/yanmucorp/Dalamud)：对应游戏区服的 Dalamud 及注入组件。
-- Avalonia、.NET、Proton、Steamworks、Electron（内含 Chromium 和 Node.js）、xdelta3，以及项目使用的其他第三方组件及其贡献者。
+- [goatcorp / FFXIVQuickLauncher](https://github.com/goatcorp/FFXIVQuickLauncher): the original XIVLauncher, including Global authentication and patching implementations.
+- [ottercorp / FFXIVQuickLauncher](https://github.com/ottercorp/FFXIVQuickLauncher): China adaptation and related implementations.
+- [AtmoOmen / FFXIVQuickLauncher](https://github.com/AtmoOmen/FFXIVQuickLauncher): the China Soil branch, a primary reference when this project began.
+- [cycleapple / XIVTCLauncher](https://github.com/cycleapple/XIVTCLauncher): reference for the Traditional Chinese login protocol and feature design; this does not imply that its entire repository is licensed under this project's license.
+- [goatcorp / Dalamud](https://github.com/goatcorp/Dalamud), [Dalamud-DailyRoutines / Dalamud](https://github.com/Dalamud-DailyRoutines/Dalamud), and [yanmucorp / Dalamud](https://github.com/yanmucorp/Dalamud): Dalamud and injection components for the respective game regions.
+- Avalonia, .NET, Proton, Steamworks, Electron (including Chromium and Node.js), xdelta3, and the other third-party components and their contributors.
 
-详细的继承关系、修改范围和来源依据见 [SOURCES.txt](SOURCES.txt)，第三方声明见 [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt)。
+See [SOURCES.txt](SOURCES.txt) for inheritance, modifications, and provenance, and [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) for third-party notices.
 
-## 许可证
+## License
 
-启动器代码按 [GNU GPL 第 3 版](LICENSE) 分发。各第三方组件及素材保留自身的许可证与声明，不能将它们一概视为 GPL 授权。
+Launcher code is distributed under the [GNU GPL version 3](LICENSE). Third-party components and assets retain their own licenses and notices; they are not all licensed under the GPL.
 
-当前图标由维护者提供，来源页面为 [PNGAAA](https://www.pngaaa.com/detail/6354760)，该页面标注“非商业使用”。这不是本项目对图标的 GPL 授权，也不代表已独立确认原版权方允许再分发；相关记录见[图标来源说明](compliance/provenance/artwork.json)。
+The current icon was supplied by the maintainer and comes from [PNGAAA](https://www.pngaaa.com/detail/6354760), whose page is marked “Non-commercial Use”. This is not a GPL license granted by this project for the icon, nor independent confirmation that the original copyright holder permits redistribution. See the [artwork provenance record](compliance/provenance/artwork.json).
 
-分发材料及许可审查记录见[发布清单](compliance/RELEASE-CHECKLIST.txt)。
+See the [release checklist](compliance/RELEASE-CHECKLIST.txt) for distribution materials and licensing review records.
