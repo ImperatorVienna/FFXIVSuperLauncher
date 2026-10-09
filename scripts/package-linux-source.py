@@ -11,7 +11,7 @@ import tarfile
 import xml.etree.ElementTree as ET
 
 SOURCE_ROOTS = {'src', 'scripts', 'packaging', 'tools', 'compliance', '.github'}
-ROOT_FILES = {'LICENSE', 'README.md', 'README.zh-CN.md', 'README.zh-TW.md', 'README.ja.md', 'LINUX.md', 'ARCHITECTURE.md', '.gitignore', 'NuGet.Config', 'global.json', 'SOURCES.txt', 'THIRD-PARTY-NOTICES.txt', 'RELEASE-COMPLIANCE.txt'}
+ROOT_FILES = {'LICENSE', 'README.md', 'README.zh-CN.md', 'README.zh-TW.md', 'README.ja.md', 'LINUX.en.md', 'LINUX.zh-CN.md', 'LINUX.zh-TW.md', 'ARCHITECTURE.md', '.gitignore', 'NuGet.Config', 'global.json', 'SOURCES.txt', 'THIRD-PARTY-NOTICES.txt', 'RELEASE-COMPLIANCE.txt'}
 EXCLUDED = {'bin', 'obj', '__pycache__', '.git', 'node_modules', 'artifacts', 'outputs', 'research', 'experiments', '.venv'}
 
 

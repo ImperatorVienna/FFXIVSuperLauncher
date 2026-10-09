@@ -41,7 +41,7 @@
 
 `Patching/GamePatchFiles` 和 `ZiPatchInstaller` 共用校验、下载、应用和版本写入，原 ZiPatch 读取器整体移入 `Patching`；繁中区和国际区仅保留各自清单请求与解析。国际区使用原版停用补丁 URL token 生成后的直接下载方式，成功安装后保留原始登录 UID。
 
-`Authentication/OneTimePassword`、`LoginCode`、`DesktopCredentials` 从繁中区文件中提取，算法及现有行为保持；国际区复用账号与密钥管理。Steam 登录使用原版 Linux Steam API 和票据算法，和 Steam 兼容性工具注册互不替代。`Global/UPSTREAM.md` 记录参考版本及改动。
+`Authentication/OneTimePassword` 和 `LoginCode` 共用验证码算法；`RegionCredentials` 统一管理三端的本地明文凭据，按游戏区服分别存储；`CredentialDraftStore` 处理凭据编辑与保存。Steam 登录使用原版 Linux Steam API 和票据算法，和 Steam 兼容性工具注册互不替代。`Global/UPSTREAM.md` 记录参考版本及改动。
 
 
 ## 本地验证码与离线插件更新

@@ -12,7 +12,7 @@
 
 本项目由 **[ImperatorVienna](https://github.com/ImperatorVienna)** 维护，基于 [XIVLauncher](https://github.com/goatcorp/FFXIVQuickLauncher)、[XIVLauncherCN](https://github.com/ottercorp/FFXIVQuickLauncher) 和 [XIVLauncherCN (Soil)](https://github.com/AtmoOmen/FFXIVQuickLauncher) 的源码与经验继续开发，并参考 [XIVTCLauncher](https://github.com/cycleapple/XIVTCLauncher) 的繁中区登录协议与功能设计。它是独立维护的社区衍生项目，不是 Square Enix、Shengqu Games、USERJOY 的官方发行版本，也并非由上述上游项目维护或背书。原作者的版权与许可证声明予以保留。
 
-> **支持平台：x86_64 Linux。** 请从 [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases) 页面获取发行文件、版本说明与校验值。
+> **支持平台：x86_64 Linux。** 请从 [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases) 获取发布文件和版本说明；1.0.0 的校验文件位于 [release-materials/1.0.0](release-materials/1.0.0)。
 
 内置浏览器由官方页面与网页验证共用，独立于各游戏区服的登录模块。
 
@@ -51,18 +51,26 @@
 - 对应游戏区服的完整客户端。**本项目不提供从空文件夹下载完整客户端的功能。**
 - 正常工作的图形驱动及所选 Proton 所需的 Vulkan 支持。
 
-运行包包含 .NET 运行时，普通用户无须另外安装 .NET SDK。其他发行版的依赖与验证情况以具体发行说明为准；能够在 CachyOS 运行不代表所有发行版或沙箱环境都已通过测试。
+运行包已内置 .NET 和 Electron（包含 Chromium 和 Node.js）运行组件，无须单独安装 .NET SDK、Electron 或浏览器。其他发行版的依赖与验证情况以具体发行说明为准；能够在 CachyOS 运行不代表所有发行版或沙箱环境都已通过测试。
 
 ### AppImage
 
 从 [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases) 下载 x86_64 AppImage，赋予执行权限后运行，可放在自行选择的可写目录。仅提供 AppImage 发行包。
-
 
 首次配置向导会引导选择界面语言、游戏区服、Steam / Proton 目录及是否启用 Dalamud。
 
 之后在“语言和区服”中设置客户端目录。应选择包含 `game` 子目录的游戏安装目录；国际区还需完整的 `boot` 子目录。
 
 在“登录凭据管理”中通过“添加账号”填写凭据，点击“保存”后，返回“游戏”页面，通过“选择登录名”选择账号，再点击“登录并启动”。中国区新账户只需填写登录名，首次登录时扫码，成功后自动保存快捷凭据。
+
+### 界面与国际区语言设置
+
+在“语言和区服”页面中：
+
+- **启动器界面语言**：选择后点击旁边的“应用”，按提示重新启动启动器，以应用到所有页面。
+- **国际区客户端语言**：仅在选择国际区时显示，可选日本語、English、Français、Deutsch。点击旁边的“应用”后，下次启动游戏时生效；切换到其他游戏区服不会清除这一选择。
+- **账户 CDKey 版本**：按账户实际授权选择 JP、NA 或 EU，默认 NA。此设置用于选择对应的官网、商城、Mog Station 和活动公告来源，不会改变账户授权。
+- **官网及商城偏好语言**：仅CDKey版本选择 EU 时显示，可选 English(UK)、Français、Deutsch，并用于选择相应语言的官网、商城及公告。上述网页偏好更改后自动保存，独立于客户端语言。
 
 ## Steam 与 Proton
 
@@ -74,11 +82,11 @@
 
 ### 从 Steam 启动本启动器
 
-在“兼容性工具设置”中勾选“注册为 Steam compatibility tool（可随时关闭）”，即可注册 **FFXIV Super Launcher**。重新启动 Steam 后，在 Steam 库中的 FFXIV 游戏属性中选择该 compatibility tool。取消勾选即可移除注册。
+在“兼容性工具设置”中勾选“注册为 Steam compatibility tool（可随时关闭）”，即可将 **FFXIV Super Launcher** 注册。重新启动 Steam 后，在 Steam 库中的 FFXIV 游戏属性中选择该 compatibility tool。取消勾选即可移除注册。
 
 这项功能提供 Steam 启动入口，**不等于开启 Steam 账户认证**。账户认证仍由“我的 CDKey 购买自 Steam”控制。
 
-Steam 使用固定启动脚本。手动移动或重命名 AppImage 后，运行一次即可刷新路径。从旧版直接路径注册方式升级时，请重新注册一次。
+该功能使用固定启动脚本。手动移动或重命名 AppImage 后，运行一次即可刷新路径。启动器自动更新后会自动重启并刷新路径，无需任何手动操作。
 
 ### compatibility environment / pfx
 
@@ -90,7 +98,7 @@ Steam 使用固定启动脚本。手动移动或重命名 AppImage 后，运行�
 
 启动器每次打开时在后台检查稳定版，也可点击“关于”版本号旁的“检查更新”；不提供更新通道选择。AppImage 更新须经用户确认，完整下载后验证清单签名及 SHA256，再替换原文件。更新文件保存在原目录，文件名使用新版版本号，旧版保留为 `.previous`。Steam 和应用菜单通过 `~/.local/share/xivlauncher-super/appimage-launcher` 启动。手动移动或重命名 AppImage 后，请双击运行一次，以自动刷新路径；之后即可继续从 Steam 或应用菜单启动。有多个副本时，以最后运行的文件为准。请退出游戏后更新。安装完成后会直接通过新版 AppImage 的绝对路径自动打开界面，不依赖应用菜单注册。账户和设置独立保存，后台检查失败不阻塞游戏登录。
 
-在“关于”中点击“添加到应用菜单”。手动移动或重命名后运行一次即可，无需重新添加菜单入口。从旧版直接路径入口升级时，请重新添加一次。
+应用菜单入口会在 AppImage 启动时自动创建。“关于”中的“添加到应用菜单”用于手动重建入口，通常无须额外操作。默认入口文件为 `~/.local/share/applications/xivlauncher-super.desktop`，遵循 `XDG_DATA_HOME`。手动移动或重命名 AppImage 后，直接运行一次即可刷新记录。
 
 AppImage 启动时会先依次创建缺失的默认配置、写入固定启动脚本和应用菜单入口，然后才检查更新，也可在“关于”中手动重建。完成设置或添加入口后，会在后台刷新可用的应用菜单缓存，不弹出终端窗口；刷新失败不会阻止启动器使用。菜单入口使用持久保存的图标文件绝对路径，AppImage 卸载后图标仍可读取。
 
@@ -124,8 +132,6 @@ Dalamud 更新连接超时时，可以选择使用现有可用版本继续启动
 
 凭据仅以明文保存在各游戏区服目录下的 `credentials.json` 中，密码、2FA 密钥和快捷登录凭据均不加密。启动器创建的凭据文件仅允许当前用户读写，请勿上传或分享。
 
-
-
 2FA 密钥与六位验证码不同：密钥用于生成验证码，验证码仅在当前登录时输入。不要把六位验证码填入密钥字段。
 
 ## 问题反馈
@@ -143,34 +149,7 @@ Dalamud 更新连接超时时，可以选择使用现有可用版本继续启动
 
 ## 从源码构建
 
-需要 .NET 10 SDK、C 编译器、Python 3、Git 和 `7z`。构建及打包可能需要下载 NuGet 依赖、固定版本的辅助组件和对应源码。
-
-在仓库根目录执行：
-
-1.0.0 的完整启动器源码位于本仓库。原始源码归档、随包依赖的对应源码及校验文件保存在 [release-materials/1.0.0](release-materials/1.0.0)。Release 下载仅保留 AppImage 和签名更新所需的两个小文件。
-
-```bash
-# 构建 Linux 启动器
-dotnet build src/XIVLauncher.Linux/XIVLauncher.Linux.csproj -c Release -m:1
-
-# 运行离线测试
-dotnet test src/XIVLauncher.Linux.Tests/XIVLauncher.Linux.Tests.csproj \
-  -c Release -m:1 --filter "Category!=Network"
-
-# 检查已记录的许可材料
-python3 scripts/check-compliance-materials.py
-
-# 生成运行包和对应源码附件
-bash scripts/package-linux.sh
-```
-
-默认输出到 `artifacts/linux/`。再次打包时需使用新的输出目录，例如：
-
-```bash
-bash scripts/package-linux.sh artifacts/local-build
-```
-
-完整打包会同时生成许可证、依赖声明、对应源码附件、`SOURCE-DELIVERY.json` 与校验文件。重新分发时，请保留相关声明，并按适用许可证一并提供对应源码。详情见[源码交付说明](compliance/SOURCE-DELIVERY.txt)。
+如需从源码构建或参与开发，请参阅[开发说明](LINUX.zh-CN.md)。
 
 ## 关于页面
 

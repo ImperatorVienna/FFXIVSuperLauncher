@@ -19,7 +19,9 @@ for readme in README.md README.zh-CN.md README.zh-TW.md README.ja.md; do
     install -m644 "$repo_root/$readme" "$bundle/$readme"
 done
 install -m644 "$repo_root/LICENSE" "$bundle/LICENSE"
-install -m644 "$repo_root/LINUX.md" "$bundle/LINUX.md"
+install -m644 "$repo_root/LINUX.en.md" "$bundle/LINUX.en.md"
+install -m644 "$repo_root/LINUX.zh-CN.md" "$bundle/LINUX.zh-CN.md"
+install -m644 "$repo_root/LINUX.zh-TW.md" "$bundle/LINUX.zh-TW.md"
 install -m644 "$repo_root/RELEASE-1.0.0.md" "$bundle/RELEASE-1.0.0.md"
 install -m644 "$repo_root/src/XIVLauncher.Linux/Resources/icon.png" "$bundle/icon.png"
 install -m644 "$repo_root/packaging/linux/xivlauncher-super.desktop" "$bundle/"

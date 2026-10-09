@@ -1,9 +1,9 @@
 name: Super Linux preview
 on:
   push:
-    paths: ['src/**', 'scripts/**', 'compliance/**', 'packaging/**', 'SOURCES.txt', 'LICENSE', 'LINUX.md', '.github/workflows/linux.yml']
+    paths: ['src/**', 'scripts/**', 'compliance/**', 'packaging/**', 'SOURCES.txt', 'LICENSE', 'LINUX.en.md', 'LINUX.zh-CN.md', 'LINUX.zh-TW.md', '.github/workflows/linux.yml']
   pull_request:
-    paths: ['src/**', 'scripts/**', 'compliance/**', 'packaging/**', 'SOURCES.txt', 'LICENSE', 'LINUX.md', '.github/workflows/linux.yml']
+    paths: ['src/**', 'scripts/**', 'compliance/**', 'packaging/**', 'SOURCES.txt', 'LICENSE', 'LINUX.en.md', 'LINUX.zh-CN.md', 'LINUX.zh-TW.md', '.github/workflows/linux.yml']
   workflow_dispatch:
 jobs:
   linux:
