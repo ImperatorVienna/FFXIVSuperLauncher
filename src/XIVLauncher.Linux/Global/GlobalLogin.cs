@@ -28,6 +28,7 @@ public sealed class GlobalLogin(HttpClient client) : IRegionLogin
             }, token, frontier);
         if (context.UpdateAfterLogin != null) await context.UpdateAfterLogin(token);
         var updater = new GlobalGameUpdater(client);
+        using var cacheLease = DownloadCacheLock.Acquire(settings.Root);
         var uid = await updater.RegisterAndUpdateAsync(settings.GamePath, settings.RegionRoot, session, context.Status, token);
         token.ThrowIfCancellationRequested();
         RegionUpdateService.RecordGameVersion(settings);

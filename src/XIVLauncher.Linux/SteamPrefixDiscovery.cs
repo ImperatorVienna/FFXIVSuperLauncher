@@ -28,45 +28,12 @@ public static class SteamPrefixDiscovery
             }
         return found.Values.OrderBy(x => x.AppId).ThenBy(x => x.DataDirectory).ToArray();
     }
-    private static string CanonicalDirectory(string path)
-    {
-        var full = Path.GetFullPath(path); var current = Path.GetPathRoot(full)!;
-        foreach (var part in full[current.Length..].Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries))
-        {
-            current = Path.Combine(current, part);
-            current = new DirectoryInfo(current).ResolveLinkTarget(true)?.FullName ?? current;
-        }
-        return current;
-    }
-    private static bool Matches(string entry, string variable, string expected)
-    {
-        if (!entry.StartsWith(variable, StringComparison.Ordinal)) return false;
-        try { return CanonicalDirectory(entry[variable.Length..]) == CanonicalDirectory(expected); }
-        catch (IOException) { return false; } catch (UnauthorizedAccessException) { return false; } catch (ArgumentException) { return false; }
-    }
-    public static bool IsPrefixOwner(string name) => GameProcessGuard.IsGameProcessName(name)
-        || GameProcessGuard.IsOfficialLauncher(name) || name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
-        || name.StartsWith("wineserver", StringComparison.OrdinalIgnoreCase)
-        || name is "wine" or "wine64" or "wine-preloader" or "wine64-preloader";
+    private static string CanonicalDirectory(string path) => Processes.ProcessSessions.CanonicalDirectory(path);
+    public static bool IsPrefixOwner(string name) => Processes.ProcessIdentity.IsPrefixOwner(name);
     public static void EnsureIdle(string path)
     {
-        var data = Normalize(path); var prefix = Path.Combine(data, "pfx");
-        foreach (var process in System.Diagnostics.Process.GetProcesses())
-        {
-            using (process)
-            {
-                if (process.Id == Environment.ProcessId) continue;
-                // Steam wrappers inherit the prefix variables without using Wine.
-                // Only actual Wine processes can hold this environment busy.
-                string name;
-                try { name = process.ProcessName; } catch (InvalidOperationException) { continue; }
-                if (!IsPrefixOwner(name)) continue;
-                string[] environment;
-                try { environment = File.ReadAllText($"/proc/{process.Id}/environ").Split('\0'); }
-                catch (IOException) { continue; } catch (UnauthorizedAccessException) { continue; }
-                if (environment.Any(x => Matches(x, "WINEPREFIX=", prefix) || Matches(x, "STEAM_COMPAT_DATA_PATH=", data)))
-                    throw new CredentialValidationException("The selected Steam prefix is in use.", "所选 Steam 兼容环境正在使用中，请先退出 Steam 启动的游戏或官方启动器后重试。");
-            }
-        }
+        var data = Normalize(path);
+        if (Processes.ProcessSessions.Find(Path.Combine(data, "pfx"), true, data) != Processes.ProcessPresence.Gone)
+            throw new CredentialValidationException("The selected Steam prefix is in use or cannot be inspected.", "所选 Steam 兼容环境正在使用中或无法确认空闲，请先退出相关游戏或官方启动器后重试。");
     }
 }

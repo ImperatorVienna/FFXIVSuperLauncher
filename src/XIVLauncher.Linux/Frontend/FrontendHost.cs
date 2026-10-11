@@ -16,9 +16,14 @@ internal static class FrontendHost
         string? launcherEntry = null, bool steamEntry = false,
         Func<CompatibilityView>? scanCompatibility = null, TimeSpan? scanDeadline = null)
     {
+        StartupCleanup.Run(root);
+        try { await new GameSessionDiscovery(root).CleanupAsync(token); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
         if (launcherEntry != null) LinuxSettings.EnsureCreated(root);
         XIVLauncher.Common.Unix.CompatibilityRunner? gameSession = null;
         var releasedSession = false;
+        var gameTracker = new Processes.GameSessionTracker();
+        var travelSessions = new List<XIVLauncher.Linux.ChinaTravel.GameTravelSession>();
         try
         {
         var compatibility = new FrontendCompatibility(root, launcherEntry);
@@ -28,8 +33,12 @@ internal static class FrontendHost
         var accounts=new FrontendAccounts(root);
         var plugins=new FrontendPlugins(root);
         using var travel=new FrontendTravel(root);
-        await using var operations=new FrontendOperations(root, (request, operation) =>
-            FrontendGame.RunAsync(root, request, operation, runner => gameSession = runner));
+        var gameRecovery = new FrontendGameRecovery(root);
+        await using var operations=new FrontendOperations(root, async (request, operation) =>
+        {
+            await FrontendGame.RunAsync(root, request, operation, runner => gameSession = runner, session => travelSessions.Add(session));
+            if (gameSession != null) gameTracker.Observe(Path.Combine(gameSession.Settings.DataDirectory, "pfx"));
+        });
         await using var official=new FrontendOfficial(root,fetchOfficial);
         using var lifetime=CancellationTokenSource.CreateLinkedTokenSource(token);
         using var writerGate=new SemaphoreSlim(1,1);
@@ -88,6 +97,8 @@ internal static class FrontendHost
                 object result;
                 switch(request.Method)
                 {
+                    case "game-auth.check": result = await gameRecovery.CheckAsync(token); break;
+                    case "game-auth.start": result = gameRecovery.Start(operations); break;
                     case "snapshot":result=preferences.Snapshot();break;
                     case "session.release":
                         var releaseView=operations.Poll(Parse<OperationIdentity>());
@@ -102,6 +113,7 @@ internal static class FrontendHost
                     case "system.initialize":result=application.Initialize();break;
                     case "window.save":result=application.SaveWindow(Parse<WindowPlacement>());break;
                     case "setup.complete":result=application.CompleteSetup(Parse<SetupRequest>());break;
+                    case "maintenance.clean":result=FrontendCleanup.Start(root, Parse<CleanupRequest>(), operations);break;
                     case "about.read":result=application.About();break;
                     case "about.open":result=application.Open(Parse<AboutRequest>());break;
                     case "about.notice":result=application.Notice(Parse<AboutRequest>());break;
@@ -165,6 +177,8 @@ internal static class FrontendHost
         }
         finally
         {
+            try
+            {
             // Disposing UI services must not drop the AppImage mount while a game is alive.
             if ((steamEntry || releasedSession) && gameSession != null)
             {
@@ -172,10 +186,13 @@ internal static class FrontendHost
                 catch (Exception ex)
                 {
                     new SessionDiagnostics(root).Write("Prefix wait failed; monitoring the game process instead. " + DiagnosticLog.Format(ex),"shared","WARN");
-                    while(FrontendSessionRelease.HasGame(Path.Combine(gameSession.Settings.DataDirectory,"pfx")))await Task.Delay(1000);
+                    while(gameTracker.Observe(Path.Combine(gameSession.Settings.DataDirectory,"pfx")))await Task.Delay(1000);
                 }
             }
+            }
+            finally { foreach (var bridge in travelSessions) await bridge.DisposeAsync(); }
         }
+
         return 0;
     }
 }

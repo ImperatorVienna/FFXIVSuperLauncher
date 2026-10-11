@@ -1,4 +1,5 @@
 using XIVLauncher.Common.Util;
+using XIVLauncher.Linux.ChinaTravel;
 using XIVLauncher.Common.Http;
 using XIVLauncher.Common.Unix;
 using XIVLauncher.Login.Client;
@@ -8,7 +9,7 @@ namespace XIVLauncher.Linux.Frontend;
 
 internal static class FrontendGame
 {
-    internal static async Task RunAsync(string root, GameOperationRequest request, FrontendOperation operation, Action<CompatibilityRunner>? onStarting = null)
+    internal static async Task RunAsync(string root, GameOperationRequest request, FrontendOperation operation, Action<CompatibilityRunner>? onStarting = null, Action<GameTravelSession>? registerTravelSession = null)
     {
         var token=operation.Token;token.ThrowIfCancellationRequested();
         var settings=LinuxSettings.Load(root);
@@ -30,6 +31,7 @@ internal static class FrontendGame
         if(!GameHelpers.IsValidGamePath(settings.GamePath))
             throw new CredentialValidationException("Invalid client path.","请选择当前游戏区服的完整客户端目录，需包含 game/ffxiv_dx11.exe 和有效版本文件。");
         settings.Save();
+        GameTravelSession? travelSession = null;
         var provider=RegionLogin.For(request.Region);
         var areas=request.Region=="ffxiv_cn" && needsLogin
             ? await provider.AreasAsync(token).WaitAsync(TimeSpan.FromSeconds(15),token) : [];
@@ -52,7 +54,9 @@ internal static class FrontendGame
             var arguments=await provider.AuthenticateAsync(new(settings,area,areas,loginRequest,password,operation.Status,
                 operation.AuthenticateWithWebAsync,
                 ct=>operation.AskAsync("otp",settings.SelectedRegion=="ffxiv"?"2FA 验证码（可选）":"请输入当前六位 2FA 验证码",optional:true,token:ct),
-                async ct=>{operation.ClearNotification();await Update(ct);}),ct);
+                async ct=>{operation.ClearNotification();await Update(ct);},
+                RegisterTravelSession: request.Region == "ffxiv_cn" && request.EnableDalamud && !request.NoPlugins && registerTravelSession != null
+                    ? session => travelSession = session : null),ct);
             operation.ClearNotification();return arguments;
         }
         if(request.Kind=="game-update")
@@ -67,9 +71,14 @@ internal static class FrontendGame
         var proton=ProtonDiscovery.FromScript(settings.ProtonScript,settings.SteamRoot);
         if(request.Region=="ffxiv" && settings.Current.UseSteamPrefix)SteamPrefixDiscovery.EnsureIdle(settings.Current.SteamCompatibilityData);
         var runner=new CompatibilityRunner(settings.GetCompatibility(proton));runner.Validate();
+        try
+        {
         await GameLaunchCoordinator.LaunchAsync(settings,runner,Authenticate,
             ct=>PrepareDalamudAsync(settings,operation,ct),request.NoPlugins,operation.Status,onStarting,token);
+        if (travelSession != null) { registerTravelSession!(travelSession); travelSession = null; }
         operation.MarkLaunched();
+        }
+        finally { if (travelSession != null) await travelSession.DisposeAsync(); }
     }
     private static async Task<RegionDalamudFiles?> PrepareDalamudAsync(LinuxSettings settings, FrontendOperation operation, CancellationToken token)
     {

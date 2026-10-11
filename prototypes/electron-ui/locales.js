@@ -1464,3 +1464,141 @@ Object.assign(window.previewStrings, {
     "Select the source and destination game regions. Only the destination third-party repository list and enablement states are replaced. Its main repository, preset repository switch, and other Dalamud settings are always preserved. The original configuration is backed up."
   ]
 });
+
+Object.assign(window.previewStrings, {
+  "存储清理": [
+    "儲存空間清理",
+    "ストレージの整理",
+    "Storage cleanup"
+  ],
+  "清理下载缓存": [
+    "清理下載快取",
+    "ダウンロードキャッシュを削除",
+    "Clear download cache"
+  ],
+  "清理日志": [
+    "清理日誌",
+    "ログを消去",
+    "Clear logs"
+  ],
+  "清理内置浏览器缓存": [
+    "清理內建瀏覽器快取",
+    "内蔵ブラウザーのキャッシュを削除",
+    "Clear built-in browser cache"
+  ],
+  "浏览器缓存清理保留 Cookie 和验证状态。": [
+    "清理瀏覽器快取會保留 Cookie 和驗證狀態。",
+    "ブラウザーのキャッシュを削除しても Cookie と認証状態は保持されます。",
+    "Clearing browser caches preserves cookies and verification state."
+  ],
+  "清理启动器管理的缓存和日志；保留 Dalamud 管理的内容。游戏运行时也可清理；下载或安装进行中时暂不可清理下载缓存。": [
+    "清理啟動器管理的快取和日誌，保留 Dalamud 管理的內容。遊戲執行時也可清理；下載或安裝進行中時無法清理下載快取。",
+    "ランチャーが管理するキャッシュとログを削除し、Dalamud が管理する内容は保持します。ゲーム実行中も利用できますが、ダウンロード・インストール中はダウンロードキャッシュを削除できません。",
+    "Clears launcher-managed caches and logs, preserving content managed by Dalamud. Available while the game is running; download caches cannot be cleared during downloads or installation."
+  ],
+  "已清理 {count} 个文件，释放 {size} MiB；跳过 {skipped} 项。": [
+    "已清理 {count} 個檔案，釋出 {size} MiB；略過 {skipped} 項。",
+    "{count} 個のファイルを削除し、{size} MiB を解放しました。スキップ：{skipped} 件。",
+    "Cleared {count} files, freeing {size} MiB; skipped {skipped} items."
+  ],
+  "已清理 {count} 个浏览器会话的缓存，HTTP 缓存减少 {size} MiB；跳过 {skipped} 项。Cookie 和验证状态已保留。": [
+    "已清理 {count} 個瀏覽器工作階段的快取，HTTP 快取減少 {size} MiB；略過 {skipped} 項。Cookie 和驗證狀態已保留。",
+    "{count} 個のブラウザーセッションのキャッシュを削除し、HTTP キャッシュが {size} MiB 減少しました。スキップ：{skipped} 件。Cookie と認証状態は保持されています。",
+    "Cleared caches for {count} browser sessions, reducing HTTP cache by {size} MiB; skipped {skipped} items. Cookies and verification state were preserved."
+  ],
+  "请等待当前操作或网页验证结束后再清理浏览器缓存。": [
+    "請等待目前操作或網頁驗證結束後，再清理瀏覽器快取。",
+    "現在の操作またはウェブ認証が終了してから、ブラウザーのキャッシュを削除してください。",
+    "Wait for the current operation or web verification to finish before clearing browser caches."
+  ],
+  "其他下载、安装或缓存清理正在进行，请稍后重试。": [
+    "其他下載、安裝或快取清理正在進行，請稍後再試。",
+    "別のダウンロード、インストール、またはキャッシュ削除が進行中です。後でもう一度お試しください。",
+    "Another download, installation or cache cleanup is running. Please try again later."
+  ],
+  "重新授权游戏内跨区": [
+    "重新授權遊戲內跨區",
+    "ゲーム内DCトラベルを再認証",
+    "Reauthorize in-game DC travel"
+  ],
+  "当前没有需要恢复授权的游戏会话。": [
+    "目前沒有需要恢復授權的遊戲工作階段。",
+    "再認証が必要なゲームセッションはありません。",
+    "No running game session currently needs reauthorization."
+  ],
+  "跨区授权已恢复，请回到游戏重新点击跨区。": [
+    "跨區授權已恢復，請回到遊戲重新點選跨區。",
+    "DCトラベルの認証を更新しました。ゲームに戻り、もう一度DCトラベルを実行してください。",
+    "DC travel authorization was restored. Return to the game and try DC travel again."
+  ],
+  "繁中区登录验证": [
+    "繁中區登入驗證",
+    "繁体字中国語版のログイン認証",
+    "Traditional Chinese login verification"
+  ],
+  "跨区登录授权已失效，请打开启动器扫码恢复；无需退出游戏。": [
+    "跨區登入授權已失效，請開啟啟動器掃碼恢復，無需退出遊戲。",
+    "DCトラベルの認証が失効しました。ランチャーを開いてQRコードで再認証してください。ゲームを終了する必要はありません。",
+    "DC travel authorization expired. Open the launcher and scan the QR code to restore it; you do not need to exit the game."
+  ],
+  "正在恢复运行中游戏的跨区授权；无需退出游戏。": [
+    "正在恢復執行中遊戲的跨區授權，無需退出遊戲。",
+    "実行中のゲームのDCトラベル認証を復元しています。ゲームを終了する必要はありません。",
+    "Restoring DC travel authorization for the running game; you do not need to exit the game."
+  ],
+  "请使用当前游戏账号扫码，恢复跨区授权。": [
+    "請使用目前遊戲帳號掃碼，恢復跨區授權。",
+    "現在のゲームアカウントでQRコードを読み取り、DCトラベルを再認証してください。",
+    "Scan with the current game account to restore DC travel authorization."
+  ],
+  "认证未完成，请重新打开启动器重试。": [
+    "驗證未完成，請重新開啟啟動器再試。",
+    "認証が完了しませんでした。ランチャーを開き直して再試行してください。",
+    "Verification was not completed. Reopen the launcher and try again."
+  ],
+  "认证已取消或超时，请重试。": [
+    "驗證已取消或逾時，請重試。",
+    "認証がキャンセルされたか、タイムアウトしました。再試行してください。",
+    "Verification was cancelled or timed out. Please try again."
+  ],
+  "认证未完成，请使用当前游戏账号重新扫码。": [
+    "驗證未完成，請使用目前遊戲帳號重新掃碼。",
+    "認証が完了しませんでした。現在のゲームアカウントでもう一度QRコードを読み取ってください。",
+    "Verification was not completed. Scan again with the current game account."
+  ],
+  "认证服务暂时不可用，请稍后重试。": [
+    "驗證服務暫時無法使用，請稍後再試。",
+    "認証サービスを利用できません。後でもう一度お試しください。",
+    "The verification service is temporarily unavailable. Please try again later."
+  ],
+  "请使用当前游戏账号扫码。": [
+    "請使用目前遊戲帳號掃碼。",
+    "現在のゲームアカウントでQRコードを読み取ってください。",
+    "Scan with the current game account."
+  ],
+  "跨区授权已恢复，请回到游戏重新点击跨区；本次不会自动提交订单。": [
+    "跨區授權已恢復，請回到遊戲重新點選跨區；本次不會自動提交訂單。",
+    "DCトラベルの認証を更新しました。ゲームに戻って再試行してください。移動申請は自動送信されません。",
+    "DC travel authorization was restored. Retry in the game; no travel order will be submitted automatically."
+  ],
+  "所选 Steam 兼容环境正在使用中或无法确认空闲，请先退出相关游戏或官方启动器后重试。": [
+    "所選 Steam 相容環境正在使用中或無法確認閒置，請先退出相關遊戲或官方啟動器後再試。",
+    "選択した Steam 互換環境は使用中か、空き状態を確認できません。関連するゲームや公式ランチャーを終了して再試行してください。",
+    "The selected Steam compatibility environment is in use or its idle state cannot be confirmed. Close the related game or official launcher and retry."
+  ],
+  "官方超域旅行服务维护中，请稍后重试。": [
+    "官方超域旅行服務維護中，請稍後再試。",
+    "公式DCトラベルサービスはメンテナンス中です。後で再試行してください。",
+    "The official DC travel service is under maintenance. Please try again later."
+  ],
+  "目标服务器繁忙，请您稍晚再次尝试。": [
+    "目標伺服器忙碌，請稍後再試。",
+    "移動先サーバーが混雑しています。後で再試行してください。",
+    "The destination server is busy. Please try again later."
+  ],
+  "跨区服务请求未能确认结果，请先查询官方订单状态。": [
+    "無法確認跨區服務請求結果，請先查詢官方訂單狀態。",
+    "DCトラベルのリクエスト結果を確認できませんでした。公式の申請状況を先に確認してください。",
+    "The DC travel request result could not be confirmed. Check the official order status first."
+  ]
+});

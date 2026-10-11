@@ -48,14 +48,15 @@ test('plugin IPC only accepts bounded identities and named data categories',()=>
   assert.equal(contracts['plugins.start']({region:'ffxiv',kind:'install-updates',planId:'x',plugins:Array(1001).fill('x')}),false);
 });
 
-async function operationHarness(){
+async function operationHarness(recovery=false){
   const handlers={},timers=new Map(),calls=[],updates=[];let nextTimer=0,startTask,renders=0,polls=0;
   const logs={open:false},count={textContent:''};
-  const document={hidden:false,body:{dataset:{}},querySelector:s=>s==='.logs'?logs:s==='#log-count'?count:null,querySelectorAll:()=>[],addEventListener:(name,fn)=>{handlers[name]=fn;}};
+  const document={hidden:false,body:{dataset:{}},querySelector:s=>s==='.logs'?logs:s==='#log-count'?count:s.startsWith('nav ')?{click(){}}:null,querySelectorAll:()=>[],addEventListener:(name,fn)=>{handlers[name]=fn;}};
   const snapshot={protocolVersion:5,selectedRegion:'ffxiv',setupComplete:true,regions:[{id:'ffxiv'}]};
   let value={id:'operation',region:'ffxiv',state:'running',log:'line',challenge:null};
   const bridge={snapshot:async()=>({ok:true,result:snapshot}),listAccounts:async()=>({ok:true,result:{accounts:[]}}),diagnoseCompatibility:async()=>({ok:true,result:{operationId:'operation'}}),
     pollOperation:async()=>{polls++;return {ok:true,result:{...value}};},captchaLayout:async v=>calls.push(v)};
+  if(recovery){bridge.checkGameRecovery=async()=>({ok:true,result:{required:true}});bridge.startGameRecovery=async()=>{calls.push('recover');return {ok:true,result:{operationId:'operation'}};};}
   const window={launcherBridge:bridge,previewI18n:{t:v=>v,apply(){},languages:{English:'en'}},
     createLogView:()=>({lines:()=>[],update:lines=>updates.push(lines),clear(){}}),
     createCompatibilityPage:({start})=>{startTask=start;return {sync(){renders++;},completed(){}};},addEventListener(){}};
@@ -110,4 +111,20 @@ test('repository sync replaces the removed whole-Dalamud sync category',()=>{
  assert.equal(contracts['plugins.sources']({content:'dalamud-settings'}),false);
  assert.equal(contracts['plugins.start']({region:'ffxiv_cn',kind:'sync',content:'dalamud-settings',source:'ffxiv_cn',targets:['ffxiv_tc']}),false);
  assert.equal(contracts['plugins.start']({region:'ffxiv_cn',kind:'sync',content:'third-party-repositories',source:'ffxiv_cn',targets:['ffxiv_tc']}),true);
+});
+
+ test('reopened UI starts pending game authentication without launching another game',async()=>{
+ const h=await operationHarness(true);assert.deepEqual(h.calls,['recover']);assert.equal(h.polls(),1);
+ h.state({state:'completed',launched:false});await h.tick();assert.equal(h.timers.size,0);assert.deepEqual(h.calls,['recover']);
+});
+test('game recovery IPC never accepts caller supplied endpoint or credentials',()=>{
+ assert.equal(contracts['game-auth.check']({}),true);assert.equal(contracts['game-auth.start']({}),true);
+ assert.equal(contracts['game-auth.start']({port:123,token:'secret'}),false);
+});
+
+test('cleanup IPC only accepts the two named cleanup operations',()=>{
+  assert.equal(contracts['maintenance.clean']({kind:'downloads'}),true);
+  assert.equal(contracts['maintenance.clean']({kind:'logs'}),true);
+  assert.equal(contracts['maintenance.clean']({kind:'all'}),false);
+  assert.equal(contracts['maintenance.clean']({kind:'downloads',path:'/tmp'}),false);
 });

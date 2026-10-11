@@ -65,7 +65,7 @@ public static class DotNetRuntimeManager
 
         runtimeDirectory.Create();
 
-        var downloadPath = PlatformHelpers.GetTempFileName();
+        var downloadPath = runtimeDirectory.FullName + ".download-" + Guid.NewGuid().ToString("N");
 
         try
         {

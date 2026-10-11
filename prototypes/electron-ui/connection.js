@@ -14,6 +14,13 @@ window.frontendConnection = (() => {
   const logView=window.createLogView($('#log'));
   let pollBusy=false,lastViewKey='',pendingRedraw=false,pendingPresent=false;
   let operationKind='game';
+  const operationTraits=Object.freeze({
+    game:{verification:true,accounts:true,home:true},
+    recovery:{verification:true,accounts:true,home:true},
+    travel:{verification:true,accounts:true},
+    'launcher-update':{about:true},cleanup:{about:true},plugins:{},compatibility:{}
+  });
+  const traits=(kind=operationKind)=>operationTraits[kind]||{};
   const editors=new Map(), selections=new Map(); let editor=null;
   const editorKey=(r,name,existing)=>r+'\n'+(existing?'saved:':'new:')+name;
   const active=()=>Boolean(operation);
@@ -35,8 +42,8 @@ window.frontendConnection = (() => {
     operation:()=>operationKind==='compatibility'&&active()?view:null,chooseDirectory:()=>bridge.chooseClientDirectory(),chooseProton:()=>bridge.chooseProtonScript(),report:(message,options)=>report(message,options)}));
   const travel=feature('travel',()=>window.createTravelPage?.({call,ready:()=>ready()&&!active(),start:request=>startManagedOperation('startTravel',request,'travel'),cancel:cancelOperation,
     operation:()=>operationKind==='travel'&&active()?view:null,report:message=>report(message)}));
-  const about=feature('about',()=>window.createAboutPage?.({call,apply,ready:()=>ready()&&!active(),snapshot:()=>snapshot,start:request=>startManagedOperation('installLauncherUpdate',request,'launcher-update'),cancel:cancelOperation,
-    operation:()=>operationKind==='launcher-update'&&active()?view:null,report:(message,options)=>report(message,options)}));
+  const about=feature('about',()=>window.createAboutPage?.({call,apply,ready:()=>ready()&&!active(),snapshot:()=>snapshot,clean:request=>startManagedOperation('cleanLauncher',request,'cleanup'),start:request=>startManagedOperation('installLauncherUpdate',request,'launcher-update'),cancel:cancelOperation,
+    operation:()=>traits().about&&active()?view:null,report:(message,options)=>report(message,options)}));
   const setup=feature('setup',()=>window.createSetupWizard?.({call,snapshot:()=>snapshot,apply,chooseDirectory:()=>bridge.chooseClientDirectory(),chooseProton:()=>bridge.chooseProtonScript(),report:message=>report(message),
     completed:async result=>{snapshot=result;redraw();navigate('0');try{await reloadAccounts(true);}catch(error){fail(error);}}}));
   const official=feature('official',()=>window.createOfficialContentPage?.({call,ready,report:message=>report(t(message),{expand:false})}));
@@ -83,7 +90,7 @@ window.frontendConnection = (() => {
     const editable=ready()&&!active();
     const actions=new Set(['region-settings','clear-log','local-otp']);
     if(ready())for(const name of ['open-official','status','refresh-official'])actions.add(name);
-    if(editable)for(const name of ['browse-client','accounts','login','travel','download','add-account','delete-account','save-account','discard-account'])actions.add(name);
+    if(editable)for(const name of ['recover-game-auth','browse-client','accounts','login','travel','download','add-account','delete-account','save-account','discard-account'])actions.add(name);
     if(active()&&view?.state==='running')actions.add('cancel-operation');
     if(active()&&view?.state==='running'&&!replying)for(const name of ['submit-otp','skip-otp','dalamud-disable'])actions.add(name);
     if(active()&&view?.state==='running'&&!replying&&view?.challenge?.allowLocal)actions.add('dalamud-local');
@@ -115,7 +122,7 @@ window.frontendConnection = (() => {
     const hint=$('.setting-hint');if(hint)hint.hidden=true;
     const demos=$('.preview-tools');if(demos)demos.hidden=true;
     if($('#credential-name'))renderEditor();
-    if($('#verification')&&view&&(operationKind==='game'||operationKind==='travel'))renderOperation();
+    if($('#verification')&&view&&(traits().verification))renderOperation();
     const count=logView.lines().length;if($('#log-count'))$('#log-count').textContent=t(count===1?'1 条':'{count} 条',{count});
     official?.sync(snapshot);official?.present();plugins?.sync();compatibility?.sync();travel?.present();about?.sync();
   }
@@ -224,7 +231,7 @@ window.frontendConnection = (() => {
     previousLogs=logView.lines().slice(-500);localLogs=[];lastViewKey='';
     operation=result.operationId;operationKind=kind;
     view={id:operation,region:request.region,state:'running',challenge:null,log:''};
-    if(kind==='game'||kind==='travel'&&request.kind==='open')navigate('0');else present();
+    if(traits(kind).home||kind==='travel'&&request.kind==='open')navigate('0');else present();
     await poll();
   }
   async function poll() {
@@ -240,19 +247,20 @@ window.frontendConnection = (() => {
         const count=t(lines.length===1?'1 条':'{count} 条',{count:lines.length});if($('#log-count').textContent!==count)$('#log-count').textContent=count;
       }
       if(result.state==='running'||result.state==='cancelling'){
-        if(changed){if(document.hidden)pendingPresent=true;else if(operationKind==='game'||operationKind==='travel')renderOperation();else present();}
+        if(changed){if(document.hidden)pendingPresent=true;else if(traits().verification)renderOperation();else present();}
       }
       else {
         operation=null;
         if(result.state==='completed'&&result.result?.exitForUpdate){applying=true;present();await bridge.quitForUpdate(id);return;}
-        if(operationKind==='launcher-update')about?.completed(result);
-        const travelLaunch=operationKind==='travel'&&travel?.completed(result);if(operationKind==='plugins')await plugins?.completed(result);if(operationKind==='compatibility')compatibility?.completed(result);present();if((operationKind==='game'||operationKind==='travel'))renderOperation();
+        if(operationKind==='cleanup'&&result.state==='completed'&&result.result?.kind==='logs'){logRevision++;previousLogs=[];localLogs=[];logView.clear();lastViewKey='';}
+        if(traits().about)about?.completed(result);
+        const travelLaunch=operationKind==='travel'&&travel?.completed(result);if(operationKind==='plugins')await plugins?.completed(result);if(operationKind==='compatibility')compatibility?.completed(result);present();if((traits().verification))renderOperation();
         // Window management and account refresh must not turn a successful game launch into a failure.
         if(result.launched&&result.state==='completed')try{if((await bridge.finishLaunch(id))?.released)return;}catch{report(t('界面退出准备失败；游戏启动结果不受影响。'));}
-        try{snapshot=await call('snapshot');redraw();if((operationKind==='game'||operationKind==='travel'))await reloadAccounts(result.state==='completed');}catch(error){fail(error);}
+        try{snapshot=await call('snapshot');redraw();if(traits().accounts)await reloadAccounts(result.state==='completed');}catch(error){fail(error);}
         if(travelLaunch)setTimeout(()=>void startOperation('launch'),0);
       }
-    }catch(error){operation=null;view={...view,state:'failed',error:error.message,challenge:null};void syncCaptchaLayout();fail(error);if(!document.hidden&&(operationKind==='game'||operationKind==='travel'))renderOperation();}
+    }catch(error){operation=null;view={...view,state:'failed',error:error.message,challenge:null};void syncCaptchaLayout();fail(error);if(!document.hidden&&(traits().verification))renderOperation();}
     finally{pollBusy=false;if(operation===id)pollTimer=setTimeout(()=>void poll(),document.hidden?2000:350);}
   }
   let captchaLayoutBusy=false,captchaLayoutPending=false,captchaLayoutKey='null';
@@ -280,7 +288,7 @@ window.frontendConnection = (() => {
     const heading=document.createElement('div');heading.className='section-heading';
     const title=document.createElement('h2');title.id='verification-title';title.textContent=t('登录验证');heading.append(title);panel.append(heading);
     const body=document.createElement('div');body.className='verification-body';panel.append(body);
-    const text=document.createElement('p');text.className='muted';text.textContent=challenge?.message||t(view.state==='running'?'正在处理，请稍候…':view.state==='cancelling'?'正在取消…':view.state==='completed'?'操作已完成。':view.state==='cancelled'?'已取消。':view.error||'操作失败，请查看日志。');body.append(text);
+    const text=document.createElement('p');text.className='muted';text.textContent=t(challenge?.message||'')||t(view.state==='running'?'正在处理，请稍候…':view.state==='cancelling'?'正在取消…':view.state==='completed'?(operationKind==='recovery'?'跨区授权已恢复，请回到游戏重新点击跨区。':'操作已完成。'):view.state==='cancelled'?'已取消。':view.error||'操作失败，请查看日志。');body.append(text);
     const buttons=document.createElement('div');buttons.className='row';
     const add=(action,label,disabled=false)=>{const button=document.createElement('button');button.dataset.action=action;button.textContent=t(label);button.disabled=disabled;buttons.append(button);};
     if(challenge?.kind==='qr'&&challenge.image?.startsWith('data:image/png;base64,')){const image=document.createElement('img');image.src=challenge.image;image.alt=t('请使用叨鱼扫描二维码登录。');image.className='backend-qr';body.append(image);}
@@ -291,7 +299,7 @@ window.frontendConnection = (() => {
       line.append(label,code);body.append(line);
     }
     if(challenge?.kind==='web-captcha'){
-      body.classList.add('web-verification');const slot=document.createElement('div');slot.id='captcha-slot';slot.setAttribute('aria-label',t('台服登录验证'));body.append(slot);
+      body.classList.add('web-verification');const slot=document.createElement('div');slot.id='captcha-slot';slot.setAttribute('aria-label',t('繁中区登录验证'));body.append(slot);
       requestAnimationFrame(()=>void syncCaptchaLayout());
     }
     if(challenge?.kind==='otp'){
@@ -344,6 +352,7 @@ window.frontendConnection = (() => {
           case 'save-account':await saveEditor();break;
           case 'local-otp':window.openLocalOtp(editor?.secret||'');break;
           case 'travel':await startManagedOperation('startTravel',{kind:'open',account:$('#login-name')?.value.trim()||login.name},'travel');break;
+          case 'recover-game-auth':await recoverGameAuthentication(true);break;
           case 'login':await startOperation('launch');break;
           case 'download':await startOperation('game-update');break;
           case 'submit-otp':if(!/^\d{6}$/.test($('#otp')?.value||'')){feedback('请输入六位数字。');break;}await reply($('#otp').value);break;
@@ -381,6 +390,11 @@ window.frontendConnection = (() => {
       if(active()&&event.key==='Escape'){event.stopImmediatePropagation();void cancelOperation().catch(fail);}
     },true);
   }
+  async function recoverGameAuthentication(manual) {
+    if(!bridge?.checkGameRecovery||active())return;
+    if((await call('checkGameRecovery')).required)await startManagedOperation('startGameRecovery',{},'recovery');
+    else if(manual)feedback('当前没有需要恢复授权的游戏会话。');
+  }
   async function start(onSnapshot,onError) {
     if(!integration)return;
     receive=onSnapshot;report=(message,options)=>{
@@ -390,6 +404,7 @@ window.frontendConnection = (() => {
       snapshot=await call('snapshot');if(snapshot.protocolVersion!==5){snapshot=null;throw new Error('Backend protocol version mismatch.');}
       login.areaName=snapshot.regions.find(x=>x.id===region())?.areaName||'';
       redraw();try{await reloadAccounts(true);}catch(error){fail(error);}if(region()==='ffxiv_cn')void loadAreas();setup?.start();about?.start();
+      await recoverGameAuthentication(false);
     }catch(error){if(!snapshot)failed=true;fail(error);}
     present();
   }

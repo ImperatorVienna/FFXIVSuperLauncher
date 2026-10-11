@@ -61,6 +61,7 @@ internal sealed class FrontendLauncherUpdates(string root, FrontendApplication a
         if (!application.IsAppImage || selected.Version <= Current) throw new ArgumentException("No installable update selected.");
         return operations.Start(LinuxSettings.Load(root).SelectedRegion, async operation =>
         {
+            using var cacheLease = DownloadCacheLock.Acquire(root);
             GameProcessGuard.EnsureGamesStopped();
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(operation.Token, lifetime.Token); timeout.CancelAfter(TimeSpan.FromMinutes(15));
             var token = timeout.Token;
