@@ -96,8 +96,6 @@
   "清理下载缓存": "Clear download cache",
   "清理日志": "Clear logs",
   "清理内置浏览器缓存": "Clear built-in browser cache",
-  "浏览器缓存清理保留 Cookie 和验证状态。": "Clearing browser caches preserves cookies and verification state.",
-  "清理启动器管理的缓存和日志；保留 Dalamud 管理的内容。游戏运行时也可清理；下载或安装进行中时暂不可清理下载缓存。": "Clears launcher-managed caches and logs, preserving content managed by Dalamud. Available while the game is running; download caches cannot be cleared during downloads or installation.",
   "已清理 {count} 个文件，释放 {size} MiB；跳过 {skipped} 项。": "Cleared {count} files, freeing {size} MiB; skipped {skipped} items.",
   "已清理 {count} 个浏览器会话的缓存，HTTP 缓存减少 {size} MiB；跳过 {skipped} 项。Cookie 和验证状态已保留。": "Cleared caches for {count} browser sessions, reducing HTTP cache by {size} MiB; skipped {skipped} items. Cookies and verification state were preserved.",
   "请等待当前操作或网页验证结束后再清理浏览器缓存。": "Wait for the current operation or web verification to finish before clearing browser caches.",
@@ -117,5 +115,6 @@
   "所选 Steam 兼容环境正在使用中或无法确认空闲，请先退出相关游戏或官方启动器后重试。": "The selected Steam compatibility environment is in use or its idle state cannot be confirmed. Close the related game or official launcher and retry.",
   "官方超域旅行服务维护中，请稍后重试。": "The official DC travel service is under maintenance. Please try again later.",
   "目标服务器繁忙，请您稍晚再次尝试。": "The destination server is busy. Please try again later.",
-  "跨区服务请求未能确认结果，请先查询官方订单状态。": "The DC travel request result could not be confirmed. Check the official order status first."
+  "跨区服务请求未能确认结果，请先查询官方订单状态。": "The DC travel request result could not be confirmed. Check the official order status first.",
+  "清理启动器管理的缓存和日志，并保留 Dalamud 管理的内容；游戏运行时也可清理，但下载或安装进行中时暂不可清理下载缓存；浏览器缓存清理保留 Cookies 和验证状态。": "Clears launcher-managed caches and logs while preserving content managed by Dalamud; available while the game is running, but download caches cannot be cleared during downloads or installation; clearing browser caches preserves cookies and verification state."
 }

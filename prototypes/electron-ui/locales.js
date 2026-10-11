@@ -1486,16 +1486,6 @@ Object.assign(window.previewStrings, {
     "内蔵ブラウザーのキャッシュを削除",
     "Clear built-in browser cache"
   ],
-  "浏览器缓存清理保留 Cookie 和验证状态。": [
-    "清理瀏覽器快取會保留 Cookie 和驗證狀態。",
-    "ブラウザーのキャッシュを削除しても Cookie と認証状態は保持されます。",
-    "Clearing browser caches preserves cookies and verification state."
-  ],
-  "清理启动器管理的缓存和日志；保留 Dalamud 管理的内容。游戏运行时也可清理；下载或安装进行中时暂不可清理下载缓存。": [
-    "清理啟動器管理的快取和日誌，保留 Dalamud 管理的內容。遊戲執行時也可清理；下載或安裝進行中時無法清理下載快取。",
-    "ランチャーが管理するキャッシュとログを削除し、Dalamud が管理する内容は保持します。ゲーム実行中も利用できますが、ダウンロード・インストール中はダウンロードキャッシュを削除できません。",
-    "Clears launcher-managed caches and logs, preserving content managed by Dalamud. Available while the game is running; download caches cannot be cleared during downloads or installation."
-  ],
   "已清理 {count} 个文件，释放 {size} MiB；跳过 {skipped} 项。": [
     "已清理 {count} 個檔案，釋出 {size} MiB；略過 {skipped} 項。",
     "{count} 個のファイルを削除し、{size} MiB を解放しました。スキップ：{skipped} 件。",
@@ -1600,5 +1590,13 @@ Object.assign(window.previewStrings, {
     "無法確認跨區服務請求結果，請先查詢官方訂單狀態。",
     "DCトラベルのリクエスト結果を確認できませんでした。公式の申請状況を先に確認してください。",
     "The DC travel request result could not be confirmed. Check the official order status first."
+  ]
+});
+
+Object.assign(window.previewStrings, {
+  "清理启动器管理的缓存和日志，并保留 Dalamud 管理的内容；游戏运行时也可清理，但下载或安装进行中时暂不可清理下载缓存；浏览器缓存清理保留 Cookies 和验证状态。": [
+    "清理啟動器管理的快取和日誌，並保留 Dalamud 管理的內容；遊戲執行時也可清理，但下載或安裝進行中時無法清理下載快取；清理瀏覽器快取會保留 Cookies 和驗證狀態。",
+    "ランチャーが管理するキャッシュとログを削除し、Dalamud が管理する内容は保持します。ゲーム実行中も利用できますが、ダウンロード・インストール中はダウンロードキャッシュを削除できません。ブラウザーのキャッシュを削除しても Cookie と認証状態は保持されます。",
+    "Clears launcher-managed caches and logs while preserving content managed by Dalamud; available while the game is running, but download caches cannot be cleared during downloads or installation; clearing browser caches preserves cookies and verification state."
   ]
 });

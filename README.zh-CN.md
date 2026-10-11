@@ -28,7 +28,7 @@
 - **Steam 集成**：支持国际区 Steam 版账户登录；可手动注册为 Steam compatibility tool 以通过 Steam 打开启动器记录游戏时长。
 - **界面与公告**：Electron 图形界面支持简体中文、繁體中文、日本語、English，即时切换，无须重启；显示对应游戏区服的官方活动与公告，并提供游戏官网、服务器状态等官方页面入口。
 - **第三方插件仓库**：在插件管理右侧添加、编辑、启用/停用、删除仓库或检查连接；国服插件更新同时识别启用的预置仓库。
-- **中国区超域传送**：支持提交传送、查询历史和返回原区，可在完成后启动游戏。2.1.0 新增 DCTravelerX 游戏内跨大区适配及授权恢复。
+- **中国区超域传送**：支持提交传送、查询历史和返回原区，可在完成后启动游戏。适配 DCTravelerX（[Dalamud-DailyRoutines/DCTraveler](https://github.com/Dalamud-DailyRoutines/DCTraveler)）游戏内跨大区及授权恢复。
 - **存储清理**：在“关于”中清理下载缓存、日志和内置浏览器缓存；启动时自动回收可确认失效的会话记录。
 
 使用第三方启动器、Dalamud 和插件前，请阅读游戏相关服务条款并自行评估使用风险。Dalamud 默认关闭，项目不提供账号安全或插件可用性保证。
@@ -41,8 +41,8 @@
 - **游戏外管理插件**：无需进入游戏即可调整插件启用状态、选择更新插件，或在游戏区服之间同步设置。
 - **凭据管理**：按区服管理账户登录凭据，支持本地明文存储，及本地 TOTP 生成。
 - **国际区可复用 Steam 版已有的 pfx**：便于从官方启动器切换到 FFXIV Super Launcher 后继承原 pfx 中已有的本地游戏设置和角色配置文件（不涉及服务器保存的角色进度）。
-- **繁中区 Dalamud 注入适配**：针对 Linux／Proton 环境调整注入流程，采用与国际区一致的 entrypoint 路径，并跳过原繁中注入流程中的 ArgFixer；已通过进入角色及安装、运行插件的实机验证。
-- **中国区 Dalamud 分支选择**：采用 Soil 使用的 Dalamud-DailyRoutines 分支及更新源，不沿用 ottercorp 分支的插件黑名单策略；这不代表所有插件均兼容或不受游戏服务条款约束。
+- **繁中区 Dalamud 注入适配**：针对 Linux/Proton 环境调整注入流程，采用与国际区一致的 entrypoint 路径，并跳过原繁中注入流程中的 ArgFixer；已通过进入角色及安装、运行插件的实机验证。
+- **中国区 Dalamud 分支选择**：采用 Dalamud-DailyRoutines 分支及更新源，不沿用 ottercorp 分支的插件黑名单策略；这不代表所有插件均兼容或不受游戏服务条款约束。
 
 ## 安装与首次使用
 
@@ -123,7 +123,7 @@ Dalamud 更新连接超时时，可以选择使用现有可用版本继续启动
 
 ## 中国区游戏内跨大区
 
-2.1.0 为 **DCTravelerX**（Dalamud-DailyRoutines/DCTraveler）提供 Proton 环境下的启动器通信支持。启用中国区 Dalamud、安装兼容版本的 DCTravelerX，并通过本启动器登录游戏后，可在插件中使用游戏内跨大区功能。此适配不代表 ottercorp 的 DcTraveler 或其他插件已获兼容保证。
+2.1.0 为 **DCTravelerX**（[Dalamud-DailyRoutines/DCTraveler](https://github.com/Dalamud-DailyRoutines/DCTraveler)）提供 Proton 环境下的启动器通信支持。启用中国区 Dalamud、安装兼容版本的 DCTravelerX，并通过本启动器登录游戏后，可在插件中使用游戏内跨大区功能。此适配不代表 ottercorp 的 DcTraveler 或其他插件已获兼容保证。
 
 游戏启动后前端界面可以关闭，后台会继续维护游戏会话、跨区授权及 Steam 状态。不要手动结束该后台进程。再次打开启动器可恢复前端界面。
 

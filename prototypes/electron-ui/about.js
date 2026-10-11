@@ -33,8 +33,7 @@ window.createAboutPage=({call,apply,ready,snapshot,start,clean,cancel,operation,
     button(maintenance,'清理下载缓存',()=>clean({kind:'downloads'}),'clean-downloads');
     button(maintenance,'清理日志',()=>clean({kind:'logs'}),'clean-logs');
     button(maintenance,'清理内置浏览器缓存',clearBrowserCache,'clean-browser-cache');
-    host.append(node('p','浏览器缓存清理保留 Cookie 和验证状态。','muted'));
-    host.append(node('p','清理启动器管理的缓存和日志；保留 Dalamud 管理的内容。游戏运行时也可清理；下载或安装进行中时暂不可清理下载缓存。','muted'));
+    host.append(node('p','清理启动器管理的缓存和日志，并保留 Dalamud 管理的内容；游戏运行时也可清理，但下载或安装进行中时暂不可清理下载缓存；浏览器缓存清理保留 Cookies 和验证状态。','muted'));
     const status=node('p',null,'muted');status.id='about-feedback';status.setAttribute('role','status');host.append(status);
     button(host,'取消操作',cancel,'cancel-launcher-update');present();
   }

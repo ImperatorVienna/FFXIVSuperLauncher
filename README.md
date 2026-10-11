@@ -28,7 +28,8 @@ The built-in browser is shared by official pages and web verification and is ind
 - **Steam integration**: supports Global (Steam) account login; manually register as a Steam compatibility tool to open the launcher through Steam and record playtime.
 - **Interface and announcements**: the Electron graphical interface supports 简体中文, 繁體中文, 日本語, and English, with instant switching and no restart required; it displays official events and announcements for the corresponding game region and provides links to the official game website, server status, and other official pages.
 - **Third-party plugin repositories**: add, edit, enable/disable, delete repositories, or check their connections on the right of plugin management; China region plugin updates also recognize enabled preset repositories.
-- **China cross-data-center travel**: submit travel requests, query history, and return to the original data center, with an option to launch the game upon completion.
+- **China cross-data-center travel**: submit travel requests, query history, and return to the original data center, with an option to launch the game upon completion. Supports in-game travel and authorization recovery through DCTravelerX ([Dalamud-DailyRoutines/DCTraveler](https://github.com/Dalamud-DailyRoutines/DCTraveler)).
+- **Storage cleanup**: clear download caches, logs, and built-in browser caches from About; startup reclaims session records confirmed to be stale.
 
 Before using a third-party launcher, Dalamud, or plugins, read the game's applicable terms of service and assess the risks yourself. Dalamud is disabled by default; this project does not guarantee account safety or plugin availability.
 
@@ -41,7 +42,7 @@ Before using a third-party launcher, Dalamud, or plugins, read the game's applic
 - **Credential management**: manage account login credentials by game region, with local plaintext storage and local TOTP generation.
 - **Reuse an existing Global (Steam) pfx**: retain local game settings and character configuration files from the original pfx when switching from the official launcher to FFXIV Super Launcher (this does not concern character progress stored on the game servers).
 - **Traditional Chinese Dalamud injection adaptation**: adjusts the injection workflow for Linux/Proton, using the same entrypoint path as Global and skipping ArgFixer from the original Traditional Chinese injection workflow; entering a character and installing and running plugins have been verified in game on real hardware.
-- **China Dalamud branch selection**: uses the Dalamud-DailyRoutines branch and update source used by Soil, rather than adopting the ottercorp branch's plugin blacklist policy; this does not mean every plugin is compatible or exempt from the game's terms of service.
+- **China Dalamud branch selection**: uses the Dalamud-DailyRoutines branch and update source, rather than adopting the ottercorp branch's plugin blacklist policy; this does not mean every plugin is compatible or exempt from the game's terms of service.
 
 ## Installation and first use
 
@@ -119,6 +120,28 @@ The two Dalamud and plugin update buttons above are on the “Dalamud and plugin
 Changes to plugins, repositories, client language, client paths, and the compatibility environment are blocked while the game is running; editing becomes available again after the game exits. Login credentials, which require multiple fields, still require clicking “Save credentials”.
 
 Before synchronizing plugins between game regions, check compatibility with the destination's Dalamud API and plugin versions. Synchronization overwrites the selected destinations' data. For now, do not directly mix Traditional Chinese plugin DLLs with versions from the other game regions.
+
+## In-game cross-data-center travel in China
+
+Version 2.1.0 adds Proton communication support for **DCTravelerX** ([Dalamud-DailyRoutines/DCTraveler](https://github.com/Dalamud-DailyRoutines/DCTraveler)). Enable China Dalamud, install a compatible version of DCTravelerX, and launch the game through this launcher to use in-game cross-data-center travel. This does not guarantee compatibility with ottercorp's DcTraveler or other plugins.
+
+The frontend can close after the game starts while the backend maintains the game session, travel authorization, and Steam status. Do not terminate that backend process manually. Open the launcher again to access the frontend.
+
+When travel authorization expires, the backend first tries the saved quick-login credentials. If QR verification is still required, open the launcher or use “Reauthorize in-game DC travel” below the travel button, then scan with the **account currently in the game**. You do not need to exit the game. After recovery, retry travel in the game; the launcher does not automatically resubmit requests with uncertain results. Cancellation, failure, or timeout ends the scan attempt; the backend waits at most five minutes.
+
+## Storage cleanup
+
+The About page provides three cleanup actions:
+
+| Action | Scope and retained content |
+| --- | --- |
+| Clear download cache | Removes launcher-managed patch caches and download/install staging files; retains installed games, runtime components, plugins, and backups, without taking over content managed by Dalamud |
+| Clear logs | Clears launcher-managed logs; coordinates clearing the current log with the logging module, skips files in use by other processes or unsafe to handle, and leaves Dalamud logs alone |
+| Clear built-in browser cache | Clears HTTP, code, and shader caches for the current Electron and web-verification sessions, preserving cookies and verification state; excludes legacy standalone verification-browser directories |
+
+Cleanup is available while the game is running. Downloads, installation, and download-cache cleanup share a cross-process lock; active related tasks block download-cache cleanup. Browser-cache cleanup is unavailable during an operation or web verification. Results show reclaimed space and skipped items; zero cleared files means there were no eligible targets to clear.
+
+Startup also checks session records and known temporary files, reclaiming records confirmed to be stale. Active sessions and files whose safety cannot be confirmed are retained. This is not a whole-disk cleanup tool.
 
 ## Settings and credentials
 

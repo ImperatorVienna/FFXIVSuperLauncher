@@ -211,4 +211,4 @@ select:not([multiple]){min-block-size:calc(1.55em + 20px)}
 .travel-actions>[data-action="recover-game-auth"]{position:absolute;top:calc(100% + 8px);right:0;min-height:34px;font-size:12px;color:var(--text)}
 .login-card:has(.travel-actions)>.check{padding-right:166px}
 
-#about-content .storage-cleanup-heading{margin-top:32px;margin-bottom:14px}
+#about-content .storage-cleanup-heading{margin-top:18px;margin-bottom:14px}
