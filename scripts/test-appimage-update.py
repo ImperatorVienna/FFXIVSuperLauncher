@@ -37,6 +37,8 @@ with tempfile.TemporaryDirectory(prefix='super-update-e2e-') as temp:
    env=backend_env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,text=True)
   try:
    request(process,'system.initialize')
+   # Fresh isolated profiles have not completed setup, so automatic checks are disabled.
+   request(process,'updates.read',{'refresh':True})
    deadline=time.monotonic()+180
    while True:
     update=request(process,'updates.read')
