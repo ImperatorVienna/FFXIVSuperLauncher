@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112 52">
+  <view id="up" viewBox="0 0 24 28"/>
+  <view id="down" viewBox="24 0 24 28"/>
+  <view id="left" viewBox="0 28 28 24"/>
+  <view id="right" viewBox="28 28 28 24"/>
+  <view id="up-lit" viewBox="56 0 24 28"/>
+  <view id="down-lit" viewBox="80 0 24 28"/>
+  <view id="left-lit" viewBox="56 28 28 24"/>
+  <view id="right-lit" viewBox="84 28 28 24"/>
+  <defs>
+    <filter id="highlight" color-interpolation-filters="sRGB">
+      <feComponentTransfer>
+        <feFuncR type="linear" slope="1.22" intercept=".015"/>
+        <feFuncG type="linear" slope="1.22" intercept=".015"/>
+        <feFuncB type="linear" slope="1.22" intercept=".015"/>
+        <feFuncA type="identity"/>
+      </feComponentTransfer>
+    </filter>
+    <linearGradient id="metal" x1="0" x2="1" y1="0" y2="0">
+      <stop stop-color="#a2a095"/>
+      <stop offset=".28" stop-color="#ddd8cb"/>
+      <stop offset=".48" stop-color="#f5e8d5"/>
+      <stop offset=".65" stop-color="#b8b2a1"/>
+      <stop offset="1" stop-color="#d3ccbb"/>
+    </linearGradient>
+    <linearGradient id="ridge" x1="0" x2="1" y1="0" y2="0">
+      <stop stop-color="#f7efdc"/>
+      <stop offset=".48" stop-color="#ddd8cb"/>
+      <stop offset=".52" stop-color="#a4a092"/>
+      <stop offset="1" stop-color="#d3ccbb"/>
+    </linearGradient>
+    <g id="arrow" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Two transparent cutouts, an outer blade and a raised central ridge. -->
+      <path d="M12 1.5 1.5 20.5 9.2 18.2 12 20.8 14.8 18.2 22.5 20.5Z
+               M10.7 6.8 5.4 17.3 10.4 15.8Z
+               M13.3 6.8 13.6 15.8 18.6 17.3Z"
+            fill="url(#metal)" fill-rule="evenodd"/>
+      <path d="M12 2.2 2.5 19.4 9.4 17.5M12 2.2 21.5 19.4 14.6 17.5"
+            fill="none" stroke="#f7efdc" stroke-width=".65" opacity=".72"/>
+      <path d="M12 1.5 10.4 19.5 12 21.3 13.6 19.5Z" fill="url(#ridge)"/>
+      <path d="M10.7 20H13.3V26.1L12 27 10.7 26.1Z" fill="url(#metal)"/>
+      <path d="M9.6 21.5H14.4" stroke="#ddd8cb" stroke-width="1.4"/>
+      <path d="M10.8 24H13.2M10.8 25.8H13.2" stroke="#969182" stroke-width=".65"/>
+    </g>
+    <g id="directions">
+      <use href="#arrow"/>
+      <use href="#arrow" transform="translate(48 28) rotate(180)"/>
+      <use href="#arrow" transform="translate(0 52) rotate(-90)"/>
+      <use href="#arrow" transform="translate(56 28) rotate(90)"/>
+    </g>
+  </defs>
+  <use href="#directions"/>
+  <use href="#directions" transform="translate(56 0)" filter="url(#highlight)"/>
+</svg>

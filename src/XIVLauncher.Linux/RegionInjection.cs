@@ -5,7 +5,7 @@ using XIVLauncher.Linux.Taiwan;
 namespace XIVLauncher.Linux;
 
 // Extension boundary: a future regional method implements this interface instead
-// of adding launch branches to MainWindow or changing other regions' methods.
+// of adding launch branches to the shared launch coordinator or changing other regions' methods.
 internal interface IRegionInjection
 {
     Task<ProcessStartInfo> PrepareAsync(UnixDalamudRunner runner, RegionDalamudFiles files,

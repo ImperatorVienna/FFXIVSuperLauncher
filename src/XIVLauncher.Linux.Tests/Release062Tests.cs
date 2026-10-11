@@ -70,21 +70,14 @@ public sealed class Release062Tests : IDisposable
     [Fact] public async Task TaiwanPasswordAndOtpAreReadAfterRestartAndIsolatedByAccountAndRegion()
     {
         var s=Settings("ffxiv_tc");s.Account="test@example.invalid";s.Current.AutoOtp=true;s.Save();
-        Assert.Equal(2,await RegionCredentials.SaveEnteredAsync(s,"test-password","JBSWY3DPEHPK3PXP",default));
+        await RegionCredentials.StoreAsync(s,s.Account,"password","test-password",default);
+        await RegionCredentials.StoreAsync(s,s.Account,"otp","JBSWY3DPEHPK3PXP",default);
         s=LinuxSettings.Load(root);
         Assert.Equal("test-password",await RegionCredentials.PasswordForLoginAsync(s,"",default));
         Assert.Equal("manual",await RegionCredentials.PasswordForLoginAsync(s,"manual",default));
         Assert.Equal("JBSWY3DPEHPK3PXP",await RegionCredentials.ReadAsync(s,s.Account,"otp",default));
         Assert.Null(await RegionCredentials.ReadAsync(s,"another-account","password",default));
         s.SelectedRegion="ffxiv_cn";Assert.Null(await RegionCredentials.ReadAsync(s,"test@example.invalid","password",default));
-    }
-    [Fact] public async Task EmptySaveDoesNotPretendToWriteAndInvalidOtpDoesNotWritePassword()
-    {
-        var s=Settings("ffxiv_tc");s.Account="test";
-        await Assert.ThrowsAnyAsync<IOException>(()=>RegionCredentials.SaveEnteredAsync(s,"","",default));
-        Assert.False(File.Exists(Path.Combine(root,"ffxiv_tc","credentials.json")));
-        await Assert.ThrowsAnyAsync<Exception>(()=>RegionCredentials.SaveEnteredAsync(s,"password","!invalid!",default));
-        Assert.Null(await RegionCredentials.ReadAsync(s,s.Account,"password",default));
     }
     public void Dispose(){if(Directory.Exists(root))Directory.Delete(root,true);}
 }

@@ -6,7 +6,7 @@ const officialArg = process.argv.find(arg => arg.startsWith('--official-url='));
 if (!profile) process.exit(2);
 const official = officialArg?.slice('--official-url='.length);
 function webUrl(value) { try { return ['https:', 'http:'].includes(new URL(value).protocol); } catch { return false; } }
-if (official && !webUrl(official)) process.exit(2);
+if (!webUrl(official)) process.exit(2);
 app.setPath('userData', profile.slice('--user-data-dir='.length));
 app.enableSandbox();
 app.whenReady().then(() => {
@@ -15,16 +15,8 @@ app.whenReady().then(() => {
   session.defaultSession.setPermissionCheckHandler(() => false);
   session.defaultSession.on('will-download', event => event.preventDefault());
   const secure = { sandbox: true, nodeIntegration: false, contextIsolation: true, webSecurity: true };
-  const window = new BrowserWindow({ width: official ? 1100 : 620, height: official ? 800 : 650,
-    title: 'FFXIV Super Launcher', webPreferences: { ...secure, ...(official ? { preload: path.join(__dirname, 'toolbar.cjs'), additionalArguments: process.argv.filter(x=>x.startsWith('--ui-language=') || x.startsWith('--toolbar-labels=')) } : {}) } });
-  if (!official) {
-    window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
-    window.webContents.on('will-navigate', (event, url) => {
-      if (url !== 'https://launcher.ffxiv.com.tw/index.html' && url !== 'about:blank') event.preventDefault();
-    });
-    window.loadURL('about:blank');
-    return;
-  }
+  const window = new BrowserWindow({ width: 1100, height: 800,
+    title: 'FFXIV Super Launcher', webPreferences: { ...secure, preload: path.join(__dirname, 'toolbar.cjs'), additionalArguments: process.argv.filter(x=>x.startsWith('--ui-language=') || x.startsWith('--toolbar-labels=')) } });
   const memorySession = session.fromPartition('official');
   memorySession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
   memorySession.setPermissionCheckHandler(() => false);

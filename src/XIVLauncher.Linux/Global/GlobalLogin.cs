@@ -24,7 +24,7 @@ public sealed class GlobalLogin(HttpClient client) : IRegionLogin
             GameClientLanguage.For(settings), async ct =>
             {
                 var secret = await LoginCode.SavedSecretForLoginAsync(settings, ct);
-                return await LoginCode.GetAsync(secret, context.RequestManualOtp ?? (_ => Task.FromResult(context.ManualOtp)), ct);
+                return await LoginCode.GetAsync(secret, context.RequestManualOtp, ct);
             }, token, frontier);
         if (context.UpdateAfterLogin != null) await context.UpdateAfterLogin(token);
         var updater = new GlobalGameUpdater(client);

@@ -56,3 +56,12 @@ See compliance/notices/sources.json for original URLs, revisions and SHA256.
 COMPLIANCE-STATUS.json in the binary (compliance/STATUS.json in source) records
 review state. Presence of a license text is not a claim that every possible use
 or redistribution is permitted. No upstream party's endorsement is implied.
+
+Frontend fonts:
+GenRyu v2 TC/PJP: ButTaiwan, https://github.com/ButTaiwan/genryu-font .
+Derived from Source Han Serif; retain the upstream Adobe copyright and reserved
+font name notice in GenRyu-OFL.txt.
+Cinzel: The Cinzel Project Authors, https://github.com/NDISCOVER/Cinzel .
+Both include SIL Open Font License 1.1. Full texts and original download URLs
+with SHA256 are in prototypes/electron-ui/assets/{GenRyu-OFL.txt,Cinzel-OFL.txt,
+font-sources.json} in source, and licenses/ in the binary distribution.

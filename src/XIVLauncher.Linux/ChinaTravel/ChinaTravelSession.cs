@@ -2,9 +2,9 @@ using XIVLauncher.DCTravel;
 using XIVLauncher.Login.Workflow;
 namespace XIVLauncher.Linux.ChinaTravel;
 
-public sealed class ChinaTravelSession : ILoginSessionRefreshSink, IDisposable
+public sealed class ChinaTravelSession(DCTravelClient? client = null) : ILoginSessionRefreshSink, IDisposable
 {
-    public DCTravelClient Client { get; } = new("");
+    public DCTravelClient Client { get; } = client ?? new("");
     public bool Authenticated { get; private set; }
     public string Account { get; set; } = "";
     public void Bind(LoginSessionRefreshContext context) { Client.BindLoginSessionRefresh(context); Authenticated = true; }

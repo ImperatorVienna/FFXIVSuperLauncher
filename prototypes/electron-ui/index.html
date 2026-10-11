@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>FFXIV Super Launcher · 交互预览</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="scrollbars.css">
+  <script defer src="locales.js"></script>
+  <script defer src="i18n.js"></script>
+  <script defer src="official.js"></script>
+  <script defer src="plugins.js"></script>
+  <script defer src="compatibility.js"></script>
+  <script defer src="travel.js"></script>
+  <script defer src="about.js"></script>
+  <script defer src="setup.js"></script>
+  <script defer src="otp-tool.js"></script>
+  <script defer src="log-view.js"></script>
+  <script defer src="connection.js"></script>
+  <script defer src="server-status.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" role="img" aria-label="FFXIV Super Launcher">
+      <img class="brand-icon" src="../../src/XIVLauncher.Linux/Resources/icon.png" alt="">
+      <div class="brand-wordmark" aria-hidden="true">
+        <span class="wordmark-title">FFXIV</span>
+        <span class="wordmark-subtitle">Super Launcher</span>
+      </div>
+      <img class="brand-crest" src="assets/wordmark-crest.svg" alt="" aria-hidden="true">
+    </div>
+    <nav aria-label="主要页面"></nav>
+  </header>
+  <main>
+    <section id="page" aria-label="当前页面"></section>
+    <footer class="log-footer">
+    <details class="logs">
+      <summary><span>日志信息</span><span id="log-count" data-no-translate>0 条</span><span class="chevron" aria-hidden="true"></span></summary>
+      <div class="log-popover">
+        <div class="log-toolbar">
+          <span>设计预览 · 示例数据，不读取真实账户或记录验证码</span>
+          <details class="preview-tools"><summary>交互演示</summary><div><button data-action="otp">手动验证码</button><button data-action="qr">扫码验证</button><button data-action="mobile-confirmation">滑动验证提醒</button><button data-action="error">失败提示</button><button data-action="download">下载进度</button><button data-action="reset">重置预览</button></div></details>
+          <button data-action="clear-log">清空日志</button>
+        </div>
+        <div id="log" role="log" aria-label="操作日志" tabindex="0"><p class="empty-log">暂无日志</p></div>
+      </div>
+    </details>
+    </footer>
+  </main>
+  <dialog id="account-dialog" aria-labelledby="account-dialog-title"><h2 id="account-dialog-title">选择登录名</h2><p class="muted">仅显示当前游戏区服的示例账户</p><div class="account-options"><button class="account-option" data-action="select-account" data-no-translate>DemoAccount</button></div><div class="row dialog-actions"><button data-action="close-dialog">取消</button></div></dialog>
+</body>
+</html>

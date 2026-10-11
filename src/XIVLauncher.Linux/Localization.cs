@@ -2,12 +2,10 @@ using System.Reflection;
 using System.Text.Json;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Avalonia;
-using Avalonia.Controls;
 namespace XIVLauncher.Linux;
 
 // Only presentation properties are translated; identifiers, credentials and logs are untouched.
-public static class Localization
+public static partial class Localization
 {
     public static readonly (string Id, string Name)[] Languages = [("zh-CN", "简体中文"), ("zh-TW", "繁體中文"), ("ja", "日本語"), ("en", "English")];
     private static Dictionary<string, string> strings = new();
@@ -54,27 +52,5 @@ public static class Localization
                 return value + separator + suffix;
             }
         return text;
-    }
-    [ThreadStatic] private static bool translating;
-    private static void TranslateProperty(string text, Action<string> assign)
-    {
-        if (translating) return;
-        var value = Display(text);
-        if (value == text) return;
-        try { translating = true; assign(value); }
-        finally { translating = false; }
-    }
-    private static bool installed;
-    public static void InstallPresentationTranslation()
-    {
-        if (installed) return; installed = true;
-        TextBlock.TextProperty.Changed.AddClassHandler<TextBlock>((control, _) =>
-        { if (control.Text is {} text) TranslateProperty(text, value => control.Text=value); });
-        ContentControl.ContentProperty.Changed.AddClassHandler<ContentControl>((control, _) =>
-        { if(control.Content is string text) TranslateProperty(text, value => control.Content=value); });
-        TextBox.WatermarkProperty.Changed.AddClassHandler<TextBox>((control, _) =>
-        { if(control.Watermark is {} text) TranslateProperty(text, value => control.Watermark=value); });
-        Window.TitleProperty.Changed.AddClassHandler<Window>((control, _) =>
-        { if(control.Title is {} text) TranslateProperty(text, value => control.Title=value); });
     }
 }

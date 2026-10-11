@@ -7,41 +7,41 @@ public sealed class Release090Tests : IDisposable
 {
     private readonly string root = Path.Combine(Path.GetTempPath(), "super090-" + Guid.NewGuid());
     private LinuxSettings Settings(string region) { var s = LinuxSettings.Load(root); s.SelectedRegion = region; return s; }
-    private static async Task SaveEditorAsync(string root,string region,string name,string password,string secret,bool autoOtp,bool remember,CancellationToken token)
+    private static async Task SaveEditorAsync(string root,string region,string name,string password,string secret,bool autoOtp,CancellationToken token)
     {
         var settings=LinuxSettings.Load(root);
-        var draft=new CredentialDraft { Region=region,Name=name,Existing=settings.RegionProfiles[region].Accounts.ContainsKey(name),Password=password,Secret=secret,RememberChina=remember,Dirty=true };
+        var draft=new CredentialDraft { Region=region,Name=name,Existing=settings.RegionProfiles[region].Accounts.ContainsKey(name),Password=password,Secret=secret,Dirty=true };
         await CredentialDraftStore.SaveAsync(root,[draft],token);
         settings=LinuxSettings.Load(root);settings.SelectedRegion=region;AccountProfiles.Select(settings.Current,name);settings.Current.AutoOtp=autoOtp;settings.Save();
     }
     [Theory][InlineData("ffxiv")][InlineData("ffxiv_tc")]
     public async Task ManagerSavesReadsUpdatesAndRetainsBlankSecrets(string region)
     {
-        await SaveEditorAsync(root,region,"one","password1","JBSWY3DPEHPK3PXP",true,false,default);
+        await SaveEditorAsync(root,region,"one","password1","JBSWY3DPEHPK3PXP",true,default);
         var s=Settings(region);Assert.Equal("password1",await RegionCredentials.PasswordForLoginAsync(s,"",default));
-        await SaveEditorAsync(root,region,"one","","",true,false,default);
+        await SaveEditorAsync(root,region,"one","","",true,default);
         Assert.Equal("JBSWY3DPEHPK3PXP",await RegionCredentials.ReadAsync(Settings(region),"one","otp",default));
-        await SaveEditorAsync(root,region,"two","password2","",false,false,default);
+        await SaveEditorAsync(root,region,"two","password2","",false,default);
         s=Settings(region);AccountProfiles.Select(s.Current,"one");Assert.True(s.Current.AutoOtp);
         Assert.Equal("password1",await RegionCredentials.PasswordForLoginAsync(s,"",default));
-        await SaveEditorAsync(root,region,"one","updated","",true,false,default);
+        await SaveEditorAsync(root,region,"one","updated","",true,default);
         Assert.Equal("updated",await RegionCredentials.PasswordForLoginAsync(Settings(region),"",default));
         Assert.Null(await RegionCredentials.ReadAsync(root,region=="ffxiv"?"ffxiv_tc":"ffxiv","one","password",default));
     }
     [Fact] public async Task InvalidSecretAndMissingPasswordDoNotOverwriteSavedCredentials()
     {
-        await SaveEditorAsync(root,"ffxiv","one","original","",false,false,default);
-        await Assert.ThrowsAsync<CredentialValidationException>(()=>SaveEditorAsync(root,"ffxiv","one","changed","123456",true,false,default));
-        await Assert.ThrowsAsync<CredentialValidationException>(()=>SaveEditorAsync(root,"ffxiv","one","","JBSWY3DPEHPK3PXP",true,false,default));
+        await SaveEditorAsync(root,"ffxiv","one","original","",false,default);
+        await Assert.ThrowsAsync<CredentialValidationException>(()=>SaveEditorAsync(root,"ffxiv","one","changed","123456",true,default));
+        await Assert.ThrowsAsync<CredentialValidationException>(()=>SaveEditorAsync(root,"ffxiv","one","","JBSWY3DPEHPK3PXP",true,default));
         Assert.Equal("original",await RegionCredentials.PasswordForLoginAsync(Settings("ffxiv"),"",default));Assert.False(Settings("ffxiv").Current.AutoOtp);
     }
     [Fact] public async Task ChinaManagerPreservesSessionAndRejectsPassword()
     {
-        await SaveEditorAsync(root,"ffxiv_cn","one","","",false,true,default);
+        await SaveEditorAsync(root,"ffxiv_cn","one","","",false,default);
         var s=Settings("ffxiv_cn");await RegionCredentials.StoreAsync(s,"one","session","synthetic-session",default);
-        await SaveEditorAsync(root,"ffxiv_cn","one","","",false,true,default);
+        await SaveEditorAsync(root,"ffxiv_cn","one","","",false,default);
         Assert.Equal("synthetic-session",await RegionCredentials.ReadAsync(Settings("ffxiv_cn"),"one","session",default));
-        await Assert.ThrowsAsync<InvalidOperationException>(()=>SaveEditorAsync(root,"ffxiv_cn","one","password","",false,true,default));
+        await Assert.ThrowsAsync<InvalidOperationException>(()=>SaveEditorAsync(root,"ffxiv_cn","one","password","",false,default));
     }
     private string Prefix(string library,string id)
     {
@@ -84,17 +84,16 @@ public sealed class Release090Tests : IDisposable
         s=LinuxSettings.Load(root);Assert.Equal("ffxiv_cn",s.SelectedRegion);Assert.Equal("active",s.Account);
         Assert.Equal("tc",await RegionCredentials.ReadAsync(root,"ffxiv_tc","same","password",default));
         Assert.Equal("global",await RegionCredentials.ReadAsync(root,"ffxiv","same","password",default));
-        var drafts=CredentialDraftStore.Load(root);Assert.Equal(3,drafts.Count);Assert.All(drafts,d=>Assert.Equal("",d.Password));
     }
     [Fact] public async Task DraftClearAndDeleteOnlyTakeEffectWhenSaved()
     {
         await CredentialDraftStore.SaveAsync(root,[new(){Region="ffxiv",Name="one",Password="password",Secret="JBSWY3DPEHPK3PXP",Dirty=true}],default);
-        var draft=CredentialDraftStore.Load(root).Single();draft.ClearOtp=true;draft.Dirty=true;
+        var draft=new CredentialDraft {Region="ffxiv",Name="one",Existing=true};draft.ClearOtp=true;draft.Dirty=true;
         Assert.NotNull(await RegionCredentials.ReadAsync(root,"ffxiv","one","otp",default));
         await CredentialDraftStore.SaveAsync(root,[draft],default);
         Assert.Null(await RegionCredentials.ReadAsync(root,"ffxiv","one","otp",default));
         Assert.Equal("password",await RegionCredentials.ReadAsync(root,"ffxiv","one","password",default));
-        draft=CredentialDraftStore.Load(root).Single();draft.Delete=true;draft.Dirty=true;
+        draft=new CredentialDraft {Region="ffxiv",Name="one",Existing=true};draft.Delete=true;draft.Dirty=true;
         Assert.True(LinuxSettings.Load(root).RegionProfiles["ffxiv"].Accounts.ContainsKey("one"));
         await CredentialDraftStore.SaveAsync(root,[draft],default);
         Assert.False(LinuxSettings.Load(root).RegionProfiles["ffxiv"].Accounts.ContainsKey("one"));

@@ -47,28 +47,6 @@ public static class RegionCredentials
         if (data.TryGetValue(account, out var entry) && entry.Remove(kind)) { if (entry.Count == 0) data.Remove(account); Save(path, data); }
         return Task.CompletedTask;
     }
-    public static async Task<int> SaveEnteredAsync(LinuxSettings settings, string password, string otpSecret, CancellationToken token)
-    {
-        if (string.IsNullOrWhiteSpace(settings.Account)) throw new CredentialValidationException("An account is required to save credentials.", "请先填写或选择账号，再保存凭据。");
-        if (settings.SelectedRegion is "ffxiv_tc" or "ffxiv")
-        {
-            if (string.IsNullOrEmpty(password))
-                throw new CredentialValidationException("Enter a password to save password credentials; a 2FA secret cannot be saved alone.", "请填写密码后再保存；填写了 2FA 密钥时，必须同时填写密码，不能单独保存密钥。");
-            if (!settings.Current.RememberPassword) throw new CredentialValidationException("Enable remember password before saving password credentials.", "请先勾选“记住登录密码”，再保存凭据。");
-        }
-        // Validate before any write so an invalid OTP secret cannot cause a misleading partial save.
-        if ((settings.SelectedRegion is "ffxiv_tc" or "ffxiv") && !string.IsNullOrWhiteSpace(otpSecret))
-        {
-            try { _ = OneTimePassword.Decode(otpSecret); }
-            catch (ArgumentException) { throw new CredentialValidationException("Invalid 2FA secret; credentials were not saved.", "2FA 密钥格式无效，未保存凭据。请填写 Base32 密钥，不是六位验证码。"); }
-        }
-        var count = 0;
-        if (settings.Current.RememberPassword && !string.IsNullOrEmpty(password))
-        { await StoreAsync(settings, settings.Account, "password", password, token); count++; }
-        if ((settings.SelectedRegion is "ffxiv_tc" or "ffxiv") && !string.IsNullOrWhiteSpace(otpSecret))
-        { await StoreAsync(settings, settings.Account, "otp", otpSecret, token); count++; }
-        return count;
-    }
     public static async Task<string> PasswordForLoginAsync(LinuxSettings settings, string entered, CancellationToken token)
     {
         if (!string.IsNullOrEmpty(entered)) return entered;

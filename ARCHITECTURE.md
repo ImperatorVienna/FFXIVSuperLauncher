@@ -13,7 +13,7 @@
 | Dalamud | `DalamudUpdateService` | `IDalamudSource` / `DalamudSources` 提供发行、资源和运行时版本 |
 | Windows .NET | `Common.Runtime.DotNetRuntimeManager` | Soil 与国际区采用各自上游元数据，繁中区固定 9.0.11；均使用共用 NuGet 官方/镜像安装器 |
 | 官方资讯 | `OfficialContent` 与统一界面 | 中国区 JSON 接口、繁中区官网分类 HTML、国际区 frontier JSON |
-| 网页组件 | `Tools/webview` | 独立验证码会话；带工具栏的官方页面会话 |
+| 网页组件 | 共用 Electron 运行时 | 主进程中的隔离验证码视图；独立进程中带工具栏的官方页面 |
 
 `ffxiv_cn`、`ffxiv_tc`、`ffxiv` 各有独立配置、更新缓存、Dalamud 和插件目录，不回退到任何其他游戏区服。提供者按选择创建；台服 HTTP 客户端延迟创建。失败只上报当前操作，不自动改用其他区服来源。
 
@@ -27,7 +27,7 @@
 - 下载进度通过异步调用上下文传递，支持并行文件；UI 使用操作代次丢弃旧事件。
 - 官方资讯请求切换区服时取消；失败不阻断登录，也不覆盖新区域内容。
 - Dalamud 主程序按官方 MD5 清单校验。Soil 资源按 SHA1 校验；台服资源沿用 xl_tw 的存在性策略（上游字体 URL 内容与清单哈希存在不一致），不将不一致的资源误称为通过哈希验证。
-- 官方页面只提供 WebContentsView，无远端 Node/preload API；工具栏 IPC 只接受本地工具栏主帧。验证码使用独立 CDP 会话，不接收账号密码。网页资料均保存在私有临时会话目录。
+- 官方页面只提供 WebContentsView，无远端 Node/preload API；工具栏 IPC 只接受本地工具栏主帧。验证码使用当前视图内的 CDP 会话，不接收账号密码，也不开放远程调试端口。验证码使用启动器 Electron 配置下的独立分区；官方页面使用私有临时会话目录。
 
 ## 边界
 
@@ -35,9 +35,9 @@
 
 ## 国际区认证与更新顺序
 
-`RegionLoginContext.UpdateAfterLogin` 将共享游戏更新操作安排在成功认证之后、生成最终启动会话之前。ChinaLogin 获得 OAuth 后调用它，再获取 SID；繁中区获取登录令牌后退出网页验证会话，调用它后进行版本握手和会话获取；GlobalLogin 完成 OAuth 后调用它进行 boot 更新，再请求并安装认证游戏补丁。主窗口在上述步骤完成后才更新 Dalamud、准备 Proton 并启动。
+`RegionLoginContext.UpdateAfterLogin` 将共享游戏更新操作安排在成功认证之后、生成最终启动会话之前。ChinaLogin 获得 OAuth 后调用它，再获取 SID；繁中区获取登录令牌后退出网页验证会话，调用它后进行版本握手和会话获取；GlobalLogin 完成 OAuth 后调用它进行 boot 更新，再请求并安装认证游戏补丁。共用 GameLaunchCoordinator 在上述步骤完成后才更新 Dalamud、准备 Proton 并启动。
 
-独立“检查并更新游戏”入口：中国区和繁中区直接调用 RegionUpdateService；国际区复用 AuthenticateRegionAsync；全部不调用 Dalamud 或创建 Proton runner。
+独立“检查并更新游戏”入口：中国区和繁中区直接调用 RegionUpdateService；国际区复用 RegionLogin；全部不调用 Dalamud 或创建 Proton runner。
 
 `Patching/GamePatchFiles` 和 `ZiPatchInstaller` 共用校验、下载、应用和版本写入，原 ZiPatch 读取器整体移入 `Patching`；繁中区和国际区仅保留各自清单请求与解析。国际区使用原版停用补丁 URL token 生成后的直接下载方式，成功安装后保留原始登录 UID。
 
@@ -46,6 +46,16 @@
 
 ## 本地验证码与离线插件更新
 
-LocalOtpWindow 和 LoginCode 共用 OneTimePassword，工具输入仅保存在窗口内存中，不调用登录接口。用 RFC 6238 SHA1 测试向量验证，日志不输出密钥或验证码。
+Electron 本地验证码工具使用 Web Crypto；登录侧的 LoginCode 使用 .NET OneTimePassword。两者独立运行，以相同 RFC 6238 SHA1 测试向量验证，工具无需后端或网络，输入只留在窗口内存中，日志不输出密钥或验证码。
 
 PluginUpdates 只读取 JSON，不加载插件 DLL。通过 InstalledFromUrl 的 OFFICIAL 标记或准确仓库 URL 选取清单；主库按游戏区服选源，第三方库必须存在并启用。不跨仓库回退；测试版保留安装通道并检查用户的测试版选择；版本匹配安装的 Dalamud API。下载采用 UpdateDownload，安装使用暂存目录、ZIP 路径验证、清单身份/版本校验、插件设置快照和共用插件锁，保留旧版本。OfflinePluginManager 启用/禁用实现保持不变。
+
+## Electron 前后端边界
+
+当前分支只有 Electron 图形界面与 FrontendProgram 后台入口。旧 Avalonia 入口、窗口和依赖已移除。打包脚本统一调用 package-electron.py；独立官方网页浏览器继续复用同一 Electron 运行库。
+
+具名 IPC 和后台路由逐项对照，主进程私有接口不暴露给渲染页面。公告、更新检查和本地验证码工具不依赖登录任务成功；修改游戏、插件及账户的数据操作仍保留必要的冲突保护。区服配置读取失败仅阻止使用该区服的数据，其他区服和全局设置仍可用；无法读取的文件不会被保存默认值覆盖。
+
+验证视图的生命周期由 Electron 主进程监督。登录取消、结束、错误、网页进程崩溃、主页面重载和应用退出都会释放相应资源；主页面重载还会取消该页面发起的未完成操作。关闭清理逐项执行，异常不跳过后续清理。Steam 模式下，已启动游戏的跟踪进程可以按设计继续等待游戏退出；官方网页窗口是用户主动打开的独立功能，二者都不应被误判为验证码残留进程。
+
+功能对应及回归范围见 [frontend/CLEANUP-AUDIT.md](frontend/CLEANUP-AUDIT.md)。

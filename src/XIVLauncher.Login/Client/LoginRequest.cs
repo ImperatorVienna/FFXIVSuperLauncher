@@ -13,6 +13,7 @@ public sealed class LoginRequest
     public CancellationTokenSource?               LoginCancellationTokenSource { get; init; }
     public Action<byte[]>?                        ShowQRCode                   { get; init; }
     public Action<string>?                        ShowLoginMessage             { get; init; }
+    public Action<string>?                        ShowVerificationCode         { get; init; }
     public ILoginSessionRefreshSink?              LoginSessionRefreshSink      { get; init; }
 
     public static LoginRequest Create
@@ -24,7 +25,8 @@ public sealed class LoginRequest
         ILoginSessionRefreshSink?              loginSessionRefreshSink,
         CancellationTokenSource?               loginCancellationTokenSource,
         Action<byte[]>?                        showQRCode,
-        Action<string>?                        showLoginMessage
+        Action<string>?                        showLoginMessage,
+        Action<string>?                        showVerificationCode = null
     ) =>
         new()
         {
@@ -35,6 +37,7 @@ public sealed class LoginRequest
             LoginSessionRefreshSink      = loginSessionRefreshSink,
             LoginCancellationTokenSource = loginCancellationTokenSource,
             ShowQRCode                   = showQRCode,
-            ShowLoginMessage             = showLoginMessage
+            ShowLoginMessage             = showLoginMessage,
+            ShowVerificationCode         = showVerificationCode
         };
 }

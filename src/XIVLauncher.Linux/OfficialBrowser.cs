@@ -2,10 +2,13 @@ using System.Diagnostics;
 namespace XIVLauncher.Linux;
 public static class OfficialBrowser
 {
-    public static void Open(string url, string root)
+    public static void Open(string url, string root) => Open(url, root, null);
+    internal static void Open(string url, string root, string? browserPath)
     {
         if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || uri.Scheme is not ("http" or "https")) throw new IOException("官方页面地址无效。");
-        var browser = WebviewRuntime.FindBrowser();
+        var browser = browserPath ?? WebviewRuntime.FindBrowser();
+        if (!Path.IsPathFullyQualified(browser) || !File.Exists(browser) || !File.Exists(Path.Combine(Path.GetDirectoryName(browser)!, "resources/app/main.cjs")))
+            throw new IOException("无法打开官方页面窗口。");
         var profile = Path.Combine(root, "web-sessions", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(profile, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
         var start = new ProcessStartInfo(browser) { UseShellExecute = false, RedirectStandardError = true, RedirectStandardOutput = true };
@@ -17,7 +20,8 @@ public static class OfficialBrowser
         _ = Task.Run(async () =>
         {
             try { await Task.WhenAll(process.StandardError.BaseStream.CopyToAsync(Stream.Null), process.StandardOutput.BaseStream.CopyToAsync(Stream.Null), process.WaitForExitAsync()); }
-            finally { process.Dispose(); try { Directory.Delete(profile, true); } catch (IOException) { } }
+            catch(Exception ex) { new SessionDiagnostics(root).Write(DiagnosticLog.Format(ex),"shared","WARN"); }
+            finally { process.Dispose(); try { Directory.Delete(profile, true); } catch (Exception ex) when(ex is IOException or UnauthorizedAccessException) { } }
         });
     }
 }

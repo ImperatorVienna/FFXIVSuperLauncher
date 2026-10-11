@@ -27,7 +27,6 @@ public sealed class Release060Tests : IDisposable
     {
         Assert.Equal(new[] { "中国区", "繁中区", "国际区" }, LinuxSettings.Regions.Select(r => r.Name));
         Assert.Equal(new[] { "ffxiv_cn", "ffxiv_tc", "ffxiv" }, LinuxSettings.Regions.Select(r => r.Id));
-        Assert.Equal("在不同游戏区服间同步", UiVocabulary.Normalize("在不同区服间同步"));
         Assert.Equal("繁中区客户端", UiVocabulary.Normalize("台服客户端"));
         Assert.Equal("语言和区服", UiVocabulary.Normalize("语言和区域"));
     }

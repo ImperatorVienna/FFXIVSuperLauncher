@@ -17,7 +17,7 @@ public static class ChinaLoginSession
             ? await RegionCredentials.ReadAsync(settings, request.Account, "session", token) : null;
         LoginRequest Request(string account, string credential) => LoginRequest.Create(account, credential, remember, request.DeviceProfile,
             request.LoginSessionRefreshSink, request.LoginCancellationTokenSource, request.ShowQRCode,
-            request.ShowLoginMessage);
+            request.ShowLoginMessage, request.ShowVerificationCode);
         LoginResult? result = null;
         if (!string.IsNullOrEmpty(secret))
         {

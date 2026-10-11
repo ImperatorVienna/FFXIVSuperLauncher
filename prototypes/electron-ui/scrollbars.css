@@ -1,0 +1,80 @@
+/* Keep native scrolling, dragging, keyboard navigation and held-button repeat. */
+:root {
+  --scroll-up: url("assets/scroll-arrows.svg#up");
+  --scroll-down: url("assets/scroll-arrows.svg#down");
+  --scroll-left: url("assets/scroll-arrows.svg#left");
+  --scroll-right: url("assets/scroll-arrows.svg#right");
+  --scroll-up-lit: url("assets/scroll-arrows.svg#up-lit");
+  --scroll-down-lit: url("assets/scroll-arrows.svg#down-lit");
+  --scroll-left-lit: url("assets/scroll-arrows.svg#left-lit");
+  --scroll-right-lit: url("assets/scroll-arrows.svg#right-lit");
+}
+* { scrollbar-width: thin; scrollbar-color: #ded7c8a0 #171a1c24; }
+@supports selector(::-webkit-scrollbar) {
+  /* Non-auto standard properties would override the Chromium parts below. */
+  * { scrollbar-width: auto; scrollbar-color: auto; }
+  ::-webkit-scrollbar { width: 18px; height: 18px; }
+  ::-webkit-scrollbar-track {
+    background: linear-gradient(90deg, #e1ddcf26, #171a1c48 1px, #171a1c48 calc(100% - 1px), #e1ddcf26);
+    border: 5px solid transparent;
+    background-clip: padding-box;
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-thumb {
+    --thumb-cross-axis: 90deg;
+    --thumb-long-axis: 180deg;
+    --thumb-grip: url("assets/scroll-grip.svg#vertical");
+    --thumb-grip-size: 10px 28px;
+    min-height: 44px;
+    min-width: 44px;
+    border: 4px solid transparent;
+    border-radius: 6px;
+    background-color: var(--primary);
+    background-image: var(--thumb-grip),
+      linear-gradient(var(--thumb-long-axis), #ffffff40, #ffffff00 7px, #171a1c00 calc(100% - 7px), #171a1c65),
+      linear-gradient(var(--thumb-cross-axis), #636863cc, #d2d0c499 12%, #f7efdc99 22%, #a7aaa044 45%,
+        #a7aaa022 65%, #f7efdc88 78%, #d8d7cb99 90%, #636863cc);
+    background-size: var(--thumb-grip-size), 100% 100%, 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-origin: padding-box;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:horizontal {
+    --thumb-cross-axis: 180deg;
+    --thumb-long-axis: 90deg;
+    --thumb-grip: url("assets/scroll-grip.svg#horizontal");
+    --thumb-grip-size: 28px 10px;
+  }
+  ::-webkit-scrollbar-track:horizontal {
+    background-image: linear-gradient(180deg, #e1ddcf26, #171a1c48 1px, #171a1c48 calc(100% - 1px), #e1ddcf26);
+  }
+  ::-webkit-scrollbar-thumb:hover { background-color: #fff5e5; }
+  ::-webkit-scrollbar-thumb:active { background-color: var(--accent); }
+  ::-webkit-scrollbar-button {
+    display: none;
+    border: 0;
+    background: transparent center / 18px 21px no-repeat;
+  }
+  ::-webkit-scrollbar-button:vertical:decrement:start {
+    display: block; height: 26px; background-image: var(--scroll-up);
+  }
+  ::-webkit-scrollbar-button:vertical:increment:end {
+    display: block; height: 26px; background-image: var(--scroll-down);
+  }
+  ::-webkit-scrollbar-button:horizontal:decrement:start {
+    display: block; width: 26px; background-size: 21px 18px; background-image: var(--scroll-left);
+  }
+  ::-webkit-scrollbar-button:horizontal:increment:end {
+    display: block; width: 26px; background-size: 21px 18px; background-image: var(--scroll-right);
+  }
+  /* Brighten the vector's painted pixels only; keep its transparent surroundings. */
+  ::-webkit-scrollbar-button:vertical:decrement:start:hover:not(:disabled) { background-image: var(--scroll-up-lit); }
+  ::-webkit-scrollbar-button:vertical:increment:end:hover:not(:disabled) { background-image: var(--scroll-down-lit); }
+  ::-webkit-scrollbar-button:horizontal:decrement:start:hover:not(:disabled) { background-image: var(--scroll-left-lit); }
+  ::-webkit-scrollbar-button:horizontal:increment:end:hover:not(:disabled) { background-image: var(--scroll-right-lit); }
+  ::-webkit-scrollbar-corner { background: transparent; }
+}
+@media (forced-colors: active) {
+  * { scrollbar-color: auto; scrollbar-width: auto; }
+}

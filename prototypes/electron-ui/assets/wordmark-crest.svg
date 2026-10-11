@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 100" fill="none">
+  <!-- Original ornament: paired swords behind a shield bearing a faceted crystal. -->
+  <defs>
+    <linearGradient id="steel" x1="39" y1="4" x2="57" y2="88" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff9ea"/>
+      <stop offset=".4" stop-color="#cbd2d3"/>
+      <stop offset=".72" stop-color="#8b9295"/>
+      <stop offset="1" stop-color="#e8dfcc"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="26" y1="30" x2="67" y2="87" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff3d9"/>
+      <stop offset=".34" stop-color="#b7c0c1"/>
+      <stop offset=".6" stop-color="#ece6d7"/>
+      <stop offset="1" stop-color="#7e888b"/>
+    </linearGradient>
+    <linearGradient id="enamel" x1="33" y1="33" x2="62" y2="82" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#35454b"/>
+      <stop offset=".5" stop-color="#172329"/>
+      <stop offset="1" stop-color="#111a1f"/>
+    </linearGradient>
+    <linearGradient id="crystal" x1="41" y1="40" x2="53" y2="73" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f5fbf7"/>
+      <stop offset=".4" stop-color="#b4d1d9"/>
+      <stop offset="1" stop-color="#617f92"/>
+    </linearGradient>
+    <g id="sword" stroke-linejoin="round">
+      <path d="M48 2 52 15 51 57 45 57 44 15Z" fill="url(#steel)" stroke="#d1d6d1" stroke-width="1"/>
+      <path d="M48 5v51h-2l-1-40Z" fill="#f7f2df" fill-opacity=".7"/>
+      <path d="m48 16 1 3v33h-2V19Z" fill="#3e5059" fill-opacity=".65"/>
+      <path d="m35 60 3-6 5 3h10l5-3 3 6-3 1-5-1H43l-5 1Z" fill="url(#steel)" stroke="#d6d6c8" stroke-width="1"/>
+      <path d="M45.5 61h5v20h-5Z" fill="#283439" stroke="#b9c0bc" stroke-width="1"/>
+      <path d="m46 64 4 2m-4 3 4 2m-4 3 4 2" stroke="#b3b7ae" stroke-width="1.2"/>
+      <path d="m48 80 4 5-4 5-4-5Z" fill="url(#steel)" stroke="#d4d4c6" stroke-width="1"/>
+      <path d="m48 83 1.5 2-1.5 2-1.5-2Z" fill="#324953"/>
+    </g>
+  </defs>
+  <use href="#sword" transform="rotate(-42 48 45)"/>
+  <use href="#sword" transform="rotate(42 48 45)"/>
+  <path d="M48 28c-6 4-16 6-25 5l3 26c1 13 10 24 22 31 12-7 21-18 22-31l3-26c-9 1-19-1-25-5Z" fill="url(#rim)" stroke="#e3e1d0" stroke-width="1.1"/>
+  <path d="M48 33c-6 3-13 5-21 5l3 21c1 11 8 20 18 27 10-7 17-16 18-27l3-21c-8 0-15-2-21-5Z" fill="url(#enamel)" stroke="#778b91" stroke-width="1"/>
+  <path d="M48 36c-5 3-11 4-17 5l2 18c1 9 7 18 15 24 8-6 14-15 15-24l2-18c-6-1-12-2-17-5Z" stroke="#ddd6bd" stroke-opacity=".5" stroke-width=".8"/>
+  <!-- A single, smaller crystal leaves the shield face uncluttered. -->
+  <g transform="translate(48 57.5) scale(.8) translate(-48 -57.5)">
+    <path d="m48 40 8 14-2 11-6 10-6-10-2-11Z" fill="url(#crystal)" stroke="#e5eeea" stroke-width="1"/>
+    <path d="m48 40-3 16 3 19 3-19Z" fill="#e7f2ed" fill-opacity=".65"/>
+    <path d="m40 54 5 2 3-16m8 14-5 2-3-16m-6 25 3-9 6 0 3 9m-9-9 3 19 3-19" stroke="#eef3e6" stroke-opacity=".7" stroke-width=".7"/>
+  </g>
+  <path d="m48 94 2 2-2 2-2-2Z" fill="#d7cfb9" fill-opacity=".65"/>
+</svg>

@@ -1,9 +1,9 @@
-name: Super Linux preview
+name: Electron Linux
 on:
   push:
-    paths: ['src/**', 'scripts/**', 'compliance/**', 'packaging/**', 'SOURCES.txt', 'LICENSE', 'LINUX.en.md', 'LINUX.zh-CN.md', 'LINUX.zh-TW.md', '.github/workflows/linux.yml']
+    paths: ['frontend/**', 'prototypes/**', 'src/**', 'scripts/**', 'compliance/**', 'packaging/**', 'SOURCES.txt', 'LICENSE', 'LINUX.en.md', 'LINUX.zh-CN.md', 'LINUX.zh-TW.md', '.github/workflows/linux.yml']
   pull_request:
-    paths: ['src/**', 'scripts/**', 'compliance/**', 'packaging/**', 'SOURCES.txt', 'LICENSE', 'LINUX.en.md', 'LINUX.zh-CN.md', 'LINUX.zh-TW.md', '.github/workflows/linux.yml']
+    paths: ['frontend/**', 'prototypes/**', 'src/**', 'scripts/**', 'compliance/**', 'packaging/**', 'SOURCES.txt', 'LICENSE', 'LINUX.en.md', 'LINUX.zh-CN.md', 'LINUX.zh-TW.md', '.github/workflows/linux.yml']
   workflow_dispatch:
 jobs:
   linux:
@@ -13,8 +13,14 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
       - run: python3 scripts/check-compliance-materials.py
       - run: dotnet test src/XIVLauncher.Linux.Tests/XIVLauncher.Linux.Tests.csproj -c Release -m:1 --filter "Category!=Network"
+      - run: node --test --test-isolation=none frontend/tests/*.test.cjs
+        env:
+          FFXIV_BACKEND: ${{ github.workspace }}/src/XIVLauncher.Linux/bin/Release/net10.0/xivlauncher-super
       - run: bash scripts/package-linux.sh
       - uses: actions/upload-artifact@v4
         with:

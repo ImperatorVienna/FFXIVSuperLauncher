@@ -3,7 +3,7 @@ namespace XIVLauncher.Linux.Updates;
 // A stable entry outside the AppImage mount. Only this user's last launched image is selected.
 internal static class AppImageEntry
 {
-    public const string Notice = "手动移动或重命名 AppImage 后，请双击运行一次，以更新启动路径。之后即可继续从 Steam 或应用菜单启动。多个 AppImage 共用入口时，以最后运行的文件为准。";
+    public const string Notice = "手动移动或重命名 AppImage 后，请双击运行一次，以更新启动路径。之后即可继续从 Steam 或应用菜单启动。多个 AppImage 共用入口时，以最后运行的文件为准。可用此方法回滚旧版本，回滚后请关闭自动检查更新。";
     public static string EntryPath => Path.Combine(LinuxSettings.DataRoot, "appimage-launcher");
     public static string RegistrationPath => Environment.GetEnvironmentVariable("APPIMAGE") is { Length: > 0 }
         ? Refresh(UpdateInstallation.LauncherPath, LinuxSettings.DataRoot) : UpdateInstallation.LauncherPath;

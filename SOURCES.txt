@@ -62,3 +62,8 @@ compliance/provenance/LICENSING-DECISIONS.txt, not hidden by a root license labe
 No functional source was modified in the compliance work. The only application
 source-file edit relative to preserved 0.12.1 is an attribution comment in
 TaiwanGameUpdater.cs. Packaging, source delivery and audit tools changed separately.
+
+Electron frontend fonts: GenRyu v2 TC/PJP (ButTaiwan) and Cinzel (The Cinzel
+Project Authors). See prototypes/electron-ui/assets/font-sources.json for exact
+download URLs and SHA256, and adjacent GenRyu-OFL.txt / Cinzel-OFL.txt for the
+retained SIL OFL 1.1 notices. Electron now also hosts the main launcher interface.

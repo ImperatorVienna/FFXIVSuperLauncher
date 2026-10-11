@@ -38,11 +38,12 @@ public sealed class LinuxSettings
     public string Language { get; set; } = "en";
     public string SelectedRegion { get; set; } = "ffxiv_cn";
     public bool SetupComplete { get; set; }
+    public bool AutoCheckUpdates { get; set; } = true;
     public string ProtonScript { get; set; } = "";
     public string SteamRoot { get; set; } = "";
     public string CompatibilityData { get; set; } = Path.Combine(DataRoot, "compatdata");
     public string RegisteredSteamRoot { get; set; } = "";
-    [JsonIgnore] public Dictionary<string, RegionSettings> RegionProfiles { get; } = Regions.ToDictionary(r => r.Id, _ => new RegionSettings());
+    [JsonIgnore] public RegionProfiles RegionProfiles { get; } = new();
     [JsonIgnore] public string Root { get; private set; } = DataRoot;
     [JsonIgnore] public RegionSettings Current => RegionProfiles[SelectedRegion];
     [JsonIgnore] public string RegionRoot => Path.Combine(Root, SelectedRegion);
@@ -100,17 +101,16 @@ public sealed class LinuxSettings
         foreach (var region in Regions)
         {
             var regionFile = Path.Combine(root, region.Id, "settings.json");
-            if (File.Exists(regionFile)) result.RegionProfiles[region.Id] = RegionSettingsStorage.Deserialize(region.Id, File.ReadAllText(regionFile));
-        }
-        foreach (var region in Regions)
-        {
-            var profile = result.RegionProfiles[region.Id];
-            AccountProfiles.Capture(profile);
-            // Index legacy plaintext accounts without displaying or copying any secrets.
-            foreach (var name in RegionCredentials.SavedAccountNames(root, region.Id))
+            try
             {
-                if (!profile.Accounts.ContainsKey(name)) profile.Accounts[name] = new() { RememberPassword = true };
+                if (File.Exists(regionFile)) result.RegionProfiles[region.Id] = RegionSettingsStorage.Deserialize(region.Id, File.ReadAllText(regionFile));
+                var profile = result.RegionProfiles[region.Id];
+                AccountProfiles.Capture(profile);
+                foreach (var name in RegionCredentials.SavedAccountNames(root, region.Id))
+                    if (!profile.Accounts.ContainsKey(name)) profile.Accounts[name] = new() { RememberPassword = true };
             }
+            catch(Exception ex) when(ex is IOException or UnauthorizedAccessException or JsonException)
+            { result.RegionProfiles.Unavailable(region.Id); }
         }
         return result;
     }
@@ -120,6 +120,7 @@ public sealed class LinuxSettings
         Directory.CreateDirectory(Root, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
         foreach (var region in Regions)
         {
+            if(!RegionProfiles.TryGetValue(region.Id,out _))continue;
             AccountProfiles.Capture(RegionProfiles[region.Id]);
             var dir = Path.Combine(Root, region.Id);
             Directory.CreateDirectory(dir, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
@@ -131,6 +132,15 @@ public sealed class LinuxSettings
     {
         Directory.CreateDirectory(Root);
         AtomicWrite(Path.Combine(Root, "linux-settings.json"), JsonSerializer.Serialize(this, JsonOptions));
+    }
+    internal void SaveRegionPreferences(string region)
+    {
+        if (!Regions.Any(x => x.Id == region)) throw new ArgumentException("Unknown region.");
+        EnsureCreated(Root);
+        AccountProfiles.Capture(RegionProfiles[region]);
+        var directory = Path.Combine(Root, region);
+        Directory.CreateDirectory(directory, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        AtomicWrite(Path.Combine(directory, "settings.json"), RegionSettingsStorage.Serialize(region, RegionProfiles[region]));
     }
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
     private static void AtomicWrite(string path, string content)

@@ -26,15 +26,10 @@ public sealed class PluginUpdates(HttpClient client)
         root = Path.GetFullPath(root);
         var installed = OfflinePluginManager.Read(root, region);
         var configText = ReadConfig(root, region); var config = JObject.Parse(configText);
-        var official = Url(region == "ffxiv" ? "https://kamori.goats.dev/Plugin/PluginMaster" : config.Value<string>("MainRepoUrl") ?? (region == "ffxiv_cn"
-            ? "https://gh.atmoomen.top/raw.githubusercontent.com/Dalamud-DailyRoutines/PluginDistD17/main/pluginmaster.json"
-            : "https://raw.githubusercontent.com/yanmucorp/PluginDistD17/refs/heads/main/pluginmaster.json"));
+        var official = PluginRepositories.MainRepository(region, config);
         var repos = new Dictionary<Uri, JArray?>();
-        var enabled = new HashSet<Uri> { official };
         var problems = new List<string>(installed.Problems); var updates = new List<PluginUpdate>();
-        foreach (var repo in Array(config["ThirdRepoList"]).OfType<JObject>())
-            if (repo.Value<bool?>("IsEnabled") == true)
-                try { enabled.Add(Url(repo.Value<string>("Url") ?? "")); } catch (IOException) { problems.Add("A configured repository URL is invalid."); }
+        var enabled = PluginRepositories.Enabled(region, config, problems);
         foreach (var plugin in installed.Plugins)
         {
             token.ThrowIfCancellationRequested();
@@ -49,22 +44,24 @@ public sealed class PluginUpdates(HttpClient client)
                 if (!repos.TryGetValue(repo, out var catalog))
                 {
                     repos[repo] = null; // A failed repository is not retried for every plugin.
-                    var text = await client.GetStringAsync(repo, token);
+                    using var timeout = CancellationTokenSource.CreateLinkedTokenSource(token);
+                    timeout.CancelAfter(TimeSpan.FromSeconds(20));
+                    var text = await client.GetStringAsync(repo, timeout.Token);
                     catalog = JArray.Parse(text); repos[repo] = catalog;
                 }
                 if (catalog == null) throw new IOException("The original repository is unavailable.");
-                var matches = catalog.OfType<JObject>().Where(x => x.Value<string>("InternalName") == plugin.InternalName).ToArray();
-                if (matches.Length != 1) throw new IOException("The original repository has no unique matching plugin.");
-                var remote = matches[0];
                 var testing = local.Value<bool?>("Testing") == true;
+                var matches = catalog.OfType<JObject>().Where(x => x.Value<string>("InternalName") == plugin.InternalName
+                    && x.Value<int?>(testing ? "TestingDalamudApiLevel" : "DalamudApiLevel") == dalamudVersion.Major).ToArray();
+                if (!testing && matches.Length > 0 && matches.All(x => x.Value<bool?>("IsTestingExclusive") == true)) continue;
+                if (!testing) matches = matches.Where(x => x.Value<bool?>("IsTestingExclusive") != true).ToArray();
+                if (matches.Length != 1) throw new IOException("The original repository has no unique matching plugin for the installed Dalamud API level.");
+                var remote = matches[0];
                 // Keep the installed channel. Never switch stable plugins into testing during an offline update.
                 if (testing && (config.Value<bool?>("DoPluginTest") != true || !Array(config["PluginTestingOptIns"]).Any(x => x.Value<string>("InternalName") == plugin.InternalName)))
                     throw new IOException("Testing updates are not enabled for this installed testing plugin.");
-                if (!testing && remote.Value<bool?>("IsTestingExclusive") == true) continue;
                 if (!Version.TryParse(remote.Value<string>(testing ? "TestingAssemblyVersion" : "AssemblyVersion"), out var version)) throw new IOException("Repository plugin version is invalid.");
                 if (version <= Version.Parse(plugin.Version)) continue;
-                var api = remote.Value<int?>(testing ? "TestingDalamudApiLevel" : "DalamudApiLevel");
-                if (api != dalamudVersion.Major) throw new IOException("The update does not match the installed Dalamud API level.");
                 if (remote.Value<string>("MinimumDalamudVersion") is { Length: > 0 } minimum && (!Version.TryParse(minimum, out var min) || min > dalamudVersion))
                     throw new IOException("The update requires a newer Dalamud version.");
                 var download = Url(remote.Value<string>(testing ? "DownloadLinkTesting" : "DownloadLinkInstall") ?? "");
@@ -121,7 +118,7 @@ public sealed class PluginUpdates(HttpClient client)
         }
         finally { Directory.Delete(stage, true); }
     }
-    private static void SafePath(string root, string path)
+    internal static void SafePath(string root, string path)
     {
         root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(root)); path = Path.GetFullPath(path);
         if (path != root && !path.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.Ordinal)) throw new IOException("Plugin path escapes its data directory.");

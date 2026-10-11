@@ -3,13 +3,15 @@ namespace XIVLauncher.Linux;
 /// <summary>Detailed session diagnostics are separate from the short on-screen activity log.</summary>
 public sealed class SessionDiagnostics(string root)
 {
-    private readonly object gate = new();
-    public string FilePath { get; } = Path.Combine(root, "logs", $"launcher-{DateTime.Now:yyyyMMdd-HHmmss}-{Environment.ProcessId}.log");
+    private sealed record SessionFile(string Path) { internal readonly object Gate = new(); }
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, SessionFile> Files = new(StringComparer.Ordinal);
+    private readonly SessionFile file = Files.GetOrAdd(Path.GetFullPath(root), directory => new(Path.Combine(directory, "logs", $"launcher-{DateTime.Now:yyyyMMdd-HHmmss}-{Environment.ProcessId}.log")));
+    public string FilePath => file.Path;
     public string? WriteError { get; private set; }
     public void Write(string message, string region, string level)
     {
         if (string.IsNullOrWhiteSpace(message)) return;
-        lock (gate)
+        lock (file.Gate)
         {
             try
             {

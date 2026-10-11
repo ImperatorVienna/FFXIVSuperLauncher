@@ -16,7 +16,8 @@ public static class VersionRecords
     {
         foreach (var region in LinuxSettings.Regions)
         {
-            var profile = settings.RegionProfiles[region.Id]; InitializeClient(profile); var previous = profile.DalamudVersion; profile.DalamudVersion = "";
+            if(!settings.RegionProfiles.TryGetValue(region.Id,out var profile))continue;
+            InitializeClient(profile); var previous = profile.DalamudVersion; profile.DalamudVersion = "";
             try
             {
                 var dll = DalamudAssembly(settings.Root, region.Id, previous);

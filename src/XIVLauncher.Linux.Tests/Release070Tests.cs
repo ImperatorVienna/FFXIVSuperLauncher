@@ -11,15 +11,6 @@ public sealed class Release070Tests : IDisposable
     private readonly string root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
     private LinuxSettings Settings(string region = "ffxiv_tc")
     { var s=LinuxSettings.Load(root);s.SelectedRegion=region;s.Account="account-a";s.Current.RememberPassword=true;return s; }
-    [Fact] public async Task PasswordOnlyAllowedSecretOnlyRejectedWithoutWrites()
-    {
-        var s=Settings();Assert.Equal(1,await RegionCredentials.SaveEnteredAsync(s,"password-a","",default));
-        var original=File.ReadAllText(Path.Combine(root,"ffxiv_tc","credentials.json"));
-        await Assert.ThrowsAsync<CredentialValidationException>(()=>RegionCredentials.SaveEnteredAsync(s,"","JBSWY3DPEHPK3PXP",default));
-        Assert.Equal(original,File.ReadAllText(Path.Combine(root,"ffxiv_tc","credentials.json")));
-        Assert.Equal(2,await RegionCredentials.SaveEnteredAsync(s,"password-b","JBSWY3DPEHPK3PXP",default));
-        Assert.Equal("password-b",await RegionCredentials.ReadAsync(s,s.Account,"password",default));
-    }
     [Fact] public async Task AutoOtpUsesOnlySelectedAccountAndFallsBackToManualWhenMissing()
     {
         var s=Settings();s.Current.AutoOtp=true;

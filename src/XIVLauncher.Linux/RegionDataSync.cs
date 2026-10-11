@@ -1,6 +1,6 @@
 namespace XIVLauncher.Linux;
 
-public enum RegionSyncContent { DalamudSettings, InstalledPlugins, PluginSettings }
+public enum RegionSyncContent { ThirdPartyRepositories, InstalledPlugins, PluginSettings }
 public sealed record RegionSyncResult(string[] Targets, string BackupDirectory);
 
 /// <summary>Replaces exactly one selected category in explicitly selected destination regions. Never copies a whole region.</summary>
@@ -8,7 +8,7 @@ public static class RegionDataSync
 {
     public static string RelativePath(RegionSyncContent content) => content switch
     {
-        RegionSyncContent.DalamudSettings => "dalamud/dalamudConfig.json",
+        RegionSyncContent.ThirdPartyRepositories => "dalamud/dalamudConfig.json",
         RegionSyncContent.InstalledPlugins => "dalamud/installedPlugins",
         RegionSyncContent.PluginSettings => "dalamud/pluginConfigs",
         _ => throw new ArgumentOutOfRangeException(nameof(content))
@@ -18,7 +18,7 @@ public static class RegionDataSync
     {
         ValidateRegion(region);
         var path = Path.Combine(root, region, RelativePath(content));
-        return content == RegionSyncContent.DalamudSettings ? File.Exists(path) : Directory.Exists(path);
+        return content == RegionSyncContent.ThirdPartyRepositories ? File.Exists(path) : Directory.Exists(path);
     }
 
     public static RegionSyncResult Synchronize(string root, string sourceRegion, IReadOnlyCollection<string> targetRegions, RegionSyncContent content, CancellationToken token = default) =>
@@ -38,7 +38,7 @@ public static class RegionDataSync
         token.ThrowIfCancellationRequested();
         root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(root));
         var relative = RelativePath(content);
-        var directory = content != RegionSyncContent.DalamudSettings;
+        var directory = content != RegionSyncContent.ThirdPartyRepositories;
         var source = Path.Combine(root, sourceRegion, relative);
         CheckParents(root, source);
         if (!HasSource(root, sourceRegion, content)) throw new IOException("所选来源没有此项数据，未修改其他区服。");
@@ -72,7 +72,18 @@ public static class RegionDataSync
                 if (json.RootElement.ValueKind != System.Text.Json.JsonValueKind.Object)
                     throw new IOException("Dalamud 设置不是有效的 JSON 对象，未同步。");
             }
-            foreach (var entry in entries) Copy(snapshot, entry.Prepared, directory, token);
+            foreach (var entry in entries)
+            {
+                if (directory) Copy(snapshot, entry.Prepared, true, token);
+                else
+                {
+                    entry.OriginalText = File.Exists(entry.Target) ? File.ReadAllText(entry.Target) : null;
+                    var merged = MergeRepositories(File.ReadAllText(snapshot), entry.OriginalText);
+                    using var output = new FileStream(entry.Prepared, new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write,
+                        UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite });
+                    using var writer = new StreamWriter(output); writer.Write(merged);
+                }
+            }
             token.ThrowIfCancellationRequested();
             PrivateDirectory(backup);
             File.WriteAllText(Path.Combine(backup, "sync-info.txt"),
@@ -83,6 +94,8 @@ public static class RegionDataSync
                 beforeCommit?.Invoke(index);
                 var entry = entries[index];
                 CheckParents(root, entry.Target);
+                if (!directory && (File.Exists(entry.Target) ? File.ReadAllText(entry.Target) : null) != entry.OriginalText)
+                    throw new IOException("目标仓库配置已变化，请重新同步。");
                 PrivateDirectory(Path.GetDirectoryName(entry.Target)!);
                 if (File.Exists(entry.Target) || Directory.Exists(entry.Target))
                 {
@@ -112,6 +125,34 @@ public static class RegionDataSync
             throw;
         }
         finally { if (Directory.Exists(staging)) Directory.Delete(staging, true); }
+    }
+
+    // Only the user repository list crosses regions. All destination fields, including absent
+    // MainRepoUrl/AddPresetThirdRepos (which mean regional defaults), remain destination-owned.
+    private static string MergeRepositories(string source, string? target)
+    {
+        var from = System.Text.Json.Nodes.JsonNode.Parse(source) as System.Text.Json.Nodes.JsonObject
+            ?? throw new System.Text.Json.JsonException("Invalid source configuration.");
+        var to = target == null ? new System.Text.Json.Nodes.JsonObject()
+            : System.Text.Json.Nodes.JsonNode.Parse(target) as System.Text.Json.Nodes.JsonObject
+                ?? throw new System.Text.Json.JsonException("Invalid destination configuration.");
+        var list = from["ThirdRepoList"];
+        var values = list switch {
+            null => new System.Text.Json.Nodes.JsonArray(),
+            System.Text.Json.Nodes.JsonArray array => array,
+            System.Text.Json.Nodes.JsonObject wrapper when wrapper["$values"] is System.Text.Json.Nodes.JsonArray array => array,
+            _ => throw new System.Text.Json.JsonException("Invalid third-party repository list.")
+        };
+        foreach (var entry in values)
+        {
+            if (entry is not System.Text.Json.Nodes.JsonObject item || item["Url"] is not System.Text.Json.Nodes.JsonValue url
+                || !url.TryGetValue<string>(out var address) || item["IsEnabled"] is not System.Text.Json.Nodes.JsonValue enabled
+                || !enabled.TryGetValue<bool>(out _)) throw new System.Text.Json.JsonException("Invalid repository entry.");
+            _ = PluginUpdates.Url(address);
+        }
+        if (to["ThirdRepoList"] is System.Text.Json.Nodes.JsonObject existing) existing["$values"] = values.DeepClone();
+        else to["ThirdRepoList"] = values.DeepClone();
+        return to.ToJsonString(new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
     }
 
     private static void ValidateRegion(string region)
@@ -175,6 +216,7 @@ public static class RegionDataSync
         public string Target { get; } = target;
         public string Prepared { get; } = prepared;
         public string Backup { get; } = backup;
+        public string? OriginalText { get; set; }
         public bool OriginalMoved { get; set; }
         public bool Installed { get; set; }
     }

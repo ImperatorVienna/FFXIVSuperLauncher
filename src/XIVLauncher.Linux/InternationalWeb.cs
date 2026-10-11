@@ -28,6 +28,6 @@ public static class InternationalWeb
         var mog = "https://secure.square-enix.com/oauth/oa/oauthlogin?response_type=code&client_id=ffxiv_mog&redirect_uri="
             + Uri.EscapeDataString("https://secure.square-enix.com/account/app/svc/top?request=mogstation") + "&lang=" + locale;
         return new($"https://{site}.finalfantasyxiv.com/lodestone/",
-            $"https://store.finalfantasyxiv.com/ffxivstore/{locale}/", null, mog);
+            $"https://store.finalfantasyxiv.com/ffxivstore/{locale}/", null, mog, $"https://{site}.finalfantasyxiv.com/lodestone/worldstatus/");
     }
 }

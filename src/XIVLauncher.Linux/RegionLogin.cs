@@ -9,8 +9,9 @@ using XIVLauncher.Linux.Taiwan;
 namespace XIVLauncher.Linux;
 
 public sealed record RegionLoginContext(LinuxSettings Settings, LoginArea? Area, LoginArea[] Areas,
-    LoginRequest Request, string Password, string ManualOtp, Func<CancellationToken, Task<string>> Captcha,
-    Action<string> Status, Func<Func<string, CancellationToken, Task<string>>, CancellationToken, Task<string>>? AuthenticateWithCaptcha = null, Func<CancellationToken, Task<string>>? RequestManualOtp = null, Func<CancellationToken, Task>? UpdateAfterLogin = null);
+    LoginRequest Request, string Password, Action<string> Status,
+    Func<Func<string, CancellationToken, Task<string>>, CancellationToken, Task<string>> AuthenticateWithCaptcha,
+    Func<CancellationToken, Task<string>> RequestManualOtp, Func<CancellationToken, Task>? UpdateAfterLogin = null);
 public interface IRegionLogin
 {
     Task<LoginArea[]> AreasAsync(CancellationToken token);
@@ -53,14 +54,12 @@ public static class RegionLogin
             context.Status("正在打开网页验证，请完成验证；关闭验证窗口可取消。");
             async Task<string> Authenticate(string captcha, CancellationToken verificationToken)
             {
-                var otp = await LoginCode.GetAsync(otpSecret, context.RequestManualOtp ?? (_ => Task.FromResult(context.ManualOtp)), verificationToken);
+                var otp = await LoginCode.GetAsync(otpSecret, context.RequestManualOtp, verificationToken);
                 if (otp.Length != 0 && (otp.Length != 6 || otp.Any(c => c < '0' || c > '9'))) throw new IOException("2FA 验证码必须为六位数字。");
                 context.Status("正在验证账号…");
                 return await new TaiwanLogin(RegionBackends.TaiwanHttp).AuthenticateAsync(settings.Account, context.Password, otp, captcha, verificationToken);
             }
-            var loginToken = context.AuthenticateWithCaptcha != null
-                ? await context.AuthenticateWithCaptcha(Authenticate, token)
-                : await Authenticate(await context.Captcha(token), token);
+            var loginToken = await context.AuthenticateWithCaptcha(Authenticate, token);
             if (context.UpdateAfterLogin != null) await context.UpdateAfterLogin(token);
             var sid = await new TaiwanLogin(RegionBackends.TaiwanHttp).CompleteAsync(settings.GamePath, loginToken, token);
             return TaiwanLogin.GameArguments(sid);

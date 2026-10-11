@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 32">
+  <view id="vertical" viewBox="0 0 12 32"/>
+  <view id="horizontal" viewBox="12 0 32 12"/>
+  <defs>
+    <g id="grip" fill="none" stroke-linejoin="round" stroke-linecap="round">
+      <path d="m6 10 3.1 6L6 22l-3.1-6Z" fill="#686a60" stroke="#f5e8d5" stroke-width=".85"/>
+      <path d="M6 12v8l1.5-4Z" fill="#ddd7c9" stroke="none"/>
+      <path d="m2 12-1 4 1 4m8-8 1 4-1 4" stroke="#ddd7c9" stroke-width=".65" opacity=".65"/>
+    </g>
+  </defs>
+  <use href="#grip"/>
+  <use href="#grip" transform="translate(44 0) rotate(90)"/>
+</svg>

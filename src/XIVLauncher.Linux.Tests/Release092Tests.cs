@@ -20,10 +20,10 @@ public sealed class Release092Tests : IDisposable
     {
         await CredentialDraftStore.SaveAsync(root,[new(){Region="ffxiv",Name="one",Password="password",Secret="JBSWY3DPEHPK3PXP",Dirty=true}],default);
         var s=LinuxSettings.Load(root);s.SelectedRegion="ffxiv";AccountProfiles.Select(s.Current,"one");s.Current.AutoOtp=true;s.Save();
-        var draft=CredentialDraftStore.Load(root).Single();draft.Password="updated";draft.Dirty=true;
+        var draft=new CredentialDraft {Region="ffxiv",Name="one",Existing=true};draft.Password="updated";draft.Dirty=true;
         await CredentialDraftStore.SaveAsync(root,[draft],default);
         s=LinuxSettings.Load(root);Assert.True(s.Current.AutoOtp);
-        draft=CredentialDraftStore.Load(root).Single();draft.ClearOtp=true;draft.Dirty=true;
+        draft=new CredentialDraft {Region="ffxiv",Name="one",Existing=true};draft.ClearOtp=true;draft.Dirty=true;
         await CredentialDraftStore.SaveAsync(root,[draft],default);
         s=LinuxSettings.Load(root);Assert.True(s.Current.AutoOtp);Assert.Null(await LoginCode.SavedSecretForLoginAsync(s,default));
         Assert.Equal("updated",await RegionCredentials.PasswordForLoginAsync(s,"",default));

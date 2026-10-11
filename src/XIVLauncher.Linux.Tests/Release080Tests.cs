@@ -83,8 +83,7 @@ public sealed class Release080Tests : IDisposable
     [Fact] public async Task CredentialsAndSteamTrialPreferencesAreAccountAndRegionScoped()
     {
         var settings=LinuxSettings.Load(root);settings.SelectedRegion="ffxiv";settings.Account="first";settings.Current.RememberPassword=true;settings.Current.SteamAccount=true;settings.Current.FreeTrial=true;
-        Assert.Equal(1,await RegionCredentials.SaveEnteredAsync(settings,"password","",default));
-        await Assert.ThrowsAsync<CredentialValidationException>(()=>RegionCredentials.SaveEnteredAsync(settings,"","JBSWY3DPEHPK3PXP",default));
+        await RegionCredentials.StoreAsync(settings,settings.Account,"password","password",default);
         settings.Current.AutoOtp=true;Assert.Null(await LoginCode.SavedSecretForLoginAsync(settings,default));
         AccountProfiles.Select(settings.Current,"second");Assert.False(settings.Current.SteamAccount);Assert.False(settings.Current.FreeTrial);
         AccountProfiles.Select(settings.Current,"first");Assert.True(settings.Current.SteamAccount);Assert.True(settings.Current.FreeTrial);

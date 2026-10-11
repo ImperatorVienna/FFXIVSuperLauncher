@@ -22,7 +22,6 @@
   "已取消同步。": "Synchronization cancelled.",
   "正在准备并同步所选数据…": "Preparing and synchronizing selected data.",
   "同步完成。原目标数据备份：{0}": "Synchronization complete. Previous data backup: {0}",
-  "有未应用的修改。点击应用保存，或点击放弃修改。": "Plugin selection has unapplied changes. Apply or discard changes.",
   "此区服没有可管理的已安装插件。": "No installed plugins are available for this game region.",
   "已读取插件列表。": "Plugin list loaded.",
   "没有需要应用的修改。": "No changes to apply.",

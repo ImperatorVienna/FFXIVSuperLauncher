@@ -1,0 +1,27 @@
+[
+  {
+    "file": "Cinzel.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/cinzel/Cinzel%5Bwght%5D.ttf",
+    "sha256": "f4d83d34d1f6c741193e4acf4b3dff9531e5a67b6aa65228d00a7db72a4e0f34"
+  },
+  {
+    "file": "Cinzel-OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/cinzel/OFL.txt",
+    "sha256": "f2b3029aba64c378bf0963b62945eee15e564fe4330b934c8f2eb058282b5e83"
+  },
+  {
+    "file": "GenRyu-OFL.txt",
+    "source": "https://raw.githubusercontent.com/ButTaiwan/genryu-font/master/SIL_Open_Font_License_1.1.txt",
+    "sha256": "d84b652ca46586043946969a33c1dbf5a43028440825ae744a325965bec4c8fb"
+  },
+  {
+    "file": "GenRyuMin2TC-R.otf",
+    "source": "https://raw.githubusercontent.com/ButTaiwan/genryu-font/master/otf/TC/GenRyuMin2TC-R.otf",
+    "sha256": "8b4988af4fb8e7fea14245fdd61fa309ad730cb7c79a5b861eabe84db5a16774"
+  },
+  {
+    "file": "GenRyuMin2PJP-R.otf",
+    "source": "https://raw.githubusercontent.com/ButTaiwan/genryu-font/master/otf/PJP/GenRyuMin2PJP-R.otf",
+    "sha256": "40b5006671eebb81ae6212466fb94bff3679e4b57fdc3fbf878de3ad0adf7e7b"
+  }
+]

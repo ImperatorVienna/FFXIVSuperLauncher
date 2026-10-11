@@ -25,7 +25,9 @@ China supports QR-code and quick login, as well as cross-data-center travel; Tra
 
 ## Building from source
 
-Requires the .NET 10 SDK, a C compiler, Python 3, Git, and `7z`. Building and packaging may require downloading NuGet dependencies, pinned helper components, and corresponding source code.
+The Electron frontend now connects the existing features, including cross-region travel, compatibility tools settings, first-time setup, window state, About and AppImage updates. The complete test package excludes the old Avalonia interface. The development entry uses an isolated directory; AppImage uses the existing configuration by default. Real sign-in and game workflows across all three regions still require acceptance testing. See the [frontend development guide](frontend/README.md) for the Electron-only build and packaging workflow; the current branch removes the old interface entry points, and every command below builds the new Electron version.
+
+Requires Node.js 24 or later, the .NET 10 SDK, a C compiler, Python 3, Git, and `7z`. Building and packaging may require downloading NuGet dependencies, pinned helper components, and corresponding source code.
 
 The complete 1.0.0 launcher source is in this repository. Original source archives, corresponding sources for bundled dependencies, and checksum files are retained in [release-materials/1.0.0](release-materials/1.0.0). Release downloads contain only the AppImage and the two small files required for signed updates.
 
@@ -43,7 +45,7 @@ dotnet test src/XIVLauncher.Linux.Tests/XIVLauncher.Linux.Tests.csproj \
 python3 scripts/check-compliance-materials.py
 
 # Generate the runtime package and corresponding-source attachments
-bash scripts/package-linux.sh
+VERSION=1.1.1 bash scripts/package-linux.sh
 ```
 
 The default output directory is `artifacts/linux/`. Use a fresh output directory when packaging again, for example:
@@ -57,7 +59,7 @@ bash scripts/package-linux.sh artifacts/local-build
 ```bash
 python3 scripts/package-appimage.py \
   artifacts/linux/xivlauncher-super \
-  artifacts/linux/xivlauncher-super-1.0.0-x86_64.AppImage \
+  artifacts/linux/xivlauncher-super-1.1.1-x86_64.AppImage \
   --runtime /path/to/runtime-x86_64 \
   --public-key packaging/linux/appimage-public.pem
 ```

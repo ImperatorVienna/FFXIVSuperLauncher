@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+bundle=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+if [ "${1-}" = '--launcher-version' ]; then exec "$bundle/xivlauncher-backend" --launcher-version; fi
+unset ELECTRON_RUN_AS_NODE NODE_OPTIONS LD_PRELOAD
+export FFXIV_ELECTRON="$bundle/Tools/webview/electron"
+exec "$FFXIV_ELECTRON" --super-launcher "$@"

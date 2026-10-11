@@ -9,7 +9,6 @@ public sealed class LauncherLog(int capacity = 1000, Func<DateTimeOffset>? clock
     private readonly Dictionary<string, LinkedListNode<Entry>> downloads = new();
     private readonly object gate = new();
     public string Text { get { lock (gate) return string.Join(Environment.NewLine, entries.Select(e => e.Text)); } }
-    public event Action? Changed;
     private string Stamp(string level, string region) => $"[{(clock?.Invoke() ?? DateTimeOffset.Now):HH:mm:ss}] [{level}] [{region}] ";
     private void Trim()
     {
@@ -27,7 +26,6 @@ public sealed class LauncherLog(int capacity = 1000, Func<DateTimeOffset>? clock
                 entries.AddLast(new Entry(stamp + line));
             Trim();
         }
-        Changed?.Invoke();
     }
     public void Download(string operation, string label, string region, XIVLauncher.Common.Http.DownloadProgress value, bool cancelled)
     {
@@ -45,15 +43,10 @@ public sealed class LauncherLog(int capacity = 1000, Func<DateTimeOffset>? clock
             else { node = entries.AddLast(new Entry(text, id)); downloads[id] = node; }
             Trim();
         }
-        Changed?.Invoke();
     }
-    public void Clear() { lock (gate) { entries.Clear(); downloads.Clear(); } Changed?.Invoke(); }
+    public void Clear() { lock (gate) { entries.Clear(); downloads.Clear(); } }
 }
 
-internal sealed class LogTarget(Action<string> append)
-{
-    public string? Text { set { if (!string.IsNullOrWhiteSpace(value)) append(value); } }
-}
 public static class EnglishLog
 {
     private static readonly IReadOnlyDictionary<string, string> Messages = Load();

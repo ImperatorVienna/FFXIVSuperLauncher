@@ -4,9 +4,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="goaaats.Steamworks" Version="2.3.4" />
-    <PackageVersion Include="Avalonia.X11" Version="11.3.22" />
-    <PackageVersion Include="Avalonia.Skia" Version="11.3.22" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.22" />
     <PackageVersion Include="Downloader" Version="5.9.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="Serilog" Version="4.3.1" />

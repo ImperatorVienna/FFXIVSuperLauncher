@@ -5,7 +5,6 @@ public class Release061Tests
     [Fact] public void RoutinePluginMessagesAreSilent()
     {
         Assert.Equal("", UserLogMessage.Compact("已读取插件列表。"));
-        Assert.Equal("", UserLogMessage.Compact("有未应用的修改。点击应用保存，或点击放弃修改。"));
         Assert.Equal("Failed: no changes.", UserLogMessage.Compact("Failed: no changes."));
     }
     [Fact] public void FailureSummaryDoesNotShowProcessOutputOrStack()

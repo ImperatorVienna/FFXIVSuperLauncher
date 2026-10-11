@@ -4,6 +4,15 @@ using Xunit;
 namespace XIVLauncher.Linux.Tests;
 public sealed class Release0100Tests : IDisposable
 {
+    [Theory]
+    [InlineData("1 (ffxiv_dx11.exe) Z 0", false)]
+    [InlineData("1 (ffxiv_dx11.exe) X 0", false)]
+    [InlineData("1 (name with ) parentheses) S 0", true)]
+    [InlineData("1 (ffxiv_dx11.exe) R 0", true)]
+    [InlineData("1 (ffxiv_dx11.exe) T 0", true)]
+    public void ExitedLinuxProcessesDoNotBlockEditing(string stat, bool expected)
+        => Assert.Equal(expected, GameProcessGuard.IsLiveLinuxStat(stat));
+
     private readonly string root = Path.Combine(Path.GetTempPath(), "super0100-" + Guid.NewGuid());
     // RFC 6238 Appendix B, SHA1 vectors, truncated to the configured six decimal digits.
     [Theory][InlineData(59L,"287082")][InlineData(1111111109L,"081804")][InlineData(1111111111L,"050471")][InlineData(1234567890L,"005924")][InlineData(2000000000L,"279037")][InlineData(20000000000L,"353130")]
@@ -76,7 +85,7 @@ public sealed class Release0100Tests : IDisposable
             else { events.Add("game-update"); var reply=new HttpResponseMessage(HttpStatusCode.OK){Content=new StringContent("")};reply.Headers.Add("X-Patch-Unique-Id","uid");return Task.FromResult(reply); }
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=new StringContent(text)});
         }));
-        var context = new RegionLoginContext(settings, null, [], new XIVLauncher.Login.Client.LoginRequest(), "synthetic", "", _=>Task.FromResult(""), _=>{}, RequestManualOtp: _=>{events.Add("otp");return Task.FromResult("012345");}, UpdateAfterLogin: _=>{events.Add("boot-update");return Task.CompletedTask;});
+        var context = new RegionLoginContext(settings, null, [], new XIVLauncher.Login.Client.LoginRequest(), "synthetic", _=>{}, (_,_)=>throw new InvalidOperationException("Global must not request TC verification"), RequestManualOtp: _=>{events.Add("otp");return Task.FromResult("012345");}, UpdateAfterLogin: _=>{events.Add("boot-update");return Task.CompletedTask;});
         await new XIVLauncher.Linux.Global.GlobalLogin(client).AuthenticateAsync(context, default);
         Assert.Equal(new[]{"top","otp","login","boot-update","game-update"},events);
     }

@@ -60,8 +60,6 @@ public sealed class Release0106Tests : IDisposable
             Localization.SetLanguage("en");
             Assert.Equal("游戏", Localization.T("游戏")); // Log callers retain the original EnglishLog lookup key.
             Assert.Equal("Game", Localization.Display("游戏"));
-            Assert.Equal("Currently managed game region: Global", Localization.Display("当前管理的游戏区服：国际区"));
-            Assert.Equal("Found 3 Proton versions.", Localization.Display("已找到 3 个 Proton。"));
             Assert.Equal("日本語", Localization.Display("日本語"));
             Assert.Equal("unknown text", Localization.Display("unknown text"));
         }

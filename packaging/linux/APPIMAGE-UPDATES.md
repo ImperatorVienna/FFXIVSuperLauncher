@@ -13,6 +13,6 @@ The fixed entry is $XDG_DATA_HOME/xivlauncher-super/appimage-launcher (normally 
 
 The updater verifies the signed manifest, size, SHA256 and image format before staging in the same directory. The helper waits for the old process to exit, rechecks hashes, keeps a .previous backup, installs the new versioned filename, switches the fixed entry and directly executes the new image after clearing obsolete AppImage environment paths. It does not start the game. Failure is recorded in the diagnostic log. To roll back, rename the backup to an executable .AppImage and run it once.
 
-Preview/loopback support is only for explicitly built --test fixtures. scripts/test-appimage-update.py is a local fixture test and must not be confused with actual GitHub stable-channel verification.
+Preview/loopback support is only for explicitly built --test fixtures. scripts/test-appimage-update.py drives the packaged backend through the same named update protocol as Electron, using isolated data and no visible desktop; it verifies installation and backup, not the reopened GUI. It is a local fixture test and must not be confused with actual GitHub stable-channel verification.
 
 Host graphics/desktop libraries, Steam and Proton remain external. Preserve all component notices and corresponding-source attachments. AppImage packaging does not certify every Linux distribution or resolve recorded licensing qualifications.

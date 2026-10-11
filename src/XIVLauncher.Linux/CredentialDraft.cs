@@ -6,27 +6,13 @@ public sealed class CredentialDraft
     public bool Existing { get; set; }
     public string Password { get; set; } = "";
     public string Secret { get; set; } = "";
-    public bool RememberChina { get; set; } = true;
     public bool Delete { get; set; }
-    public bool CredentialsLoaded { get; set; }
-    public bool HadPassword { get; set; }
-    public bool HadSecret { get; set; }
     public bool ClearPassword { get; set; }
     public bool ClearOtp { get; set; }
     public bool Dirty { get; set; }
-    public override string ToString() => $"{Localization.Display(LinuxSettings.Regions.Single(x => x.Id == Region).Name)} · {(Name.Length == 0 ? Localization.Display("新账号") : Name)}{(Delete ? Localization.Display("（待删除）") : Dirty ? Localization.Display("（未保存）") : "")}";
 }
 public static class CredentialDraftStore
 {
-    public static IReadOnlyList<CredentialDraft> Load(string root)
-    {
-        var settings = LinuxSettings.Load(root);
-        return LinuxSettings.Regions.SelectMany(region => settings.RegionProfiles[region.Id].Accounts.OrderBy(x => x.Key).Select(pair => new CredentialDraft
-        {
-            Region = region.Id, Name = pair.Key, Existing = true,
-            RememberChina = pair.Value.RememberPassword
-        })).ToArray();
-    }
     public static async Task SaveAsync(string root, IReadOnlyList<CredentialDraft> drafts, CancellationToken token)
     {
         var dirty = drafts.Where(x => x.Dirty).ToArray();

@@ -9,7 +9,6 @@
     <RootNamespace>XIVLauncher.Linux</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources/icon.png" />
     <None Include="Resources/icon.png" Link="icon.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <EmbeddedResource Include="../../packaging/linux/xivlauncher-super.desktop" LogicalName="Desktop.Entry" />
     <EmbeddedResource Include="../../LICENSE" LogicalName="About.LICENSE" />
@@ -20,9 +19,6 @@
     <InternalsVisibleTo Include="XIVLauncher.Linux.Tests" />
     <PackageReference Include="goaaats.Steamworks" />
     <None Include="Global/libsteam_api64.so" Link="libsteam_api64.so" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <PackageReference Include="Avalonia.X11" />
-    <PackageReference Include="Avalonia.Skia" />
-    <PackageReference Include="Avalonia.Themes.Fluent" />
     <ProjectReference Include="../XIVLauncher.Common.Unix/XIVLauncher.Common.Unix.csproj" />
     <ProjectReference Include="../XIVLauncher.GamePatchV3/XIVLauncher.GamePatchV3.csproj" />
   </ItemGroup>

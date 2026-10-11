@@ -10,7 +10,7 @@ import sys
 import tarfile
 import xml.etree.ElementTree as ET
 
-SOURCE_ROOTS = {'src', 'scripts', 'packaging', 'tools', 'compliance', '.github'}
+SOURCE_ROOTS = {'src', 'scripts', 'packaging', 'tools', 'compliance', '.github', 'frontend', 'prototypes'}
 ROOT_FILES = {'LICENSE', 'README.md', 'README.zh-CN.md', 'README.zh-TW.md', 'README.ja.md', 'LINUX.en.md', 'LINUX.zh-CN.md', 'LINUX.zh-TW.md', 'ARCHITECTURE.md', '.gitignore', 'NuGet.Config', 'global.json', 'SOURCES.txt', 'THIRD-PARTY-NOTICES.txt', 'RELEASE-COMPLIANCE.txt'}
 EXCLUDED = {'bin', 'obj', '__pycache__', '.git', 'node_modules', 'artifacts', 'outputs', 'research', 'experiments', '.venv'}
 
@@ -38,8 +38,8 @@ def source_archive(repo, output, version):
     return target
 
 
-def package_notices(repo, bundle):
-    assets = json.loads((repo / 'src/XIVLauncher.Linux/obj/project.assets.json').read_text())
+def package_notices(repo, bundle, assets_file=None):
+    assets = json.loads((assets_file or repo / 'src/XIVLauncher.Linux/obj/project.assets.json').read_text())
     destination = bundle / 'licenses'
     destination.mkdir(exist_ok=True)
     supplemental = json.loads((repo / 'compliance/notices/sources.json').read_text())
@@ -82,7 +82,7 @@ def package_notices(repo, bundle):
             for source in root.iterdir():
                 if source.is_file() and source.name.lower().startswith(('license', 'licence', 'third-party', 'thirdparty', 'notice', 'copying')):
                     copy_notice(source, package + '-' + version + '-' + source.name)
-        component = ('Avalonia' if package.startswith('Avalonia') else package) + '-' + version
+        component = package + '-' + version
         for notice in supplemental:
             if notice['component'] != component:
                 continue

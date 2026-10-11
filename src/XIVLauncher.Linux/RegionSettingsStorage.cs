@@ -33,6 +33,12 @@ internal static class RegionSettingsStorage
     private static JsonSerializerOptions Options(string region) => Contracts.TryGetValue(region, out var options)
         ? options : throw new ArgumentException("Unknown configuration region.", nameof(region));
     internal static string Serialize(string region, RegionSettings settings) => JsonSerializer.Serialize(settings, Options(region));
-    internal static RegionSettings Deserialize(string region, string json) =>
-        JsonSerializer.Deserialize<RegionSettings>(json, Options(region)) ?? throw new IOException("Empty region configuration.");
+    internal static RegionSettings Deserialize(string region, string json)
+    {
+        var value=JsonSerializer.Deserialize<RegionSettings>(json,Options(region)) ?? throw new IOException("Empty region configuration.");
+        if(value.Accounts==null||value.DeviceProfiles==null||value.Accounts.Any(x=>x.Value==null)||
+           value.GamePath==null||value.Account==null||value.AreaName==null||value.EuShopLanguage==null||value.SteamCompatibilityData==null)
+            throw new IOException("Invalid region configuration.");
+        return value;
+    }
 }

@@ -12,7 +12,7 @@ public sealed class RegionDataSyncTests : IDisposable
         var path = Path.Combine(root, relative); Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         File.WriteAllText(path, data); return path;
     }
-    public static IEnumerable<object[]> CategoriesAndRegions => Enum.GetValues<RegionSyncContent>()
+    public static IEnumerable<object[]> CategoriesAndRegions => Enum.GetValues<RegionSyncContent>().Where(x => x != RegionSyncContent.ThirdPartyRepositories)
         .SelectMany(category => LinuxSettings.Regions.Select(region => new object[] { category, region.Id }));
 
     [Theory]
@@ -20,7 +20,7 @@ public sealed class RegionDataSyncTests : IDisposable
     public void SyncReplacesOnlySelectedCategoryAndBacksUpBothTargets(RegionSyncContent category, string source)
     {
         var relative = RegionDataSync.RelativePath(category);
-        var file = category == RegionSyncContent.DalamudSettings;
+        var file = category == RegionSyncContent.ThirdPartyRepositories;
         foreach (var region in LinuxSettings.Regions)
         {
             Write(region.Id + "/settings.json", "account settings");
@@ -28,7 +28,7 @@ public sealed class RegionDataSyncTests : IDisposable
             Write(region.Id + "/runtime/dotnet.exe", "runtime");
             Write(region.Id + "/assets/test", "assets");
             foreach (var other in Enum.GetValues<RegionSyncContent>().Where(x => x != category))
-                Write(region.Id + "/" + RegionDataSync.RelativePath(other) + (other == RegionSyncContent.DalamudSettings ? "" : "/keep"), "untouched");
+                Write(region.Id + "/" + RegionDataSync.RelativePath(other) + (other == RegionSyncContent.ThirdPartyRepositories ? "" : "/keep"), "untouched");
             Write(region.Id + "/" + relative + (file ? "" : "/" + (region.Id == source ? "new/plugin.dll" : "obsolete.dll")),
                 region.Id == source ? "{\"new\":true}" : "{\"old\":true}");
         }
@@ -48,19 +48,19 @@ public sealed class RegionDataSyncTests : IDisposable
             Assert.Equal("runtime", File.ReadAllText(Path.Combine(root, region.Id, "runtime/dotnet.exe")));
             Assert.Equal("assets", File.ReadAllText(Path.Combine(root, region.Id, "assets/test")));
             foreach (var other in Enum.GetValues<RegionSyncContent>().Where(x => x != category))
-                Assert.Equal("untouched", File.ReadAllText(Path.Combine(root, region.Id, RegionDataSync.RelativePath(other), other == RegionSyncContent.DalamudSettings ? "" : "keep")));
+                Assert.Equal("untouched", File.ReadAllText(Path.Combine(root, region.Id, RegionDataSync.RelativePath(other), other == RegionSyncContent.ThirdPartyRepositories ? "" : "keep")));
         }
         Assert.Equal("{\"new\":true}", File.ReadAllText(Path.Combine(root, source, relative, file ? "" : "new/plugin.dll")));
         Assert.Empty(Directory.GetDirectories(root, ".plugin-sync-*"));
     }
 
     [Theory]
-    [InlineData(RegionSyncContent.DalamudSettings)]
+    [InlineData(RegionSyncContent.ThirdPartyRepositories)]
     [InlineData(RegionSyncContent.PluginSettings)]
     [InlineData(RegionSyncContent.InstalledPlugins)]
     public void FailureAfterFirstReplacementRollsBackBothTargets(RegionSyncContent category)
     {
-        var relative = RegionDataSync.RelativePath(category) + (category == RegionSyncContent.DalamudSettings ? "" : "/plugin");
+        var relative = RegionDataSync.RelativePath(category) + (category == RegionSyncContent.ThirdPartyRepositories ? "" : "/plugin");
         Write("ffxiv_cn/" + relative, "{\"new\":true}");
         Write("ffxiv_tc/" + relative, "{\"target\":1}");
         Write("ffxiv/" + relative, "{\"target\":2}");
@@ -82,7 +82,7 @@ public sealed class RegionDataSyncTests : IDisposable
     {
         Write("ffxiv_cn/dalamud/dalamudConfig.json", "corrupted");
         var target = Write("ffxiv_tc/dalamud/dalamudConfig.json", "{}");
-        Assert.ThrowsAny<System.Text.Json.JsonException>(() => RegionDataSync.Synchronize(root, "ffxiv_cn", new[] { "ffxiv_tc", "ffxiv" }, RegionSyncContent.DalamudSettings));
+        Assert.ThrowsAny<System.Text.Json.JsonException>(() => RegionDataSync.Synchronize(root, "ffxiv_cn", new[] { "ffxiv_tc", "ffxiv" }, RegionSyncContent.ThirdPartyRepositories));
         Assert.Equal("{}", File.ReadAllText(target));
     }
     [Fact]
@@ -119,7 +119,7 @@ public sealed class RegionDataSyncTests : IDisposable
     public void SingleDestinationLeavesUnselectedRegionAndSourceUntouched(RegionSyncContent category, string source)
     {
         var others = LinuxSettings.Regions.Where(r => r.Id != source).Select(r => r.Id).ToArray();
-        var relative = RegionDataSync.RelativePath(category) + (category == RegionSyncContent.DalamudSettings ? "" : "/config");
+        var relative = RegionDataSync.RelativePath(category) + (category == RegionSyncContent.ThirdPartyRepositories ? "" : "/config");
         var sourcePath = Write(source + "/" + relative, "{\"new\":true}");
         Write(others[0] + "/" + relative, "{\"old\":true}");
         var untouched = Write(others[1] + "/" + relative, "{\"keep\":true}");
@@ -149,5 +149,51 @@ public sealed class RegionDataSyncTests : IDisposable
         Assert.False(File.Exists(Path.Combine(root, ".plugin-sync.lock")));
     }
 
+
+    public static IEnumerable<object[]> RegionPairs => LinuxSettings.Regions.SelectMany(s => LinuxSettings.Regions.Where(t => t.Id != s.Id).Select(t => new object[] { s.Id, t.Id }));
+    [Theory][MemberData(nameof(RegionPairs))]
+    public void RepositorySyncPreservesEveryDestinationSetting(string source, string target)
+    {
+        var list = new System.Text.Json.Nodes.JsonArray();
+        foreach (var url in new[] { "https://raw.githubusercontent.com/cycleapple/DalamudPlugins-TW/main/repo.json", "https://raw.githubusercontent.com/AtmoOmen/DalamudPlugins/main/pluginmaster.json", "https://raw.githubusercontent.com/extrant/DalamudPlugins/main/pluginmaster.json" })
+            list.Add(new System.Text.Json.Nodes.JsonObject { ["Url"] = url, ["IsEnabled"] = list.Count % 2 == 0 });
+        var sourceJson = new System.Text.Json.Nodes.JsonObject { ["MainRepoUrl"] = "https://source.invalid", ["AddPresetThirdRepos"] = true, ["ThirdRepoList"] = new System.Text.Json.Nodes.JsonObject { ["$values"] = list }, ["Other"] = "source" };
+        var targetJson = new System.Text.Json.Nodes.JsonObject { ["MainRepoUrl"] = "https://target.invalid", ["AddPresetThirdRepos"] = false, ["ThirdRepoList"] = new System.Text.Json.Nodes.JsonObject { ["$type"] = "target-metadata", ["$values"] = new System.Text.Json.Nodes.JsonArray() }, ["Other"] = "target" };
+        var relative = RegionDataSync.RelativePath(RegionSyncContent.ThirdPartyRepositories);
+        var from = Write(source + "/" + relative, sourceJson.ToJsonString());
+        var to = Write(target + "/" + relative, targetJson.ToJsonString());
+        var result = RegionDataSync.Synchronize(root, source, [target], RegionSyncContent.ThirdPartyRepositories);
+        var actual = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(to))!;
+        targetJson["ThirdRepoList"]!["$values"] = list.DeepClone();
+        Assert.True(System.Text.Json.Nodes.JsonNode.DeepEquals(targetJson, actual));
+        Assert.Equal(sourceJson.ToJsonString(), File.ReadAllText(from));
+        Assert.True(File.Exists(Path.Combine(result.BackupDirectory, target, relative)));
+    }
+    [Theory][InlineData(true)][InlineData(false)]
+    public void MissingDestinationRegionFieldsStayAbsent(bool exists)
+    {
+        Write("ffxiv_cn/dalamud/dalamudConfig.json", "{\"MainRepoUrl\":\"https://wrong.invalid\",\"AddPresetThirdRepos\":false}");
+        if (exists) Write("ffxiv_tc/dalamud/dalamudConfig.json", "{\"Other\":123}");
+        RegionDataSync.Synchronize(root, "ffxiv_cn", ["ffxiv_tc"], RegionSyncContent.ThirdPartyRepositories);
+        using var json = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "ffxiv_tc/dalamud/dalamudConfig.json")));
+        Assert.False(json.RootElement.TryGetProperty("MainRepoUrl",out _)); Assert.False(json.RootElement.TryGetProperty("AddPresetThirdRepos",out _));
+        Assert.Equal(0,json.RootElement.GetProperty("ThirdRepoList").GetArrayLength());
+    }
+    [Fact] public void CorruptDestinationPreventsAllWrites()
+    {
+        Write("ffxiv_cn/dalamud/dalamudConfig.json", "{}");
+        var first = Write("ffxiv_tc/dalamud/dalamudConfig.json", "{\"Keep\":true}");
+        Write("ffxiv/dalamud/dalamudConfig.json", "broken");
+        Assert.ThrowsAny<System.Text.Json.JsonException>(() => RegionDataSync.Synchronize(root, "ffxiv_cn", ["ffxiv_tc", "ffxiv"], RegionSyncContent.ThirdPartyRepositories));
+        Assert.Equal("{\"Keep\":true}",File.ReadAllText(first));
+    }
+    [Fact] public void ConcurrentDestinationChangeIsNotOverwritten()
+    {
+        Write("ffxiv_cn/dalamud/dalamudConfig.json", "{}");
+        var target = Write("ffxiv_tc/dalamud/dalamudConfig.json", "{}");
+        Assert.Throws<IOException>(() => RegionDataSync.SynchronizeCore(root, "ffxiv_cn", ["ffxiv_tc"], RegionSyncContent.ThirdPartyRepositories, default,
+            _ => File.WriteAllText(target,"{\"Concurrent\":true}")));
+        Assert.Equal("{\"Concurrent\":true}",File.ReadAllText(target));
+    }
     public void Dispose() => Directory.Delete(root, true);
 }

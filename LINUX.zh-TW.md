@@ -25,7 +25,9 @@ Steam、Proton 和預設 pfx 設定共用；各遊戲區服分別管理用戶端
 
 ## 從原始碼建置
 
-需要 .NET 10 SDK、C 編譯器、Python 3、Git 和 `7z`。建置及打包可能需要下載 NuGet 相依套件、固定版本的輔助元件和對應原始碼。
+Electron 前端已完成現有功能接入，包含跨區傳送、compatibility tools 設定、首次設定、視窗記憶、「關於」及 AppImage 更新；完整測試套件不包含舊 Avalonia 介面。開發入口使用獨立目錄，AppImage 預設沿用現有設定；真實三個遊戲區服的登入和遊戲流程仍待實機驗收。純 Electron 建置和封裝方法見[前端開發說明](frontend/README.md)，目前分支已移除舊介面入口，下列指令均建置新的 Electron 版本。
+
+需要 Node.js 24 或更新版本、.NET 10 SDK、C 編譯器、Python 3、Git 和 `7z`。建置及打包可能需要下載 NuGet 相依套件、固定版本的輔助元件和對應原始碼。
 
 1.0.0 的完整啟動器原始碼位於本倉庫。原始碼封存檔、隨附相依元件的對應原始碼及校驗檔案保存在 [release-materials/1.0.0](release-materials/1.0.0)。Release 下載僅保留 AppImage 和簽章更新所需的兩個小檔案。
 
@@ -43,7 +45,7 @@ dotnet test src/XIVLauncher.Linux.Tests/XIVLauncher.Linux.Tests.csproj \
 python3 scripts/check-compliance-materials.py
 
 # 產生執行套件和對應原始碼附件
-bash scripts/package-linux.sh
+VERSION=1.1.1 bash scripts/package-linux.sh
 ```
 
 預設輸出至 `artifacts/linux/`。再次打包時需使用新的輸出目錄，例如：
@@ -57,7 +59,7 @@ bash scripts/package-linux.sh artifacts/local-build
 ```bash
 python3 scripts/package-appimage.py \
   artifacts/linux/xivlauncher-super \
-  artifacts/linux/xivlauncher-super-1.0.0-x86_64.AppImage \
+  artifacts/linux/xivlauncher-super-1.1.1-x86_64.AppImage \
   --runtime /path/to/runtime-x86_64 \
   --public-key packaging/linux/appimage-public.pem
 ```

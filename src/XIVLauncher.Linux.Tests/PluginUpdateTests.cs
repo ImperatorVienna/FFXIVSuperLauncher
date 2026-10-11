@@ -81,5 +81,37 @@ public sealed class PluginUpdateTests : IDisposable
         Assert.Equal("old", File.ReadAllText(Path.Combine(old, "Example.dll"))); Assert.False(Directory.Exists(Path.Combine(Path.GetDirectoryName(old)!, "2.0.0.0")));
         Assert.Empty(Directory.GetDirectories(root, ".plugin-update-*"));
     }
+    [Theory][InlineData(true, "ffxiv_cn", true)][InlineData(false, "ffxiv_cn", false)][InlineData(true, "ffxiv_tc", false)][InlineData(true, "ffxiv", false)]
+    public async Task PresetRepositoriesRespectRegionAndSwitch(bool enabled, string region, bool expected)
+    {
+        var source = PluginRepositories.ChinaPresets[0]; Installed(region, source);
+        var path = Path.Combine(root, region, "dalamud/dalamudConfig.json");
+        File.WriteAllText(path, new JObject { ["AddPresetThirdRepos"] = enabled, ["ThirdRepoList"] = new JObject { ["$values"] = new JArray() } }.ToString());
+        using var client = new HttpClient(new Handler(request => { Assert.True(expected); Assert.Equal(source, request.RequestUri!.AbsoluteUri); return Json(new JArray(Manifest())); }));
+        var plan = await new PluginUpdates(client).CheckAsync(root, region, new(17, 0), default);
+        Assert.Equal(expected ? 1 : 0, plan.Updates.Count); Assert.Equal(expected ? 0 : 1, plan.Problems.Count);
+    }
+    [Fact] public async Task SameNameAcrossApiLevelsSelectsOnlyInstalledApi()
+    {
+        Installed(source: PluginRepositories.ChinaPresets[0]);
+        var previous = Manifest("1.4.0.0"); previous["DalamudApiLevel"] = 16;
+        var future = Manifest("3.0.0.0"); future["DalamudApiLevel"] = 18;
+        using var client = new HttpClient(new Handler(_ => Json(new JArray(previous, Manifest(), future))));
+        var plan = await new PluginUpdates(client).CheckAsync(root, "ffxiv_cn", new(17, 0), default);
+        Assert.Equal(new Version(2,0,0,0), Assert.Single(plan.Updates).Version); Assert.Empty(plan.Problems);
+    }
+    [Fact] public async Task MissingPresetSwitchUsesUpstreamDefaultAndFailedRepositoryDoesNotBlockAnother()
+    {
+        Installed(source: PluginRepositories.ChinaPresets[0]);
+        var other = Path.Combine(root, "ffxiv_cn/dalamud/installedPlugins/Second/1.0.0.0"); Directory.CreateDirectory(other);
+        File.WriteAllText(Path.Combine(other, "Second.dll"), "not executed");
+        File.WriteAllText(Path.Combine(other, "Second.json"), new JObject { ["InternalName"] = "Second", ["AssemblyVersion"] = "1.0.0.0", ["InstalledFromUrl"] = Repo, ["WorkingPluginId"] = Guid.NewGuid() }.ToString());
+        using var client = new HttpClient(new Handler(request => {
+            if (request.RequestUri!.AbsoluteUri != Repo) return new(HttpStatusCode.ServiceUnavailable);
+            var item = Manifest(); item["InternalName"] = "Second"; return Json(new JArray(item));
+        }));
+        var plan = await new PluginUpdates(client).CheckAsync(root, "ffxiv_cn", new(17, 0), default);
+        Assert.Equal("Second", Assert.Single(plan.Updates).Plugin.InternalName); Assert.Single(plan.Problems);
+    }
     public void Dispose() { if (Directory.Exists(root)) Directory.Delete(root, true); }
 }
