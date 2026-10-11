@@ -1,0 +1,6 @@
+FFXIV Super Launcher 2.1.0 release materials
+
+The AppImage and signed update metadata are on the v2.1.0 Release.
+Launcher source, checksums, public key and validation are retained here.
+SOURCE-DELIVERY.json references unchanged dependency sources under ../1.0.0.
+No private signing keys are included.

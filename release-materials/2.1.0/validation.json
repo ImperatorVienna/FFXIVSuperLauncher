@@ -1,0 +1,30 @@
+{
+  "version": "2.1.0",
+  "channel": "stable",
+  "sourceCommit": "4654226492dcd7573669c8675ea57fc7c2a9eb54",
+  "appImageSha256": "449cb94ec6f399ef2901b3c5a2e66d19030df3015d087486e5ecd6b5ef72ab51",
+  "appimageBytes": 204675576,
+  "embeddedVersionVerified": true,
+  "localTest": false,
+  "readmeLanguages": [
+    "en",
+    "zh-CN",
+    "zh-TW",
+    "ja"
+  ],
+  "packagedReadmesMatchReviewedSources": true,
+  "sourceArchiveVerified": true,
+  "backendTestsPassed": 513,
+  "frontendTestsAgainstPackagedBackendPassed": 74,
+  "updateSignatureVerified": true,
+  "thirdPartyRuntimeComponentsUnchanged": true,
+  "isolatedUpgrade": {
+    "from": "2.0.0",
+    "to": "2.1.0",
+    "passed": true,
+    "signatureAndInstallVerified": true,
+    "backupMatchesOriginal": true,
+    "oldPackageSha256": "e755c872bea5e3e8136e658d73142a244cb5bee678e49816222b49812e92bd37",
+    "scope": "Published 2.0.0 program repackaged with test-only loopback metadata; GUI and in-game acceptance separate."
+  }
+}
