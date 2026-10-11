@@ -1,8 +1,0 @@
-{
-  "version": "2.1.0-beta",
-  "backendOfflineTests": 474,
-  "packagedFrontendTests": 66,
-  "thirdPartyRuntimeUnchanged": true,
-  "userReportedSteamDesktopAndBigPictureSessionTrackingPassed": true,
-  "steamDeckTested": false
-}
