@@ -74,6 +74,7 @@ public sealed class PluginUpdates(HttpClient client)
     }
     public async Task InstallAsync(PluginUpdatePlan plan, PluginUpdate update, Action ensureIdle, CancellationToken token)
     {
+        using var cacheLease = DownloadCacheLock.Acquire(plan.Root);
         if (!plan.Updates.Contains(update)) throw new IOException("Plugin update does not belong to this plan.");
         var root = plan.Root; var stage = Path.Combine(root, ".plugin-update-" + Guid.NewGuid().ToString("N"));
         SafePath(root, stage); Directory.CreateDirectory(stage);

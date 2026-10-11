@@ -18,9 +18,18 @@ owner=$5
 destination=$6
 entry=$7
 entryStage=$8
+log=${9:-$stage.helper-log}
+IFS= read -r stat < "/proc/$$/stat"
+fields=${stat##*) }
+set -- $fields
+shift 19
+printf '%s %s\n' "$$" "$1" > "$stage.in-use.tmp"
+mv -f -- "$stage.in-use.tmp" "$stage.in-use"
+cp -- "$stage.in-use" "$log.in-use.tmp"
+mv -f -- "$log.in-use.tmp" "$log.in-use"
 lock="$image.update-lock"
 mkdir -- "$lock" || exit 1
-trap 'rm -f -- "$entryStage"; rmdir -- "$lock"' EXIT
+trap 'rm -f -- "$stage.in-use" "$log.in-use" "$entryStage"; rmdir -- "$lock"' EXIT
 n=0
 while [ -d "/proc/$owner" ]; do
   n=$((n+1)); [ "$n" -lt 3600 ] || exit 1
@@ -44,6 +53,7 @@ mv -f -- "$entryStage" "$entry"
 rm -- "$image"
 printf '%s\n' 'Launcher update installed. Previous version: ' "$image.previous"
 rmdir -- "$lock"
+rm -f -- "$stage.in-use" "$log.in-use"
 trap - EXIT
 # Do not inherit the old, now-unmounted AppImage runtime paths.
 unset APPIMAGE APPDIR ARGV0 OWD LD_LIBRARY_PATH LD_PRELOAD
@@ -72,7 +82,9 @@ exec "$destination" </dev/null
         foreach (var value in new[] { image, stage, expected.ToLowerInvariant(), original, Environment.ProcessId.ToString(), destination, AppImageEntry.EntryPath, entryStage, log }) start.ArgumentList.Add(value);
         File.WriteAllText(entryStage, AppImageEntry.Script(destination));
         File.SetUnixFileMode(entryStage, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        Processes.ProcessFileOwner.Publish(stage + ".in-use", Environment.ProcessId);
+        Processes.ProcessFileOwner.Publish(log + ".in-use", Environment.ProcessId);
         try { return Process.Start(start) ?? throw new IOException("Cannot start the update installer."); }
-        catch { File.Delete(entryStage); throw; }
+        catch { File.Delete(log + ".in-use"); File.Delete(stage + ".in-use"); File.Delete(entryStage); throw; }
     }
 }

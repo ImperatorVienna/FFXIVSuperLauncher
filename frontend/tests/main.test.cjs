@@ -67,7 +67,7 @@ test('all backend contracts and exposed IPC methods have matching handlers',asyn
  const h=await start();const {contracts}=require('../ipc-contract.cjs');
  const host=fs.readFileSync(require.resolve('../../src/XIVLauncher.Linux/Frontend/FrontendHost.cs'),'utf8');
  const backendMethods=[...host.matchAll(/case "([a-z.-]+)":/g)].map(m=>m[1]).sort();
- assert.deepEqual(backendMethods,Object.keys(contracts).sort());
+ assert.deepEqual(backendMethods,Object.keys(contracts).filter(method=>method!=='maintenance.browser-cache').sort());
  let bridge;vm.runInNewContext(fs.readFileSync(require.resolve('../preload.cjs'),'utf8'),{require:()=>({contextBridge:{exposeInMainWorld:(_name,value)=>bridge=value},ipcRenderer:{invoke:name=>assert.ok(h.handlers.has(name),name)}})});
  for(const call of Object.values(bridge))await call();
  const internal=new Set(['system.initialize','window.save','steam.attach','captcha.page','captcha.reply','captcha.fail','session.release']);

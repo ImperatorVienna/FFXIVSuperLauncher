@@ -1,5 +1,4 @@
-using System.Text;
-using System.Text.Json;
+using XIVLauncher.Linux.ChinaTravel;
 using XIVLauncher.Common;
 using XIVLauncher.Common.Game;
 using XIVLauncher.Login.Channels;
@@ -11,7 +10,7 @@ namespace XIVLauncher.Linux;
 public sealed record RegionLoginContext(LinuxSettings Settings, LoginArea? Area, LoginArea[] Areas,
     LoginRequest Request, string Password, Action<string> Status,
     Func<Func<string, CancellationToken, Task<string>>, CancellationToken, Task<string>> AuthenticateWithCaptcha,
-    Func<CancellationToken, Task<string>> RequestManualOtp, Func<CancellationToken, Task>? UpdateAfterLogin = null);
+    Func<CancellationToken, Task<string>> RequestManualOtp, Func<CancellationToken, Task>? UpdateAfterLogin = null, Action<GameTravelSession>? RegisterTravelSession = null);
 public interface IRegionLogin
 {
     Task<LoginArea[]> AreasAsync(CancellationToken token);
@@ -38,8 +37,27 @@ public static class RegionLogin
             if (context.UpdateAfterLogin != null) await context.UpdateAfterLogin(token);
             var sid = await new LoginChannelContext(context.Request.DeviceProfile).GetSessionIdAsync(oauth.TGT, oauth.Guid).WaitAsync(token);
             var area = context.Area ?? throw new IOException("请选择大区。");
-            return new Launcher().CreateGameStartRequest(sid, oauth.SndaID, 0, area.AreaID, area.AreaLobby, area.AreaGM,
-                area.AreaConfigUpload, Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(context.Areas))), "",
+            GameTravelSession? travelSession = null;
+            if (context.RegisterTravelSession != null)
+            {
+                var refresh = new XIVLauncher.Login.Workflow.LoginSessionRefreshContext
+                {
+                    RefreshGameSessionIdAsync = () => new LoginChannelContext(context.Request.DeviceProfile).GetSessionIdAsync(oauth.TGT, oauth.Guid),
+                    RefreshDcTravelSessionIdAsync = () => new LoginChannelContext(context.Request.DeviceProfile).GetDCTravelSessionIDAsync(oauth.TGT, oauth.Guid)
+                };
+                var authentication = new GameSessionAuthentication(context.Settings.Root,
+                    string.IsNullOrEmpty(oauth.InputUserID) ? context.Settings.Account : oauth.InputUserID,
+                    oauth.SndaID, context.Request.DeviceProfile, refresh);
+                travelSession = await GameTravelSession.CreateAsync(context.Settings.Root, authentication, context.Areas, name =>
+                {
+                    var settings = LinuxSettings.Load(context.Settings.Root);
+                    settings.RegionProfiles["ffxiv_cn"].AreaName = name;
+                    settings.Save();
+                });
+                context.RegisterTravelSession(travelSession);
+            }
+            return new Launcher().CreateGameStartRequest(sid, oauth.SndaID, travelSession?.Port ?? 0, area.AreaID, area.AreaLobby, area.AreaGM,
+                area.AreaConfigUpload, DcTravelerBridge.SerializeLobbyHosts(context.Areas), "",
                 new DirectoryInfo(context.Settings.GamePath)).Arguments;
         }
     }

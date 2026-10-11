@@ -28,7 +28,7 @@ metadata=json.loads((repo/'packaging/webview/package.json').read_text());metadat
 (bundle/'frontend').mkdir()
 for name in ['README.md','CLEANUP-AUDIT.md']:
     shutil.copy2(repo/'frontend'/name,bundle/'frontend'/name)
-for name in ['main.cjs','preload.cjs','backend-client.cjs','ipc-contract.cjs','window-state.cjs','steam-session.cjs','launcher-entry.cjs','captcha-view.cjs','shutdown.cjs','session-handoff.cjs']:
+for name in ['main.cjs','preload.cjs','backend-client.cjs','ipc-contract.cjs','window-state.cjs','steam-session.cjs','launcher-entry.cjs','captcha-view.cjs','browser-cache.cjs','shutdown.cjs','session-handoff.cjs']:
     shutil.copy2(repo/'frontend'/name,bundle/'frontend'/name)
 ui=bundle/'prototypes/electron-ui';shutil.copytree(repo/'prototypes/electron-ui',ui,ignore=shutil.ignore_patterns('README.md'))
 html=(ui/'index.html').read_text().replace('../../src/XIVLauncher.Linux/Resources/icon.png','../../icon.png').replace('FFXIV Super Launcher · 交互预览','FFXIV Super Launcher');(ui/'index.html').write_text(html)

@@ -12,6 +12,7 @@ const steamEntry=process.argv.includes('--steam-entry');
 const { pathToFileURL } = require('node:url');
 const { BackendClient } = require('./backend-client.cjs');
 const {contracts} = require('./ipc-contract.cjs');
+const {createBrowserCacheCleaner}=require('./browser-cache.cjs');
 const repository = path.resolve(__dirname, '..');
 const packaged=existsSync(path.join(repository,'frontend-package.json'));
 const defaultData=path.join(process.env.XDG_DATA_HOME&&path.isAbsolute(process.env.XDG_DATA_HOME)?process.env.XDG_DATA_HOME:path.join(require('node:os').homedir(),'.local/share'),'xivlauncher-super');
@@ -53,13 +54,19 @@ else {
     if(!packaged)await writeDevelopmentEntry({root:dataRoot,node:process.env.FFXIV_FRONTEND_NODE,runner:path.join(__dirname,'run.cjs'),
       backend:executable,electron:process.env.FFXIV_ELECTRON,dotnetRoot:process.env.DOTNET_ROOT});
     removeSession=await publishSession(dataRoot,packaged&&/^\d+$/.test(process.env.FFXIV_SESSION_SUPERVISOR||'')?Number(process.env.FFXIV_SESSION_SUPERVISOR):process.pid);
+    const clearBrowserCache=createBrowserCacheCleaner({session,busy:async()=>{
+      if(verification?.isActive())return true;
+      if(!operationId)return false;
+      const state=await backend.request('operations.poll',{operationId});
+      return ['running','cancelling'].includes(state.state);
+    }});
     for (const [method,validate] of Object.entries(contracts)) {
       if(['system.initialize','window.save','steam.attach','captcha.page','captcha.reply','captcha.fail','session.release'].includes(method))continue;
       ipcMain.handle('launcher:'+method, async (event, params) => {
         checkSender(event);
         if(!validate(params))return {ok:false,code:'invalid-request',message:'Invalid request.'};
-        try {const result=await backend.request(method,params);if(result?.operationId)operationId=result.operationId;return {ok:true,result};}
-        catch(error){return {ok:false,code:error.message,message:error.userMessage || 'The backend request failed.',logMessage:error.logMessage || 'The backend request failed.'};}
+        try {const result=method==='maintenance.browser-cache'?await clearBrowserCache():await backend.request(method,params);if(result?.operationId)operationId=result.operationId;return {ok:true,result};}
+        catch(error){return {ok:false,code:error.message,message:error.userMessage || (method==='maintenance.browser-cache'?error.message:'The backend request failed.'),logMessage:error.logMessage || 'The backend request failed.'};}
       });
     }
     ipcMain.handle('launcher:captcha-layout',async(event,value)=>{

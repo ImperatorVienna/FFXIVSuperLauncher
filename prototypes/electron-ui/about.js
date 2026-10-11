@@ -1,8 +1,8 @@
 'use strict';
 window.aboutTemplate=()=>'<section class="panel settings-panel" data-about-ui><div class="section-heading"><h2>关于</h2></div><div id="about-content"></div></section>';
-window.createAboutPage=({call,apply,ready,snapshot,start,cancel,operation,report})=>{
+window.createAboutPage=({call,apply,ready,snapshot,start,clean,cancel,operation,report})=>{
   const {t}=window.previewI18n;
-  let info=null,updates=null,mounted=null,timer=null,checkPending=false,manual=false,notified=null,updateDialog=null,error='',started=false,autoChecked=false,lastLoggedUpdate='';
+  let info=null,updates=null,mounted=null,timer=null,checkPending=false,manual=false,notified=null,updateDialog=null,error='',started=false,autoChecked=false,lastLoggedUpdate='',cleaningBrowser=false;
   const node=(tag,text,cls)=>{const n=document.createElement(tag);if(text)n.textContent=t(text);if(cls)n.className=cls;return n;};
   function button(parent,label,action,id){const b=node('button',label);if(id)b.id=id;b.addEventListener('click',()=>void Promise.resolve().then(action).catch(failure));parent.append(b);return b;}
   function failure(ex){error=ex.message||'操作失败，请查看日志。';report(ex.logMessage||'Launcher information or update operation failed.');present();}
@@ -28,8 +28,21 @@ window.createAboutPage=({call,apply,ready,snapshot,start,cancel,operation,report
     for(const [key,label] of [['license','查看许可证'],['third-party','第三方声明']])button(legal,label,async()=>notice((await call('readNotice',{key})).text,true));
     button(legal,'源码与来源记录',()=>call('openAbout',{key:'sources'}));
     button(legal,'美术素材来源',artSources,'art-sources');
+    host.append(node('h3','存储清理','storage-cleanup-heading'));
+    const maintenance=node('div',null,'row');host.append(maintenance);
+    button(maintenance,'清理下载缓存',()=>clean({kind:'downloads'}),'clean-downloads');
+    button(maintenance,'清理日志',()=>clean({kind:'logs'}),'clean-logs');
+    button(maintenance,'清理内置浏览器缓存',clearBrowserCache,'clean-browser-cache');
+    host.append(node('p','浏览器缓存清理保留 Cookie 和验证状态。','muted'));
+    host.append(node('p','清理启动器管理的缓存和日志；保留 Dalamud 管理的内容。游戏运行时也可清理；下载或安装进行中时暂不可清理下载缓存。','muted'));
     const status=node('p',null,'muted');status.id='about-feedback';status.setAttribute('role','status');host.append(status);
     button(host,'取消操作',cancel,'cancel-launcher-update');present();
+  }
+  async function clearBrowserCache(){
+    if(!ready()||cleaningBrowser)return;
+    cleaningBrowser=true;present();
+    try{const result=await call('clearBrowserCache');error='';notice(t('已清理 {count} 个浏览器会话的缓存，HTTP 缓存减少 {size} MiB；跳过 {skipped} 项。Cookie 和验证状态已保留。',{count:result.cleared,size:(result.bytes/1048576).toFixed(1),skipped:result.skipped}));}
+    finally{cleaningBrowser=false;present();}
   }
   function artSources(){
     const dialog=node('dialog',null,'art-sources-dialog');dialog.dataset.aboutUi='';
@@ -78,7 +91,7 @@ window.createAboutPage=({call,apply,ready,snapshot,start,cancel,operation,report
   }
   function present(){
     const host=document.querySelector('#about-content');
-    if(host){for(const b of host.querySelectorAll('button'))b.disabled=!ready()||b.hasAttribute('data-reserved');
+    if(host){for(const b of host.querySelectorAll('button'))b.disabled=cleaningBrowser||!ready()||b.hasAttribute('data-reserved');
       const check=host.querySelector('#launcher-check');if(check)check.disabled ||= checkPending||updates?.state==='checking';
       const stop=host.querySelector('#cancel-launcher-update');if(stop){stop.hidden=!operation();stop.disabled=operation()?.state!=='running';}
       const status=host.querySelector('#about-feedback');if(status)status.textContent=t(error||(updates?.state==='checking'?'正在检查启动器更新…':operation()?'正在处理，请稍候…':''));}
@@ -89,5 +102,5 @@ window.createAboutPage=({call,apply,ready,snapshot,start,cancel,operation,report
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)maybeNotify();});
   function autoCheck(){if(started&&!autoChecked&&ready()&&snapshot()?.setupComplete&&snapshot()?.autoCheckUpdates!==false){autoChecked=true;void check();}}
   return {start(){started=true;void load();autoCheck();},sync(){if(mounted!==document.querySelector('#about-content'))render();const toggle=document.querySelector('#auto-check-updates');if(toggle){toggle.checked=snapshot()?.autoCheckUpdates!==false;toggle.disabled=!ready();}present();autoCheck();},
-    completed(result){error=result.error||'';present();}};
+    completed(result){error=result.error||'';if(result.state==='completed'&&Number.isInteger(result.result?.deleted)){const r=result.result;notice(t('已清理 {count} 个文件，释放 {size} MiB；跳过 {skipped} 项。',{count:r.deleted,size:(r.bytes/1048576).toFixed(1),skipped:r.skipped}));}present();}};
 };

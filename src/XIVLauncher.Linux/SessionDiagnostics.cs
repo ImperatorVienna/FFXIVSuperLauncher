@@ -8,6 +8,26 @@ public sealed class SessionDiagnostics(string root)
     private readonly SessionFile file = Files.GetOrAdd(Path.GetFullPath(root), directory => new(Path.Combine(directory, "logs", $"launcher-{DateTime.Now:yyyyMMdd-HHmmss}-{Environment.ProcessId}.log")));
     public string FilePath => file.Path;
     public string? WriteError { get; private set; }
+    internal long ClearFile(string path)
+    {
+        lock (file.Gate)
+        {
+            if (Processes.ProcessFileOwner.IsProtected(path + ".in-use")) throw new IOException("Log owner is active.");
+            if (Path.GetFullPath(path) != file.Path)
+            {
+                var name = Path.GetFileNameWithoutExtension(path);
+                if (!int.TryParse(name[(name.LastIndexOf('-') + 1)..], out var pid) || pid <= 0 ||
+                    Processes.ProcessFacts.Read(pid).Presence != Processes.ProcessPresence.Gone)
+                    throw new IOException("Other log owner is active or unknown.");
+            }
+            using var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            var size = stream.Length;
+            // Preserve the current log inode; subsequent writes continue normally.
+            if (Path.GetFullPath(path) == file.Path) stream.SetLength(0);
+            else File.Delete(path);
+            return size;
+        }
+    }
     public void Write(string message, string region, string level)
     {
         if (string.IsNullOrWhiteSpace(message)) return;

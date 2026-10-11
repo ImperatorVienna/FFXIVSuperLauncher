@@ -37,6 +37,7 @@ public sealed class RegionDalamudUpdates(
         token.ThrowIfCancellationRequested();
         var region = settings.SelectedRegion;
         var language = GameClientLanguage.For(settings);
+        using var cacheLease = DownloadCacheLock.Acquire(settings.Root);
         var files = await prepare(region, Path.Combine(settings.Root, region), status, token);
         token.ThrowIfCancellationRequested();
         settings.RegionProfiles[region].DalamudVersion = files.Injector.Directory!.Name;

@@ -9,6 +9,7 @@ public sealed class RegionUpdateService(Func<string, IRegionBackend>? provider =
         var region = settings.SelectedRegion;
         var profile = settings.RegionProfiles[region];
         var path = profile.GamePath;
+        using var cacheLease = DownloadCacheLock.Acquire(settings.Root);
         await resolve(region).UpdateGameAsync(new DirectoryInfo(path), Path.Combine(settings.Root, region), status, token);
         token.ThrowIfCancellationRequested();
         RecordGameVersion(settings, region, path);

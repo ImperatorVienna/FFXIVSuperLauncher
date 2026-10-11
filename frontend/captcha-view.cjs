@@ -99,6 +99,7 @@ function createCaptchaView({window,backend,WebContentsView,session,commandTimeou
   }else if(current?.attached){window.contentView.removeChildView(current.view);current.attached=false;}
  }
  return {
+  isActive(){return Boolean(current);},
   update(value){
    if(!value){generation++;clear();return Promise.resolve();}
    const revision=generation;serial=serial.catch(()=>{}).then(()=>sync(value,revision));return serial;

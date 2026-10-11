@@ -88,7 +88,7 @@ test('preload exposes only named operations and never raw IPC',async()=>{
     ipcRenderer:{invoke:(...args)=>{calls.push(args);return Promise.resolve('ok');}}};
   const code=await readFile(path.join(__dirname,'../preload.cjs'),'utf8');
   vm.runInNewContext(code,{require:name=>{assert.equal(name,'electron');return electron;}});
-  assert.equal(Object.keys(exposed).length,36);assert.equal(Object.isFrozen(exposed),true);assert.equal(exposed.invoke,undefined);assert.equal(exposed.send,undefined);
+  assert.equal(Object.keys(exposed).length,40);assert.equal(Object.isFrozen(exposed),true);assert.equal(exposed.invoke,undefined);assert.equal(exposed.send,undefined);
   await exposed.snapshot();await exposed.applyPreferences({language:'ja'});
   assert.deepEqual(JSON.parse(JSON.stringify(calls)),[['launcher:snapshot',{}],['launcher:preferences.update',{language:'ja'}]]);
 });
