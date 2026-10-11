@@ -18,6 +18,7 @@ const contracts = Object.freeze({
   'captcha.fail':fields({...operation,challengeId:text(64),value:v=>['renderer-exited','page-load','verification-timeout','invalid-token','token-delivery','page-command','page-initialization'].includes(v)},['operationId','challengeId','value']),
   'captcha.reply':fields({...operation,challengeId:text(64),value:text(16384)},['operationId','challengeId','value']),
   'steam.attach':fields({}),
+  'session.release':fields(operation,['operationId']),
   'window.save':fields({x:Number.isInteger,y:Number.isInteger,width:Number.isFinite,height:Number.isFinite,maximized:bool},['x','y','width','height','maximized']),
   'setup.complete':fields({enableDalamud:bool},['enableDalamud']),
   'about.read':fields({}),

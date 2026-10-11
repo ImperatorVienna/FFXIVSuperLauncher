@@ -111,6 +111,6 @@
       if(operation.challenge?.id!==value.challengeId)return Promise.resolve({ok:false,code:'invalid-request',message:'Stale challenge.'});
       operation.state='completed';operation.challenge=null;operation.log+='\n[TEST] Synthetic operation completed.';return ok({accepted:true});
     },
-    chooseClientDirectory:()=>Promise.resolve(null),minimizeAfterLaunch:()=>Promise.resolve()
+    chooseClientDirectory:()=>Promise.resolve(null),finishLaunch:()=>Promise.resolve({released:false})
   };
 })();

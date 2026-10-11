@@ -248,7 +248,7 @@ window.frontendConnection = (() => {
         if(operationKind==='launcher-update')about?.completed(result);
         const travelLaunch=operationKind==='travel'&&travel?.completed(result);if(operationKind==='plugins')await plugins?.completed(result);if(operationKind==='compatibility')compatibility?.completed(result);present();if((operationKind==='game'||operationKind==='travel'))renderOperation();
         // Window management and account refresh must not turn a successful game launch into a failure.
-        if(result.launched&&result.state==='completed')try{await bridge.minimizeAfterLaunch(id);}catch{report(t('窗口最小化失败；游戏启动结果不受影响。'));}
+        if(result.launched&&result.state==='completed')try{if((await bridge.finishLaunch(id))?.released)return;}catch{report(t('界面退出准备失败；游戏启动结果不受影响。'));}
         try{snapshot=await call('snapshot');redraw();if((operationKind==='game'||operationKind==='travel'))await reloadAccounts(result.state==='completed');}catch(error){fail(error);}
         if(travelLaunch)setTimeout(()=>void startOperation('launch'),0);
       }

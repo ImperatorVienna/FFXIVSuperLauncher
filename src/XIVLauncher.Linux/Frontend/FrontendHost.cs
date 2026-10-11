@@ -18,6 +18,9 @@ internal static class FrontendHost
     {
         if (launcherEntry != null) LinuxSettings.EnsureCreated(root);
         XIVLauncher.Common.Unix.CompatibilityRunner? gameSession = null;
+        var releasedSession = false;
+        try
+        {
         var compatibility = new FrontendCompatibility(root, launcherEntry);
         var application = new FrontendApplication(root);
         await using var launcherUpdates = new FrontendLauncherUpdates(root, application);
@@ -86,6 +89,15 @@ internal static class FrontendHost
                 switch(request.Method)
                 {
                     case "snapshot":result=preferences.Snapshot();break;
+                    case "session.release":
+                        var releaseView=operations.Poll(Parse<OperationIdentity>());
+                        releasedSession=FrontendSessionRelease.CanRelease(releaseView,gameSession);
+                        if(releasedSession)
+                        {
+                            OfficialBrowser.CloseOwned();
+                            new SessionDiagnostics(root).Write("Game process confirmed. Releasing Electron; the session supervisor will remain until the game exits.",releaseView.Region,"INFO");
+                        }
+                        result=new {ready=releasedSession};break;
                     case "steam.attach":steamEntry=true;result=new {attached=true};break;
                     case "system.initialize":result=application.Initialize();break;
                     case "window.save":result=application.SaveWindow(Parse<WindowPlacement>());break;
@@ -150,8 +162,20 @@ internal static class FrontendHost
             if(areaTask!=null)try{await areaTask;}catch(IOException){ }catch(OperationCanceledException){ }
             if(scanReply!=null)try{await scanReply;}catch(IOException){ }catch(OperationCanceledException){ }
         }
-        // UI work is released before waiting for a game launched by this Steam process.
-        if (steamEntry && gameSession != null) await gameSession.WaitForPrefixExitAsync();
+        }
+        finally
+        {
+            // Disposing UI services must not drop the AppImage mount while a game is alive.
+            if ((steamEntry || releasedSession) && gameSession != null)
+            {
+                try { await gameSession.WaitForPrefixExitAsync(); }
+                catch (Exception ex)
+                {
+                    new SessionDiagnostics(root).Write("Prefix wait failed; monitoring the game process instead. " + DiagnosticLog.Format(ex),"shared","WARN");
+                    while(FrontendSessionRelease.HasGame(Path.Combine(gameSession.Settings.DataDirectory,"pfx")))await Task.Delay(1000);
+                }
+            }
+        }
         return 0;
     }
 }

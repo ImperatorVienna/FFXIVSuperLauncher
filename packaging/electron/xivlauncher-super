@@ -4,4 +4,25 @@ bundle=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 if [ "${1-}" = '--launcher-version' ]; then exec "$bundle/xivlauncher-backend" --launcher-version; fi
 unset ELECTRON_RUN_AS_NODE NODE_OPTIONS LD_PRELOAD
 export FFXIV_ELECTRON="$bundle/Tools/webview/electron"
-exec "$FFXIV_ELECTRON" --super-launcher "$@"
+# Keep the AppImage mount and Steam's tracked process alive after Chromium exits.
+# The private directory is unique to this invocation, including secondary launches.
+FFXIV_SESSION_DIRECTORY=$(mktemp -d "${TMPDIR:-/tmp}/xivlauncher-session.XXXXXXXX")
+FFXIV_SESSION_SUPERVISOR=$$
+export FFXIV_SESSION_DIRECTORY FFXIV_SESSION_SUPERVISOR
+trap 'rm -rf -- "$FFXIV_SESSION_DIRECTORY"' EXIT
+result=0
+"$FFXIV_ELECTRON" --super-launcher "$@" || result=$?
+if [ -f "$FFXIV_SESSION_DIRECTORY/backend" ]; then
+  read -r backend stamp < "$FFXIV_SESSION_DIRECTORY/backend"
+  case "$backend:$stamp" in *[!0-9:]*|:*) exit 1;; esac
+  while [ -r "/proc/$backend/stat" ]; do
+    IFS= read -r stat < "/proc/$backend/stat" || break
+    fields=${stat##*) }
+    set -- $fields
+    [ "$1" != Z ] && [ "$1" != X ] || break
+    shift 19
+    [ "${1-}" = "$stamp" ] || break
+    sleep 1
+  done
+fi
+exit "$result"

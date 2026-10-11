@@ -6,6 +6,7 @@ const {restoreBounds,observePlacement} = require('./window-state.cjs');
 const {publishSession,waitForPrimary} = require('./steam-session.cjs');
 const {createCaptchaView}=require('./captcha-view.cjs');
 const {shutdown}=require('./shutdown.cjs');
+const {handoff}=require('./session-handoff.cjs');
 const {writeDevelopmentEntry} = require('./launcher-entry.cjs');
 const steamEntry=process.argv.includes('--steam-entry');
 const { pathToFileURL } = require('node:url');
@@ -22,7 +23,8 @@ mkdirSync(userData, {recursive:true,mode:0o700});
 app.setPath('userData', userData);
 app.enableSandbox();
 if (!app.requestSingleInstanceLock({steamEntry})) {
-  if(steamEntry)void waitForPrimary(dataRoot).finally(()=>app.quit());else app.quit();
+  if(steamEntry)void waitForPrimary(dataRoot,packaged&&process.env.FFXIV_SESSION_DIRECTORY
+    ? {transfer:pid=>handoff({child:{pid},release(){}},process.env.FFXIV_SESSION_DIRECTORY)} : {}).catch(()=>{}).finally(()=>app.quit());else app.quit();
 }
 else {
   let backend;
@@ -50,9 +52,9 @@ else {
     const startup=await backend.request('system.initialize');
     if(!packaged)await writeDevelopmentEntry({root:dataRoot,node:process.env.FFXIV_FRONTEND_NODE,runner:path.join(__dirname,'run.cjs'),
       backend:executable,electron:process.env.FFXIV_ELECTRON,dotnetRoot:process.env.DOTNET_ROOT});
-    removeSession=await publishSession(dataRoot);
+    removeSession=await publishSession(dataRoot,packaged&&/^\d+$/.test(process.env.FFXIV_SESSION_SUPERVISOR||'')?Number(process.env.FFXIV_SESSION_SUPERVISOR):process.pid);
     for (const [method,validate] of Object.entries(contracts)) {
-      if(['system.initialize','window.save','steam.attach','captcha.page','captcha.reply','captcha.fail'].includes(method))continue;
+      if(['system.initialize','window.save','steam.attach','captcha.page','captcha.reply','captcha.fail','session.release'].includes(method))continue;
       ipcMain.handle('launcher:'+method, async (event, params) => {
         checkSender(event);
         if(!validate(params))return {ok:false,code:'invalid-request',message:'Invalid request.'};
@@ -76,11 +78,28 @@ else {
       const result=await dialog.showOpenDialog(window,{properties:['openFile'],filters:[{name:'Proton',extensions:['*']}]});
       return result.canceled ? null : result.filePaths[0];
     });
-    ipcMain.handle('launcher:minimize-after-launch',async (event, operationId)=>{
+    ipcMain.handle('launcher:finish-launch',async (event, operationId)=>{
       checkSender(event);
       if(typeof operationId!=='string'||operationId.length>64)throw new Error('Invalid operation.');
       const result=await backend.request('operations.poll',{operationId});
-      if(result.state==='completed'&&result.launched)placement?.minimize();
+      if(result.state!=='completed'||!result.launched)return {released:false};
+      if(!packaged||!process.env.FFXIV_SESSION_DIRECTORY){placement?.minimize();return {released:false};}
+      // Save placement before EOF; never accept a renderer-supplied PID or file path.
+      await placement?.flush();
+      let decision;
+      for(let attempt=0;attempt<20;attempt++){
+        decision=await backend.request('session.release',{operationId});
+        if(decision.ready)break;
+        await new Promise(resolve=>setTimeout(resolve,500));
+      }
+      if(!decision.ready){placement?.minimize();return {released:false};}
+      await verification?.close();
+      await handoff(backend,process.env.FFXIV_SESSION_DIRECTORY);
+      placement?.stop();removeSession=null;
+      // Leave the supervisor-owned session marker until its PID exits. A later
+      // invocation replaces the marker; secondary Steam entries wait for that PID.
+      app.exit(0);
+      return {released:true};
     });
     ipcMain.handle('launcher:quit-for-update',async(event,operationId)=>{
       checkSender(event);

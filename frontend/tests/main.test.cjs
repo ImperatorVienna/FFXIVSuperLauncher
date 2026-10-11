@@ -1,13 +1,13 @@
 'use strict';
 const {test}=require('node:test');const assert=require('node:assert/strict');const vm=require('node:vm');const fs=require('node:fs');const {EventEmitter}=require('node:events');
-async function start(packaged=true,verification=null){
+async function start(packaged=true,verification=null,release=false){
  const calls=[],handlers=new Map();let current;const ready=[];
  const app=new EventEmitter();Object.assign(app,{setPath(){},enableSandbox(){},requestSingleInstanceLock(){return true},whenReady(){const p=Promise.resolve();const original=p.then.bind(p);p.then=fn=>{const result=original(fn);ready.push(result);return result;};return p;},quit(){calls.push('quit')},exit(){calls.push('exit')}});
  class Window extends EventEmitter{constructor(options){super();this.options=options;this.webContents=new EventEmitter();this.webContents.mainFrame={url:''};this.webContents.setWindowOpenHandler=fn=>this.navigation=fn;current=this;calls.push('window');}loadFile(file,{query}){this.webContents.mainFrame.url=require('node:url').pathToFileURL(file).href+'?integration='+query.integration;return Promise.resolve();}maximize(){}isMinimized(){return false}focus(){}}
- class Backend{constructor(executable,args){calls.push({executable,args});}async request(method){calls.push(method);if(method==='system.initialize')return {windowPlacement:null,setupComplete:false};if(method==='operations.poll')return {state:'completed',result:{exitForUpdate:true}};return {saved:true};}async close(){calls.push('backend.close')}}
+ class Backend{constructor(executable,args){calls.push({executable,args});}async request(method){calls.push(method);if(method==='system.initialize')return {windowPlacement:null,setupComplete:false};if(method==='operations.poll')return {state:'completed',launched:release,result:{exitForUpdate:true}};if(method==='session.release')return {ready:release};return {saved:true};}async close(){calls.push('backend.close')}}
  const electron={app,BrowserWindow:Window,ipcMain:{handle:(name,fn)=>handlers.set(name,fn)},Menu:{setApplicationMenu(){}},session:{defaultSession:{setPermissionRequestHandler(){},setPermissionCheckHandler(){},on(){}}},dialog:{},screen:{getPrimaryDisplay:()=>({workArea:{x:0,y:0,width:1280,height:800}}),getAllDisplays:()=>[]}};
- const mocks={'electron':electron,'node:fs':{mkdirSync(){},existsSync:()=>packaged},'./captcha-view.cjs':{createCaptchaView:()=>verification||({update:async()=>{},close:async()=>{}})},'./backend-client.cjs':{BackendClient:Backend},'./launcher-entry.cjs':{writeDevelopmentEntry:async()=>calls.push('entry')},'./steam-session.cjs':{publishSession:async()=>{calls.push('session');return async()=>calls.push('remove-session')}},'./window-state.cjs':{...require('../window-state.cjs'),observePlacement:()=>({flush:async()=>calls.push('flush'),stop(){},minimize:()=>calls.push('minimize')})}};
- vm.runInNewContext(fs.readFileSync(require.resolve('../main.cjs'),'utf8'),{require:name=>mocks[name]||require(name.startsWith('./')?'../'+name.slice(2):name),__dirname:'/fixture/frontend',console,process:{once(){},argv:['electron','--super-launcher'],env:{APPIMAGE:'/test/renamed.AppImage',FFXIV_BACKEND:'/stale/backend',FFXIV_ELECTRON:'/runtime/electron',FFXIV_FRONTEND_NODE:'/runtime/node',FFXIV_FRONTEND_DATA_DIR:'/isolated'}}});
+ const mocks={'./session-handoff.cjs':{handoff:async()=>calls.push('handoff')},'electron':electron,'node:fs':{mkdirSync(){},existsSync:()=>packaged},'./captcha-view.cjs':{createCaptchaView:()=>verification||({update:async()=>{},close:async()=>{}})},'./backend-client.cjs':{BackendClient:Backend},'./launcher-entry.cjs':{writeDevelopmentEntry:async()=>calls.push('entry')},'./steam-session.cjs':{publishSession:async()=>{calls.push('session');return async()=>calls.push('remove-session')}},'./window-state.cjs':{...require('../window-state.cjs'),observePlacement:()=>({flush:async()=>calls.push('flush'),stop(){},minimize:()=>calls.push('minimize')})}};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../main.cjs'),'utf8'),{require:name=>mocks[name]||require(name.startsWith('./')?'../'+name.slice(2):name),__dirname:'/fixture/frontend',console,process:{once(){},argv:['electron','--super-launcher'],env:{APPIMAGE:'/test/renamed.AppImage',FFXIV_BACKEND:'/stale/backend',FFXIV_ELECTRON:'/runtime/electron',FFXIV_FRONTEND_NODE:'/runtime/node',FFXIV_FRONTEND_DATA_DIR:'/isolated',...(release?{FFXIV_SESSION_DIRECTORY:'/private-session',FFXIV_SESSION_SUPERVISOR:'123'}:{})}}});
  await Promise.all(ready);
  return {calls,handlers,current,app,event:{sender:current.webContents,senderFrame:current.webContents.mainFrame}};
 }
@@ -70,6 +70,18 @@ test('all backend contracts and exposed IPC methods have matching handlers',asyn
  assert.deepEqual(backendMethods,Object.keys(contracts).sort());
  let bridge;vm.runInNewContext(fs.readFileSync(require.resolve('../preload.cjs'),'utf8'),{require:()=>({contextBridge:{exposeInMainWorld:(_name,value)=>bridge=value},ipcRenderer:{invoke:name=>assert.ok(h.handlers.has(name),name)}})});
  for(const call of Object.values(bridge))await call();
- const internal=new Set(['system.initialize','window.save','steam.attach','captcha.page','captcha.reply','captcha.fail']);
+ const internal=new Set(['system.initialize','window.save','steam.attach','captcha.page','captcha.reply','captcha.fail','session.release']);
  for(const method of Object.keys(contracts))assert.equal(h.handlers.has('launcher:'+method),!internal.has(method));
+});
+
+test('confirmed launch hands off lifetime then exits Chromium without waiting for the game',async()=>{
+ const h=await start(true,null,true);
+ await h.handlers.get('launcher:finish-launch')(h.event,'launch-id');
+ assert.ok(h.calls.indexOf('flush')<h.calls.indexOf('session.release'));
+ assert.ok(h.calls.indexOf('session.release')<h.calls.indexOf('handoff'));
+ assert.equal(h.calls.at(-1),'exit');assert.ok(!h.calls.includes('backend.close'));assert.ok(!h.calls.includes('remove-session'));
+});
+test('nonlaunch operations never hand off or exit',async()=>{
+ const h=await start();await h.handlers.get('launcher:finish-launch')(h.event,'update-id');
+ assert.ok(!h.calls.includes('handoff'));assert.ok(!h.calls.includes('exit'));
 });

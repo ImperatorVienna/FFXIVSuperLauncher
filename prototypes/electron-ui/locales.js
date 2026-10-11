@@ -825,10 +825,10 @@ window.previewStrings = {
     "確認コード",
     "Confirmation code"
   ],
-  "窗口最小化失败；游戏启动结果不受影响。": [
-    "視窗最小化失敗；遊戲啟動結果不受影響。",
-    "ウィンドウを最小化できませんでした。ゲームの起動結果には影響しません。",
-    "The window could not be minimized; the game launch result is unaffected."
+  "界面退出准备失败；游戏启动结果不受影响。": [
+    "介面退出準備失敗；遊戲啟動結果不受影響。",
+    "画面終了の準備に失敗しました。ゲームの起動結果には影響しません。",
+    "Could not prepare to close the interface; the game launch result is unaffected."
   ],
   "2FA 验证码（可选）": [
     "2FA 驗證碼（選填）",

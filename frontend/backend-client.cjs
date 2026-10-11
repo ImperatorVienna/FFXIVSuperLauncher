@@ -72,6 +72,13 @@ class BackendClient {
     this.pending.clear();
     if(notify)try{this.onFailure?.(code);}catch{}
   }
+  release() {
+    this.fail('backend-closed');
+    this.child.stdin.end();
+    this.child.stdout.destroy();this.child.stderr.destroy();
+    this.child.unref();
+    this.closing=Promise.resolve();
+  }
   close() {
     if(this.closing)return this.closing;
     this.fail('backend-closed');

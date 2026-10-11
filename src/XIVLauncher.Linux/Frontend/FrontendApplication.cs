@@ -51,7 +51,7 @@ internal sealed class FrontendApplication(string root)
     }
     internal object About() => new
     {
-        version = typeof(FrontendHost).Assembly.GetName().Version?.ToString(3), author = "ImperatorVienna",
+        version = typeof(FrontendHost).Assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false).OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion.Split('+')[0] ?? typeof(FrontendHost).Assembly.GetName().Version?.ToString(3), author = "ImperatorVienna",
         isAppImage = IsAppImage, notice = IsAppImage ? AppImageEntry.Notice : "",
         diagnosticPath = diagnostics.FilePath, links = Links.Keys.ToArray()
     };

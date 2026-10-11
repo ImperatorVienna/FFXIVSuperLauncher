@@ -2,6 +2,13 @@ using System.Diagnostics;
 namespace XIVLauncher.Linux;
 public static class OfficialBrowser
 {
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<int,Process> owned = new();
+    internal static void CloseOwned()
+    {
+        foreach(var process in owned.Values)
+            try { if(!process.HasExited)process.Kill(entireProcessTree:true); }
+            catch(InvalidOperationException) { }
+    }
     public static void Open(string url, string root) => Open(url, root, null);
     internal static void Open(string url, string root, string? browserPath)
     {
@@ -17,11 +24,13 @@ public static class OfficialBrowser
         start.ArgumentList.Add("--user-data-dir=" + profile); start.ArgumentList.Add("--official-url=" + uri.AbsoluteUri); start.ArgumentList.Add("--ui-language=" + Localization.Language);
         start.ArgumentList.Add("--toolbar-labels=" + System.Text.Json.JsonSerializer.Serialize(new[] { "后退", "前进", "重新加载", "在系统浏览器中打开" }.Select(Localization.Display)));
         var process = Process.Start(start) ?? throw new IOException("无法打开官方页面窗口。");
+        owned[process.Id]=process;
+        var pid=process.Id;
         _ = Task.Run(async () =>
         {
             try { await Task.WhenAll(process.StandardError.BaseStream.CopyToAsync(Stream.Null), process.StandardOutput.BaseStream.CopyToAsync(Stream.Null), process.WaitForExitAsync()); }
             catch(Exception ex) { new SessionDiagnostics(root).Write(DiagnosticLog.Format(ex),"shared","WARN"); }
-            finally { process.Dispose(); try { Directory.Delete(profile, true); } catch (Exception ex) when(ex is IOException or UnauthorizedAccessException) { } }
+            finally { owned.TryRemove(pid,out _); process.Dispose(); try { Directory.Delete(profile, true); } catch (Exception ex) when(ex is IOException or UnauthorizedAccessException) { } }
         });
     }
 }

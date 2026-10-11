@@ -37,5 +37,5 @@ contextBridge.exposeInMainWorld('launcherBridge', Object.freeze({
   cancelOperation: value => ipcRenderer.invoke('launcher:operations.cancel',value),
   replyOperation: value => ipcRenderer.invoke('launcher:operations.reply',value),
   chooseClientDirectory: () => ipcRenderer.invoke('launcher:choose-client'),
-  minimizeAfterLaunch: operationId => ipcRenderer.invoke('launcher:minimize-after-launch',operationId)
+  finishLaunch: operationId => ipcRenderer.invoke('launcher:finish-launch',operationId)
 }));

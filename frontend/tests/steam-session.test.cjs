@@ -7,3 +7,10 @@ test('a secondary Steam invocation waits for the owning primary session, then re
   await waitForPrimary(root,{alive:()=>true,delay:async()=>{if(++polls===3)await remove();}});
   assert.equal(polls,3);await assert.rejects(fs.access(path.join(root,'electron-session.json')));
 });
+
+test('secondary packaged entry transfers waiting to its shell without keeping Electron alive',async t=>{
+ const root=await fs.mkdtemp(path.join(tmpdir(),'steam-transfer-test-'));t.after(()=>fs.rm(root,{recursive:true,force:true}));
+ await publishSession(root,12345);let transferred;
+ await waitForPrimary(root,{alive:()=>true,transfer:async pid=>{transferred=pid},delay:async()=>{throw new Error('must not poll after transfer')}});
+ assert.equal(transferred,12345);
+});
