@@ -1,3 +1,23 @@
+<table>
+<tr><td>
+
+<h3>Sound familiar?</h3>
+<ul>
+  <li>Moving to <strong>Linux</strong>, by choice or necessity, but worried you won’t be able to enjoy FFXIV?</li>
+  <li>Playing in <strong>multiple game regions</strong>, but each launcher only supports one, leaving you with two or three launchers that all look and feel different?</li>
+  <li>One launcher restricts more adventurous plugins, while the version without those restrictions <strong>doesn’t support Linux</strong>?</li>
+  <li>The game requires <strong>2FA</strong>, so you have to type a code every time you log in?</li>
+  <li>Your launcher’s bundled Wine performs poorly, but <strong>switching to Proton</strong> is a struggle?</li>
+  <li>Your launcher’s UI looks <strong>far worse</strong> than the official one?</li>
+  <li>A plugin update crashes the game, forcing you to <strong>disable every plugin</strong> just to log in, then re-enable the others one by one?</li>
+</ul>
+<p>……</p>
+<p align="center"><strong>Download FFXIV Super Launcher and tackle all of these problems in one place!</strong></p>
+<p align="center"><a href="https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases"><strong>Download FFXIV Super Launcher →</strong></a></p>
+
+</td></tr>
+</table>
+
 <p align="center">
   <img src="src/XIVLauncher.Linux/Resources/icon.png" width="128" height="128" alt="FFXIV Super Launcher icon">
 </p>

@@ -1,3 +1,23 @@
+<table>
+<tr><td>
+
+<h3>這些問題，你也遇過嗎？</h3>
+<ul>
+  <li>即將主動或被迫切換到 <strong>Linux</strong> 系統，卻擔心無法暢玩 FFXIV？</li>
+  <li>遊玩<strong>多個區服</strong>，但每個啟動器都只支援單一區服，所以得安裝兩三個風格迥異的啟動器？</li>
+  <li>某啟動器限制一些比較激進的外掛，而不設限的版本又<strong>不支援 Linux</strong> 平台？</li>
+  <li>遊戲官方強制使用 <strong>2FA 驗證</strong>，每次登入都得手動輸入？</li>
+  <li>啟動器內建的 Wine 效能表現十分糟糕，想要<strong>改用 Proton</strong> 卻困難重重？</li>
+  <li>啟動器的 UI 相較於官方啟動器過於<strong>醜陋</strong>？</li>
+  <li>某個外掛更新導致遊戲崩潰，每次都得<strong>停用全部外掛</strong>登入，才能再逐一啟用其他外掛？</li>
+</ul>
+<p>……</p>
+<p align="center"><strong>以上問題，下載 FFXIV Super Launcher，一次為你解決！</strong></p>
+<p align="center"><a href="https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases"><strong>下載 FFXIV Super Launcher →</strong></a></p>
+
+</td></tr>
+</table>
+
 <p align="center">
   <img src="src/XIVLauncher.Linux/Resources/icon.png" width="128" height="128" alt="FFXIV Super Launcher 圖示">
 </p>

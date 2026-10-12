@@ -1,3 +1,23 @@
+<table>
+<tr><td>
+
+<h3>こんな悩み、ありませんか？</h3>
+<ul>
+  <li>自分の意思で、あるいはやむを得ず <strong>Linux</strong> に移行するけれど、FFXIV を快適に遊べるか不安？</li>
+  <li><strong>複数のゲームリージョン</strong>で遊んでいるのに、各ランチャーは一つにしか対応せず、見た目も操作感も違うランチャーを二つも三つも入れる必要がある？</li>
+  <li>あるランチャーでは踏み込んだ機能のプラグインが制限され、制限のないバージョンは <strong>Linux に非対応</strong>？</li>
+  <li>ゲーム公式で <strong>2FA 認証</strong>が必須になり、ログインのたびにコードを手入力している？</li>
+  <li>ランチャーに同梱された Wine の動作が重く、<strong>Proton に切り替える</strong>のも一苦労？</li>
+  <li>ランチャーの UI が公式ランチャーと比べて<strong>見劣りする</strong>？</li>
+  <li>プラグインの更新でゲームがクラッシュし、毎回<strong>すべてのプラグインを無効にして</strong>ログインしてから、ほかのプラグインを一つずつ有効に戻している？</li>
+</ul>
+<p>……</p>
+<p align="center"><strong>そんな悩みは、FFXIV Super Launcher をダウンロードしてまとめて解決！</strong></p>
+<p align="center"><a href="https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases"><strong>FFXIV Super Launcher をダウンロード →</strong></a></p>
+
+</td></tr>
+</table>
+
 <p align="center">
   <img src="src/XIVLauncher.Linux/Resources/icon.png" width="128" height="128" alt="FFXIV Super Launcher のアイコン">
 </p>
