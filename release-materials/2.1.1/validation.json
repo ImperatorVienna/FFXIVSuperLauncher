@@ -1,0 +1,33 @@
+{
+  "version": "2.1.1",
+  "channel": "stable",
+  "localTest": false,
+  "backendTestsPassed": 531,
+  "frontendTestsAgainstPackagedBackendPassed": 84,
+  "sourceCommit": "5cfbda6fd20e6e9ce77747a6d4ad36821881eead",
+  "localizationCheckPassed": true,
+  "packagedSmokePassed": true,
+  "sourceMatches": true,
+  "pinnedFiles": 299,
+  "sha256": {
+    "xivlauncher-super-2.1.1-x86_64.AppImage": "5fc3131c25e6ffcd02a153f54268aaee85cbef36aec32c08660245af03f5b12f",
+    "xivlauncher-super-2.1.1-source.tar.gz": "e90ea0188e3dbcde41738df30d84686f0a87cfed1a88ae75200c687ed0466831"
+  },
+  "readmeLanguages": [
+    "en",
+    "zh-CN",
+    "zh-TW",
+    "ja"
+  ],
+  "packagedReadmesMatchReviewedSources": true,
+  "updateSignatureVerified": true,
+  "thirdPartyRuntimeComponentsUnchanged": true,
+  "isolatedUpgrade": {
+    "from": "2.1.0",
+    "to": "2.1.1",
+    "passed": true,
+    "signatureAndInstallVerified": true,
+    "backupMatchesOriginal": true,
+    "scope": "2.1.0 program repackaged with test-only loopback metadata; no changes to the published 2.1.0 image. GUI and in-game acceptance separate."
+  }
+}
