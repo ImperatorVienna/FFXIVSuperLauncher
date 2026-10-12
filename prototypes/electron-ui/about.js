@@ -4,7 +4,7 @@ window.createAboutPage=({call,apply,ready,snapshot,start,clean,cancel,operation,
   const {t}=window.previewI18n;
   let info=null,updates=null,mounted=null,timer=null,checkPending=false,manual=false,notified=null,updateDialog=null,error='',started=false,autoChecked=false,lastLoggedUpdate='',cleaningBrowser=false;
   const node=(tag,text,cls)=>{const n=document.createElement(tag);if(text)n.textContent=t(text);if(cls)n.className=cls;return n;};
-  function button(parent,label,action,id){const b=node('button',label);if(id)b.id=id;b.addEventListener('click',()=>void Promise.resolve().then(action).catch(failure));parent.append(b);return b;}
+  function button(parent,label,action,id){const b=node('button',label);if(id)b.id=id;let pending=false;b.addEventListener('click',()=>{if(pending)return;pending=true;b.dataset.pending='';b.disabled=true;void Promise.resolve().then(action).catch(failure).finally(()=>{pending=false;delete b.dataset.pending;b.disabled=false;present();});});parent.append(b);return b;}
   function failure(ex){error=ex.message||'操作失败，请查看日志。';report(ex.logMessage||'Launcher information or update operation failed.');present();}
   async function load(){try{info=await call('readAbout');render();present();}catch(ex){failure(ex);}}
   function render(){
@@ -55,12 +55,12 @@ window.createAboutPage=({call,apply,ready,snapshot,start,clean,cancel,operation,
       });link.className='account-option';
     }
     const actions=node('div',null,'row dialog-actions');button(actions,'关闭',()=>dialog.close());
-    dialog.append(list,status,actions);dialog.addEventListener('close',()=>dialog.remove(),{once:true});document.body.append(dialog);dialog.showModal();
+    dialog.append(list,status,actions);dialog.addEventListener('close',()=>dialog.remove(),{once:true});document.body.append(dialog);window.uiState.showDialog(dialog);
   }
   function notice(text,verbatim=false){
     const dialog=node('dialog',null,'notice-dialog');dialog.dataset.aboutUi='';
     const content=node(verbatim?'pre':'p',verbatim?null:text);if(verbatim){content.textContent=text;content.dataset.noTranslate='';}dialog.append(content);
-    button(dialog,'关闭',()=>dialog.close());dialog.addEventListener('close',()=>dialog.remove(),{once:true});document.body.append(dialog);dialog.showModal();
+    button(dialog,'关闭',()=>dialog.close());dialog.addEventListener('close',()=>dialog.remove(),{once:true});document.body.append(dialog);window.uiState.showDialog(dialog);
   }
   async function check(refresh=false){
     if(checkPending)return;checkPending=true;if(refresh)manual=true;present();
@@ -78,27 +78,40 @@ window.createAboutPage=({call,apply,ready,snapshot,start,clean,cancel,operation,
     maybeNotify();
   }
   function maybeNotify(){
-    if(document.hidden||!updates?.available||!manual&&(snapshot()?.autoCheckUpdates===false||notified===updates.release))return;
-    if(!ready()||!snapshot()?.setupComplete||document.querySelector('dialog[open]')){clearTimeout(timer);timer=setTimeout(maybeNotify,1000);return;}
+    if(updateDialog?.open||document.hidden||!updates?.available||!manual&&(snapshot()?.autoCheckUpdates===false||notified===updates.release))return;
+    if(!info||!ready()||!snapshot()?.setupComplete||document.querySelector('dialog[open]')){clearTimeout(timer);timer=setTimeout(maybeNotify,1000);return;}
     manual=false;notified=updates.release;
-    const selected={...updates};updateDialog=node('dialog',null,'notice-dialog');updateDialog.dataset.aboutUi='';
-    updateDialog.append(node('h2','启动器更新'),node('p',t('发现新版本：')+selected.version),node('p',t('当前版本：')+info?.version));
-    button(updateDialog,'查看发行说明',()=>call('openLauncherRelease',{release:selected.release}));
-    if(selected.canInstall){updateDialog.append(node('p','请先退出游戏。更新安装完成后将自动打开新版启动器。'));
-      button(updateDialog,'下载并更新',async()=>{updateDialog.close();await start({release:selected.release});});}
-    button(updateDialog,'稍后',()=>updateDialog.close());updateDialog.addEventListener('close',()=>{updateDialog.remove();updateDialog=null;},{once:true});document.body.append(updateDialog);updateDialog.showModal();
+    const selected={...updates},dialog=node('dialog',null,'notice-dialog');updateDialog=dialog;dialog.dataset.aboutUi='';
+    const title=node('h2','启动器更新');title.id='launcher-update-title';dialog.setAttribute('aria-labelledby',title.id);
+    dialog.append(title,node('p',t('发现新版本：')+selected.version),node('p',t('当前版本：')+info.version));
+    const status=node('p',null,'inline-error');status.setAttribute('role','status');let installing=false;
+    const actions=node('div',null,'row dialog-actions');
+    const updateFailure=ex=>{status.textContent=ex.message||t('操作失败，请查看日志。');report(ex.logMessage||'Launcher update request failed.');};
+    button(actions,'查看发行说明',async()=>{status.textContent='';try{await call('openLauncherRelease',{release:selected.release});}catch(ex){updateFailure(ex);}});
+    if(selected.canInstall){dialog.append(node('p','请先退出游戏。更新安装完成后将自动打开新版启动器。'));
+      button(actions,'下载并更新',async()=>{
+        if(!ready()||installing)return;installing=true;status.textContent='';dialog.setAttribute('aria-busy','true');for(const b of actions.querySelectorAll('button'))b.disabled=true;
+        try{await start({release:selected.release});dialog.close();}
+        catch(ex){updateFailure(ex);}
+        finally{installing=false;dialog.removeAttribute('aria-busy');for(const b of actions.querySelectorAll('button'))b.disabled=b.hasAttribute('data-pending');}
+      }).classList.add('primary');}
+    button(actions,'稍后',()=>{if(!installing)dialog.close();});dialog.append(status,actions);
+    dialog.addEventListener('cancel',event=>{if(installing)event.preventDefault();});
+    dialog.addEventListener('close',()=>{dialog.remove();if(updateDialog===dialog)updateDialog=null;},{once:true});document.body.append(dialog);window.uiState.showDialog(dialog);
   }
+
   function present(){
     const host=document.querySelector('#about-content');
-    if(host){for(const b of host.querySelectorAll('button'))b.disabled=cleaningBrowser||!ready()||b.hasAttribute('data-reserved');
+    if(host){for(const b of host.querySelectorAll('button'))b.disabled=cleaningBrowser||!ready()||b.hasAttribute('data-reserved')||b.hasAttribute('data-pending');
       const check=host.querySelector('#launcher-check');if(check)check.disabled ||= checkPending||updates?.state==='checking';
       const stop=host.querySelector('#cancel-launcher-update');if(stop){stop.hidden=!operation();stop.disabled=operation()?.state!=='running';}
-      const status=host.querySelector('#about-feedback');if(status)status.textContent=t(error||(updates?.state==='checking'?'正在检查启动器更新…':operation()?'正在处理，请稍候…':''));}
+      const status=host.querySelector('#about-feedback');if(status){status.className=error?'inline-error':'muted';status.textContent=t(error||(updates?.state==='checking'?'正在检查启动器更新…':operation()?(operation().state==='cancelling'?'正在取消…':'正在处理，请稍候…'):''));}}
     let path=document.querySelector('#diagnostic-path');
     if(!path){path=node('div',null,'diagnostic-path');path.id='diagnostic-path';document.querySelector('.logs').before(path);}
     path.hidden=!info;const label=info?t('完整诊断日志：')+' '+info.diagnosticPath:'';if(path.textContent!==label)path.textContent=label;
   }
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)maybeNotify();});
+  window.addEventListener('pagehide',()=>clearTimeout(timer));
   function autoCheck(){if(started&&!autoChecked&&ready()&&snapshot()?.setupComplete&&snapshot()?.autoCheckUpdates!==false){autoChecked=true;void check();}}
   return {start(){started=true;void load();autoCheck();},sync(){if(mounted!==document.querySelector('#about-content'))render();const toggle=document.querySelector('#auto-check-updates');if(toggle){toggle.checked=snapshot()?.autoCheckUpdates!==false;toggle.disabled=!ready();}present();autoCheck();},
     completed(result){error=result.error||'';if(result.state==='completed'&&Number.isInteger(result.result?.deleted)){const r=result.result;notice(t('已清理 {count} 个文件，释放 {size} MiB；跳过 {skipped} 项。',{count:r.deleted,size:(r.bytes/1048576).toFixed(1),skipped:r.skipped}));}present();}};

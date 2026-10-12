@@ -67,6 +67,49 @@ public sealed class LinuxCompatibilityTests : IDisposable
     }
 
     [Theory]
+    [InlineData("dxgi=n", "dxgi=n;d3d11=n")]
+    [InlineData("winhttp=n,b;dxgi=n", "winhttp=n,b;dxgi=n;d3d11=n")]
+    [InlineData("*DXGI.dll=n", "*DXGI.dll=n;d3d11=n")]
+    [InlineData("dxgi,d3d11=n", "dxgi,d3d11=n")]
+    [InlineData("dxgi=n;d3d11=b", "dxgi=n;d3d11=b")]
+    [InlineData("dxgi=n;*D3D11.dll=", "dxgi=n;*D3D11.dll=")]
+    [InlineData("dxgi=b", "dxgi=b")]
+    [InlineData("dxgi=n;dxgi=b", "dxgi=n;dxgi=b")]
+    [InlineData("winhttp=n,b", "winhttp=n,b")]
+    [InlineData("", "")]
+    public void DirectGameLaunchCompletesOnlyTheInheritedNativeDxgiPair(string value, string expected)
+    {
+        var runner = new CompatibilityRunner(new());
+        var environment = new Dictionary<string, string>
+        {
+            ["WINEDLLOVERRIDES"] = value, ["PROTON_USE_WINED3D"] = "0",
+            ["PROTON_USE_WINED3D11"] = "0", ["STEAM_COMPAT_CONFIG"] = ""
+        };
+        var psi = runner.BuildStartInfo(["game.exe"], environment: environment, mainSession: true, protonVerb: "runinprefix");
+        Assert.Equal(expected, psi.Environment["WINEDLLOVERRIDES"]);
+        Assert.Equal(value, environment["WINEDLLOVERRIDES"]);
+        Assert.Equal(value, runner.BuildStartInfo(["winepath"], environment: environment, protonVerb: "runinprefix").Environment["WINEDLLOVERRIDES"]);
+        Assert.Equal(value, runner.BuildStartInfo(["game.exe"], environment: environment, mainSession: true).Environment["WINEDLLOVERRIDES"]);
+    }
+
+    [Theory]
+    [InlineData("PROTON_USE_WINED3D", "1")]
+    [InlineData("PROTON_USE_WINED3D11", "1")]
+    [InlineData("STEAM_COMPAT_CONFIG", "wined3d")]
+    [InlineData("STEAM_COMPAT_CONFIG", "foo,wined3d11")]
+    [InlineData("STEAM_COMPAT_CONFIG", "nod3d11")]
+    [InlineData("STEAM_COMPAT_CONFIG", "nod3d10")]
+    public void ExplicitRendererPreferencesRemainUnchanged(string key, string value)
+    {
+        var psi = new CompatibilityRunner(new()).BuildStartInfo(["game.exe"], environment: new Dictionary<string, string>
+        {
+            ["WINEDLLOVERRIDES"] = "dxgi=n", [key] = value
+        }, mainSession: true, protonVerb: "runinprefix");
+        Assert.Equal("dxgi=n", psi.Environment["WINEDLLOVERRIDES"]);
+        Assert.Equal(value, psi.Environment[key]);
+    }
+
+    [Theory]
     [InlineData("", false, 0)]
     [InlineData("some log with pid: 17", false, 0)]
     [InlineData("{\"pid\":0}", false, 0)]

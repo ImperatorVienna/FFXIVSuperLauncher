@@ -4,10 +4,14 @@ test('embedded verification isolates remote content, bounds it, keeps it for OTP
  let state={state:'running',webVerificationId:'test-id',challenge:{kind:'web-captcha'}},view;const calls=[],children=new Set();
  const backend={async request(method,value){calls.push({method,value});if(method==='operations.poll')return state;if(method==='captcha.page')return {url:'https://launcher.ffxiv.com.tw/index.html',binding:'test-binding',html:'<p>synthetic page</p>'};return {};}};
  class View{constructor(options){view=this;this.options=options;this.webContents=new EventEmitter();const c=this.webContents;c.debugger=new EventEmitter();c.debugger.attach=()=>{};c.debugger.sendCommand=async()=>{};c.setWindowOpenHandler=fn=>this.open=fn;c.loadURL=async url=>this.url=url;c.isDestroyed=()=>this.closed;c.close=()=>{this.closed=true};}setBounds(bounds){this.bounds=bounds}}
- const controller=createCaptchaView({window:{contentView:{addChildView:v=>children.add(v),removeChildView:v=>children.delete(v)},getContentSize:()=>[800,700]},backend,WebContentsView:View,session:{fromPartition:()=>({setPermissionRequestHandler(){},setPermissionCheckHandler(){},on(){}})}});
+ let zoom=1;const window=Object.assign(new EventEmitter(),{contentView:{addChildView:v=>children.add(v),removeChildView:v=>children.delete(v)},getContentSize:()=>[800,700],webContents:{getZoomFactor:()=>zoom}});
+ const controller=createCaptchaView({window,backend,WebContentsView:View,session:{fromPartition:()=>({setPermissionRequestHandler(){},setPermissionCheckHandler(){},on(){}})}});
  const request={operationId:'operation',bounds:{x:600,y:650,width:500,height:400}};
  try{
   await controller.update(request);assert.deepEqual(view.bounds,{x:600,y:650,width:200,height:50});assert.equal(children.size,1);
+  zoom=1.5;window.emit('resize');assert.deepEqual(view.bounds,{x:800,y:700,width:0,height:0});
+  await controller.update({...request,bounds:{x:20,y:40,width:300,height:200}});assert.deepEqual(view.bounds,{x:30,y:60,width:450,height:300});
+  zoom=1;window.emit('resize');assert.deepEqual(view.bounds,{x:20,y:40,width:300,height:200});
   assert.equal(view.options.webPreferences.nodeIntegration,false);assert.equal(view.options.webPreferences.sandbox,true);assert.equal(view.options.webPreferences.preload,undefined);
   assert.equal(view.open().action,'deny');let denied=false;view.webContents.emit('will-navigate',{preventDefault(){denied=true}},'file:///private');assert.equal(denied,true);
   const debug=view.webContents.debugger;

@@ -20,15 +20,17 @@ public sealed class DcTravelerBridge : IAsyncDisposable
     private int disposed;
     private readonly Func<string, JsonElement[], Task<object?>> dispatch;
     private readonly Task serving;
+    private readonly Action<string, string>? diagnostic;
     internal static readonly JsonSerializerOptions WireOptions = CreateWireOptions();
     public int Port { get; }
 
-    public DcTravelerBridge(LoginSessionRefreshContext refresh, LoginArea[] areas, Action<string> setArea)
-        : this(null, refresh, areas, setArea) { }
+    public DcTravelerBridge(LoginSessionRefreshContext refresh, LoginArea[] areas, Action<string> setArea, Action<string, string>? diagnostic = null)
+        : this(null, refresh, areas, setArea, diagnostic: diagnostic) { }
 
     internal DcTravelerBridge(Func<string, JsonElement[], Task<object?>>? handler,
-        LoginSessionRefreshContext? refresh = null, LoginArea[]? areas = null, Action<string>? setArea = null, HttpMessageHandler? transport = null)
+        LoginSessionRefreshContext? refresh = null, LoginArea[]? areas = null, Action<string>? setArea = null, HttpMessageHandler? transport = null, Action<string, string>? diagnostic = null)
     {
+        this.diagnostic = diagnostic;
         client = new DCTravelClient("", transport);
         if (refresh != null) client.BindLoginSessionRefresh(refresh);
         dispatch = handler ?? DispatchAsync;
@@ -49,14 +51,7 @@ public sealed class DcTravelerBridge : IAsyncDisposable
 
         async Task<object?> DispatchAsync(string method, JsonElement[] args)
         {
-            var count = method switch
-            {
-                "QueryGroupListTravelSource" or "RefreshGameSessionId" => 0,
-                "QueryMigrationOrders" or "QueryOrderStatus" or "SetSdoArea" => 1,
-                "QueryGroupListTravelTarget" or "QueryRoleList" or "MigrationConfirmOrder" => 2,
-                "TravelOrder" => 3, "TravelBack" => 4,
-                _ => throw new ArgumentException("Unsupported DCTravelerX method.")
-            };
+            var count = ParameterCount(method);
             if (args.Length != count) throw new ArgumentException("Invalid parameter count.");
             T Arg<T>(int index) => args[index].Deserialize<T>(WireOptions) ?? throw new ArgumentException("Null parameter.");
             if (method == "SetSdoArea")
@@ -67,7 +62,7 @@ public sealed class DcTravelerBridge : IAsyncDisposable
                 return "";
             }
             if (method == "RefreshGameSessionId") return await refresh!.RefreshGameSessionIdAsync();
-            await client.GetValidCookie();
+            await client.EnsureInitializedAsync();
             switch (method)
             {
                 case "QueryGroupListTravelSource": return await client.QueryGroupListTravelSource();
@@ -84,6 +79,15 @@ public sealed class DcTravelerBridge : IAsyncDisposable
             }
         }
     }
+
+    private static int ParameterCount(string method) => method switch
+    {
+        "QueryGroupListTravelSource" or "RefreshGameSessionId" => 0,
+        "QueryMigrationOrders" or "QueryOrderStatus" or "SetSdoArea" => 1,
+        "QueryGroupListTravelTarget" or "QueryRoleList" or "MigrationConfirmOrder" => 2,
+        "TravelOrder" => 3, "TravelBack" => 4,
+        _ => throw new ArgumentException("Unsupported DCTravelerX method.")
+    };
 
     internal static string SerializeLobbyHosts(LoginArea[] areas) => Convert.ToBase64String(Encoding.UTF8.GetBytes(
         JsonSerializer.Serialize(areas.Select(a => new { Areaid = a.AreaID, AreaStat = a.AreaStatus, a.AreaOrder,
@@ -117,6 +121,7 @@ public sealed class DcTravelerBridge : IAsyncDisposable
                 { context.Response.StatusCode = 403; continue; }
                 object? result = null;
                 string? error = null;
+                var diagnosticMethod = "InvalidRequest";
                 try
                 {
                     using var deadline = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
@@ -132,13 +137,20 @@ public sealed class DcTravelerBridge : IAsyncDisposable
                     using var json = JsonDocument.Parse(body.ToArray());
                     var method = json.RootElement.GetProperty("Method").GetString() ?? throw new ArgumentException();
                     var args = json.RootElement.GetProperty("Params").EnumerateArray().ToArray();
+                    _ = ParameterCount(method); // Only known method names reach diagnostics.
+                    diagnosticMethod = method;
                     result = await dispatch(method, args).WaitAsync(lifetime.Token);
+                    if (result is DCTravelOrderInfo order)
+                        Record($"DC travel QueryOrderStatus completed: status={(int)order.Status}.", "INFO");
+                    else if (method is "TravelOrder" or "TravelBack" or "MigrationConfirmOrder")
+                        Record($"DC travel {method} completed. No automatic resubmission.", "INFO");
                 }
                 catch (Exception ex) when (!lifetime.IsCancellationRequested)
                 {
                     // Never return tickets, cookies, request bodies, or raw upstream exceptions.
                     Log.Warning("[DCTravelerX] RPC failed: {Type}, service code {Code}", ex.GetType().Name,
                         (ex as DCTravelAPIException)?.ErrorCode);
+                    Record(FailureDiagnostic(diagnosticMethod, ex), "ERROR");
                     error = FormatError(ex);
                 }
                 context.Response.ContentType = "application/json; charset=utf-8";
@@ -148,6 +160,16 @@ public sealed class DcTravelerBridge : IAsyncDisposable
             finally { context.Response.Close(); }
         }
     }
+
+    private void Record(string message, string level)
+    {
+        // Diagnostics must never turn a successful remote mutation into a failed RPC.
+        try { diagnostic?.Invoke(message, level); } catch { }
+    }
+
+    internal static string FailureDiagnostic(string method, Exception error) =>
+        $"DC travel {method} failed: {error.GetType().Name}; service code={(error as DCTravelAPIException)?.ErrorCode}; " +
+        $"HTTP status={(error as HttpRequestException)?.StatusCode}.\n{error.StackTrace}";
 
     internal static string FormatError(Exception ex) => ex switch
     {

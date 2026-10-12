@@ -1,7 +1,8 @@
 'use strict';
+const {bindExitKeys}=require('./window-ui.cjs');
 // One isolated embedded web view. Only the main process sees the CAPTCHA token;
 // account credentials stay in .NET and the remote page has no preload/launcher IPC.
-function createCaptchaView({window,backend,WebContentsView,session,commandTimeout=15000,verificationTimeout=300000,watchInterval=1000}){
+function createCaptchaView({window,backend,WebContentsView,session,onQuit,commandTimeout=15000,verificationTimeout=300000,watchInterval=1000}){
  let current=null,serial=Promise.resolve(),disposed=false,generation=0,isolated=null;
  function bounded(task,signal,timeout=commandTimeout){
   return new Promise((resolve,reject)=>{
@@ -18,6 +19,16 @@ function createCaptchaView({window,backend,WebContentsView,session,commandTimeou
   try{window.contentView.removeChildView(old.view);}catch{}
   try{if(!old.view.webContents.isDestroyed())old.view.webContents.close();}catch{}
  }
+ function position(){
+  if(!current?.bounds)return;
+  const bounds=current.bounds;
+  const [width,height]=window.getContentSize();
+  const zoom=window.webContents?.getZoomFactor()??1;
+  current.view.webContents.setZoomFactor?.(zoom);
+  const x=Math.max(0,Math.min(Math.round(bounds.x*zoom),width)),y=Math.max(0,Math.min(Math.round(bounds.y*zoom),height));
+  current.view.setBounds({x,y,width:Math.max(0,Math.min(Math.round(bounds.width*zoom),width-x)),height:Math.max(0,Math.min(Math.round(bounds.height*zoom),height-y))});
+ }
+ window.on?.('resize',position);
  function watch(item){
   item.watch=setTimeout(()=>void(async()=>{
    try{
@@ -48,7 +59,9 @@ function createCaptchaView({window,backend,WebContentsView,session,commandTimeou
    }
    const view=new WebContentsView({webPreferences:{session:isolated,sandbox:true,nodeIntegration:false,contextIsolation:true,webSecurity:true,backgroundThrottling:true}});
    const item={id,operationId:request.operationId,view,contexts:new Set(),status:'waiting',abort:new AbortController(),timer:null,watch:null};current=item;watch(item);
+   if(onQuit)bindExitKeys(view.webContents,onQuit);
    const contents=view.webContents,debug=contents.debugger,signal=item.abort.signal;
+   contents.on('did-finish-load',()=>{if(current===item)position();});
    const command=(method,params)=>bounded(debug.sendCommand(method,params),signal);
    let bootstrapping=true;
    contents.setWindowOpenHandler(()=>({action:'deny'}));
@@ -92,9 +105,7 @@ function createCaptchaView({window,backend,WebContentsView,session,commandTimeou
   }
   const bounds=request.bounds;
   if(current&&bounds&&state.challenge?.kind==='web-captcha'){
-   const [width,height]=window.getContentSize();
-   const x=Math.max(0,Math.min(Math.round(bounds.x),width)),y=Math.max(0,Math.min(Math.round(bounds.y),height));
-   current.view.setBounds({x,y,width:Math.max(0,Math.min(Math.round(bounds.width),width-x)),height:Math.max(0,Math.min(Math.round(bounds.height),height-y))});
+   current.bounds=bounds;position();
    if(!current.attached){window.contentView.addChildView(current.view);current.attached=true;}
   }else if(current?.attached){window.contentView.removeChildView(current.view);current.attached=false;}
  }
@@ -104,7 +115,7 @@ function createCaptchaView({window,backend,WebContentsView,session,commandTimeou
    if(!value){generation++;clear();return Promise.resolve();}
    const revision=generation;serial=serial.catch(()=>{}).then(()=>sync(value,revision));return serial;
   },
-  async close(){disposed=true;generation++;clear();}
+  async close(){window.removeListener?.('resize',position);disposed=true;generation++;clear();}
  };
 }
 module.exports={createCaptchaView};

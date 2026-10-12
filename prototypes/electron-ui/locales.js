@@ -1,5 +1,12 @@
 // Shared frontend strings. Tuple order: Traditional Chinese, Japanese, English.
 window.previewStrings = {
+  "勾选后将启动器注册为 Steam 兼容性工具；通过 Steam 启动时自动全屏，点击输入框会调用 Steam 虚拟键盘。桌面窗口尺寸单独保留。更改后请重启 Steam。": ["勾選後將啟動器註冊為 Steam 相容性工具；透過 Steam 啟動時自動全螢幕，點選輸入欄位會呼叫 Steam 虛擬鍵盤。桌面視窗尺寸會獨立保留。變更後請重新啟動 Steam。", "有効にするとランチャーを Steam 互換ツールとして登録します。Steam から起動すると全画面表示になり、入力欄をクリックすると Steam のスクリーンキーボードを呼び出します。デスクトップのウィンドウサイズは別に保持されます。変更後は Steam を再起動してください。", "Registers the launcher as a Steam compatibility tool. Launching through Steam uses fullscreen, and clicking a text field requests the Steam on-screen keyboard. Desktop window size is preserved separately. Restart Steam after changing this setting."],
+  "无法调用 Steam 虚拟键盘，请使用键盘输入。": ["無法呼叫 Steam 虛擬鍵盤，請使用鍵盤輸入。", "Steam のスクリーンキーボードを呼び出せません。キーボードで入力してください。", "Could not request the Steam on-screen keyboard. Please use a keyboard to type."],
+
+  "下一步：游戏区服": ["下一步：遊戲區服", "次へ：ゲームリージョン", "Next: game region"],
+  "请先保存或修正未保存的设置。": ["請先儲存或修正尚未儲存的設定。", "未保存の設定を保存または修正してください。", "Save or correct the unsaved settings first."],
+  "第三步：确认自动发现的 Steam / Proton。未发现时请手动选择；Steam 启动适配为可选项。": ["第三步：確認自動找到的 Steam / Proton。若未找到，請手動選擇；Steam 啟動適配為選用項目。", "ステップ3：自動検出された Steam / Proton を確認します。見つからない場合は手動で選択してください。Steam 起動への対応は任意です。", "Step 3: confirm the detected Steam / Proton. Select manually if none was found. Steam launch integration is optional."],
+
   "美术素材来源": ["美術素材來源", "アート素材の出典", "Artwork sources"],
   "启动器图标": ["啟動器圖示", "ランチャーアイコン", "Launcher icon"],
   "写入结果未确认，请重新启动启动器后核对设置。": ["寫入結果未確認，請重新啟動啟動器後核對設定。", "書き込み結果を確認できませんでした。ランチャーを再起動して設定を確認してください。", "The write result could not be confirmed. Restart the launcher and check the settings."],
@@ -310,11 +317,6 @@ window.previewStrings = {
     "Proton · サンプルバージョン",
     "Proton · Sample version"
   ],
-  "注册为 Steam compatibility tool": [
-    "註冊為 Steam compatibility tool",
-    "Steam compatibility tool として登録",
-    "Register as a Steam compatibility tool"
-  ],
   "原型布局，尚未连接系统设置。": [
     "原型版面，尚未連接系統設定。",
     "レイアウトのプロトタイプです。システム設定には未接続です。",
@@ -440,11 +442,7 @@ window.previewStrings = {
     "ログイン認証情報の管理",
     "Login credential management"
   ],
-  "兼容性工具设置": [
-    "相容性工具設定",
-    "互換性ツールの設定",
-    "Compatibility tools settings"
-  ],
+  "Steam 和 Proton 设置": ["Steam 與 Proton 設定", "Steam と Proton の設定", "Steam and Proton settings"],
   "语言和区服": [
     "語言和區服",
     "言語とリージョン",
@@ -1011,11 +1009,7 @@ window.previewStrings = {
     "Proton データディレクトリ（ここに pfx を自動作成します。専用ディレクトリの使用を推奨）",
     "Proton data directory (pfx is created here automatically; a dedicated directory is recommended)"
   ],
-  "注册为 Steam 兼容性工具（可随时关闭）": [
-    "註冊為 Steam compatibility tools（可隨時關閉）",
-    "Steam compatibility tools として登録（いつでも解除できます）",
-    "Register as a Steam compatibility tool (can be disabled at any time)"
-  ],
+  "适配从 Steam 启动": ["適配從 Steam 啟動", "Steam 起動に対応", "Enable Steam launch integration"],
   "国际区使用 Steam 已有 pfx": [
     "國際區使用 Steam 現有的 pfx",
     "グローバル版で Steam の既存 pfx を使用",
@@ -1272,21 +1266,7 @@ window.previewStrings = {
     "完全な診断ログ：",
     "Full diagnostic log:"
   ],
-  "欢迎使用 FFXIV Super Launcher。第一步：选择启动器界面语言及游戏区服，国际区请同时选择账户CDKey版本；客户端路径可稍后填写。": [
-    "歡迎使用 FFXIV Super Launcher。第一步：選擇啟動器介面語言及遊戲區服，國際區請同時選擇帳戶 CDKey 版本；用戶端路徑可稍後填寫。",
-    "FFXIV Super Launcher へようこそ。手順 1：ランチャーの表示言語とゲームリージョンを選択してください。グローバル版では、アカウントの CDKey リージョンも選択してください。クライアントのパスは後で入力できます。",
-    "Welcome to FFXIV Super Launcher. Step 1: choose the launcher interface language and game region. For Global, also select the account CDKey region; client paths can be entered later."
-  ],
-  "下一步：兼容性工具设置": [
-    "下一步：compatibility tools 設定",
-    "次へ：compatibility tools の設定",
-    "Next: compatibility tools settings"
-  ],
-  "第二步：确认自动发现的 Steam / Proton。未发现时请手动选择；注册 Steam 兼容性工具为可选项。": [
-    "第二步：確認自動找到的 Steam / Proton。若未找到，請手動選擇；註冊為 Steam compatibility tool 為選用項目。",
-    "手順 2：自動検出された Steam / Proton を確認してください。検出されなかった場合は手動で選択してください。Steam compatibility tool としての登録は任意です。",
-    "Step 2: confirm the automatically detected Steam / Proton installations. If none were found, select them manually; registration as a Steam compatibility tool is optional."
-  ],
+  "下一步：Steam 和 Proton 设置": ["下一步：Steam 與 Proton 設定", "次へ：Steam と Proton の設定", "Next: Steam and Proton settings"],
   "Dalamud 功能违反游戏用户协议，使用后果由用户自行承担。": [
     "Dalamud 功能違反遊戲使用者協議，使用後果由使用者自行承擔。",
     "Dalamud の機能の使用はゲームの利用規約に違反します。使用による結果はユーザー自身の責任となります。",
@@ -1410,15 +1390,15 @@ Object.assign(window.previewStrings, {
     "リポジトリ設定はゲーム内の Dalamud と共有され、現在のゲームリージョンにのみ適用されます。",
     "Repository settings are shared with in-game Dalamud and apply only to the current game region."
   ],
-  "启用国服预置仓库": [
-    "啟用中國區預設倉庫",
-    "中国リージョンの同梱リポジトリを有効化",
-    "Enable China region preset repositories"
+  "启用预置仓库": [
+    "啟用預設倉庫",
+    "同梱リポジトリを有効化",
+    "Enable preset repositories"
   ],
-  "预置仓库由国服 Dalamud 提供，开启时不受下方同地址条目的停用或删除影响。": [
-    "預設倉庫由中國區 Dalamud 提供，開啟時不受下方相同位址項目的停用或刪除影響。",
-    "同梱リポジトリは中国リージョンの Dalamud が提供します。有効な場合、下の同じ URL の項目を無効化・削除しても適用されます。",
-    "Preset repositories are supplied by China region Dalamud. While enabled, they remain active even if an entry with the same URL below is disabled or deleted."
+  "预置仓库由 Dalamud 提供，开启时不受下方同地址条目的停用或删除影响。": [
+    "預設倉庫由 Dalamud 提供，開啟時不受下方相同位址項目的停用或刪除影響。",
+    "同梱リポジトリは Dalamud が提供します。有効な場合、下の同じ URL の項目を無効化・削除しても適用されます。",
+    "Preset repositories are supplied by Dalamud. While enabled, they remain active even if an entry with the same URL below is disabled or deleted."
   ],
   "查看预置仓库": [
     "查看預設倉庫",

@@ -1,10 +1,10 @@
 const {test}=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const vm=require('node:vm');const path=require('node:path');
 const root=path.resolve(__dirname,'../..');
-test('all literal Chinese about-page labels have complete translations',()=>{
+test('all literal Chinese About and setup labels have complete translations',()=>{
  const ctx={window:{}};vm.runInNewContext(fs.readFileSync(path.join(root,'prototypes/electron-ui/locales.js'),'utf8'),ctx);
- const source=fs.readFileSync(path.join(root,'prototypes/electron-ui/about.js'),'utf8');
+ const source=['about.js','setup.js','steam-input.js'].map(name=>fs.readFileSync(path.join(root,'prototypes/electron-ui',name),'utf8')).join('\n');
  for(const [,label] of source.matchAll(/'([^'\n]*[\u4e00-\u9fff][^'\n]*)'/g)){
-  if(label.includes('<')||label.includes('=>'))continue;
+  if(label==='日本語'||label.includes('<')||label.includes('=>'))continue; // Native language names stay untranslated.
   const translations=ctx.window.previewStrings[label];assert.ok(translations,`Missing: ${label}`);
   assert.equal(translations.length,3);for(const value of translations){assert.ok(value);assert.deepEqual([...value.matchAll(/\{(\w+)\}/g)].map(m=>m[1]).sort(),[...label.matchAll(/\{(\w+)\}/g)].map(m=>m[1]).sort());}
  }

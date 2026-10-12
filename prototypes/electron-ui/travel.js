@@ -46,14 +46,15 @@ window.createTravelPage=({call,start,cancel,ready,operation,report})=>{
     dialog.append(node('p','停止等待或关闭窗口不会撤销已提交的服务端传送。可重新打开并刷新记录确认结果。','muted'));
     const feedback=node('p',null,'muted');feedback.id='travel-feedback';feedback.setAttribute('role','status');dialog.append(feedback);
     const end=buttons();button(end,'travel-stop','停止等待',cancel);button(end,'travel-close','关闭',close);
-    present();if(!dialog.open)dialog.showModal();
+    present();if(!dialog.open)window.uiState.showDialog(dialog);
   }
   async function confirm(message){
     const modal=node('dialog');modal.dataset.travelUi='';modal.append(node('p',message));
     const result=new Promise(resolve=>{
-      for(const [label,value] of [['确认',true],['取消',false]]){const b=node('button',label);b.addEventListener('click',()=>{modal.close();resolve(value);});modal.append(b);}
+      const actions=node('div',null,'row dialog-actions');modal.append(actions);
+      for(const [label,value] of [['确认',true],['取消',false]]){const b=node('button',label,value?'primary':'');b.addEventListener('click',()=>{modal.close();resolve(value);});actions.append(b);}
       modal.addEventListener('cancel',()=>resolve(false),{once:true});
-    });document.body.append(modal);modal.showModal();try{return await result;}finally{modal.remove();}
+    });document.body.append(modal);window.uiState.showDialog(modal);try{return await result;}finally{modal.remove();}
   }
   function present(){
     if(!dialog)return;

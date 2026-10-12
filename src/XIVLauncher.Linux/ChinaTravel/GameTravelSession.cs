@@ -16,7 +16,9 @@ public sealed class GameTravelSession : IAsyncDisposable
         DcTravelerBridge? bridge=null;
         try
         {
-            bridge=new DcTravelerBridge(authentication.Refresh, areas, setArea);
+            var diagnostics=new SessionDiagnostics(root);
+            bridge=new DcTravelerBridge(authentication.Refresh, areas, setArea,
+                (message,level)=>diagnostics.Write(message,"ffxiv_cn",level));
             return new(authentication, bridge, new GameRecoveryEndpoint(root,bridge.Port,authentication));
         }
         catch

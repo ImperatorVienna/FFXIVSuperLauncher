@@ -34,7 +34,7 @@ const contracts = Object.freeze({
   'updates.install':fields({release:text(64)},['release']),
   'official.read':fields({refresh:bool}),
   'official.open':fields({key:text(64),item:text(64)},['key','item']),
-  'preferences.update':fields({autoCheckUpdates:bool,language:text(32),region,clientPaths:fields({ffxiv_cn:text(4096),ffxiv_tc:text(4096),ffxiv:text(4096)}),
+  'preferences.update':fields({enableDalamud:bool,autoCheckUpdates:bool,language:text(32),region,clientPaths:fields({ffxiv_cn:text(4096),ffxiv_tc:text(4096),ffxiv:text(4096)}),
     cdKeyVersion:v=>['JP','NA','EU'].includes(v),euShopLanguage:v=>['en-gb','fr-fr','de-de'].includes(v),clientLanguage:v=>Number.isInteger(v)&&v>=0&&v<=3}),
   'accounts.list':fields({region},['region']),
   'accounts.read':fields(identity,['region','name']),

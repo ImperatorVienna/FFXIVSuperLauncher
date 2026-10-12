@@ -13,15 +13,14 @@ main{max-width:1760px;margin:auto;padding:36px 44px 12px;min-height:calc(100vh -
 @media(max-width:820px){.grid{grid-template-columns:1fr}.login-column{grid-row:1}.settings-pair{grid-template-columns:1fr}.news-column{margin-top:10px}nav{gap:4px}nav button{font-size:12px}.logs{margin-top:10px}#page{padding-bottom:22px}}
 @media(max-width:460px){main{padding:18px 14px}.topbar{margin:0 10px;padding-left:0;padding-right:0}.panel{padding:16px}.field .row{flex-wrap:wrap}.field .row>button{min-width:0}.actions{gap:8px}.actions button{font-size:14px}.qr-layout{grid-template-columns:100px 1fr;gap:12px}.qr-placeholder{width:100px;height:100px}.news time{display:none}.links{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
-/* Reserve challenge space: showing a challenge never moves the login card,
-   announcements, link row, or log disclosure. Only its contents may scroll. */
+/* The page owns scrolling; dialogs and the floating log retain bounded scroll areas. */
 /* Only the disclosure occupies layout space. Its upward floating content
    never changes the height of the main stage or the reserved challenge area. */
-:root{background:#0d1215}html,body{height:100%;min-height:0}body{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}.topbar{min-height:0}main{width:100%;height:100%;min-height:0;margin:0 auto;align-self:start;display:grid;grid-template-rows:minmax(0,1fr) auto;padding-top:24px}#page{min-height:0;overflow:auto;overflow-anchor:none;padding-bottom:20px}.grid{height:100%;min-height:0}.news-column{display:flex;flex-direction:column;min-height:0;overflow:auto}.news-column .links{margin-top:auto;padding-top:20px;flex-shrink:0}.login-column{height:100%;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);gap:12px;align-self:stretch}.login-card{min-height:0}.verification,.verification[hidden]{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden;padding:16px 22px}.verification[hidden]{visibility:hidden;pointer-events:none}.verification .section-heading{flex-shrink:0;margin-bottom:10px;padding-bottom:6px}.verification .section-heading h2{font-size:21px}.verification-body{flex:1;min-height:0;overflow:auto}.verification-body .field{margin:10px 0}.verification-body .muted{margin-bottom:6px}.verification-body .row{margin-top:10px}.verification-body .row button{padding:7px 12px}.qr-layout{height:100%;min-height:0;grid-template-columns:minmax(80px,125px) minmax(0,1fr);gap:18px}.qr-placeholder{width:100%;height:auto;max-height:125px;min-height:80px;aspect-ratio:1;gap:7px}.verification .inline-error{min-height:0;margin:4px 0}.verification input{padding:7px 12px}.logs{margin-top:0}.logs > summary{padding:12px 0}.preview-tools[open]>div{position:absolute;bottom:calc(100% + 10px);right:0;width:min(520px,80vw);padding:12px;border:1px solid #686d6e;border-radius:4px;z-index:5}.news li{min-height:35px;padding:7px 6px}.news-section+.news-section{margin-top:24px}.news-column .section-heading{margin-bottom:7px}.news-column h2{font-size:24px}
+:root{background:#0d1215}html,body{height:100%;min-height:0}body{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}.topbar{min-height:0}main{width:100%;height:100%;min-height:0;margin:0 auto;align-self:start;display:grid;grid-template-rows:minmax(0,1fr) auto;padding-top:24px}#page{min-height:0;overflow:auto;overflow-anchor:none;padding-bottom:20px}.grid{height:auto;min-height:100%;grid-template-rows:auto}.news-column{display:flex;flex-direction:column;min-height:0;overflow:visible}.news-column .links{margin-top:auto;padding-top:20px;flex-shrink:0}.login-column{height:auto;min-height:0;display:flex;flex-direction:column;gap:12px;align-self:start}.login-card{min-height:0}.verification,.verification[hidden]{display:flex;flex-direction:column;height:auto;min-height:180px;overflow:visible;padding:16px 22px}.verification[hidden]{visibility:hidden;pointer-events:none}.verification .section-heading{flex-shrink:0;margin-bottom:10px;padding-bottom:6px}.verification .section-heading h2{font-size:21px}.verification-body{flex:1;min-height:0;overflow:visible}.verification-body .field{margin:10px 0}.verification-body .muted{margin-bottom:6px}.verification-body .row{margin-top:10px}.verification-body .row button{padding:7px 12px} .qr-layout{height:auto;min-height:0;grid-template-columns:minmax(80px,125px) minmax(0,1fr);gap:18px}.qr-placeholder{width:100%;height:auto;max-height:125px;min-height:80px;aspect-ratio:1;gap:7px}.verification .inline-error{min-height:0;margin:4px 0}.verification input{padding:7px 12px}.logs{margin-top:0}.logs > summary{padding:12px 0}.preview-tools[open]>div{position:absolute;bottom:calc(100% + 10px);right:0;width:min(520px,80vw);padding:12px;border:1px solid #686d6e;border-radius:4px;z-index:5}.news li{min-height:35px;padding:7px 6px}.news-section+.news-section{margin-top:24px}.news-column .section-heading{margin-bottom:7px}.news-column h2{font-size:24px}
 @media(max-height:820px){main{padding-top:16px}.login-card{padding:16px 22px}.login-card .field{margin:11px 0}.login-card .section-heading{padding-bottom:7px;margin-bottom:9px}.login-card .check{margin:11px 0}.login-card .actions{margin-top:12px}.login-card .actions button{padding:9px;font-size:16px}.news li{min-height:30px;padding:5px}.news-section+.news-section{margin-top:18px}.verification{padding:12px 20px}.verification .section-heading h2{font-size:19px}}
 @media(max-height:680px){.brand-icon{width:36px;height:36px}.topbar{padding-top:10px}.brand{padding-bottom:10px}nav button{padding-top:8px;padding-bottom:14px}main{padding-top:12px}.login-card{padding:12px 18px}.login-card .section-heading h2{font-size:21px}.login-card .field{margin:8px 0;gap:4px}.login-card .field input,.login-card .field select,.login-card .field button{padding:6px var(--field-inline-end,10px) 6px 10px}.login-card .actions{margin-top:8px}.login-card .actions button{padding:7px}.login-card .check{margin:8px 0}.news-column h2{font-size:21px}.verification,.verification[hidden]{padding:10px 16px}.verification .section-heading h2{font-size:17px}.verification .qr-placeholder{max-height:90px}.verification .qr-layout{grid-template-columns:90px 1fr;gap:12px}}
-@media(max-width:820px){#page{overflow:auto}.grid{height:auto;min-height:100%;grid-template-rows:auto auto}.login-column{height:580px;grid-template-rows:auto minmax(0,1fr)}.news-column{overflow:visible}.news-column .links{margin-top:20px}.logs{margin-top:0}}
-@media(min-width:821px){.grid{grid-template-rows:minmax(0,1fr)}.news-column{height:100%;overflow:hidden}.news-section{flex:0 1 auto;min-height:0;overflow:auto}.news-column .links{margin-top:0;padding-top:16px}.login-column{overflow:hidden}.verification-body .qr-layout{align-items:start}.verification .qr-placeholder{max-height:100px;min-height:70px}.verification .qr-layout{grid-template-columns:100px minmax(0,1fr);gap:14px}.qr-layout .row{margin-top:8px}.qr-layout .muted{margin-bottom:4px}}
+@media(max-width:820px){#page{overflow:auto}.grid{height:auto;min-height:100%;grid-template-rows:auto auto}.news-column{overflow:visible}.news-column .links{margin-top:20px}.logs{margin-top:0}}
+@media(min-width:821px){.news-section{flex:0 1 auto;min-height:0;overflow:visible}.news-column .links{margin-top:0;padding-top:16px}.verification-body .qr-layout{align-items:start}.verification .qr-placeholder{max-height:100px;min-height:70px}.verification .qr-layout{grid-template-columns:100px minmax(0,1fr);gap:14px}.qr-layout .row{margin-top:8px}.qr-layout .muted{margin-bottom:4px}}
 @media(min-width:821px) and (max-height:760px){.verification .qr-placeholder{max-height:75px;min-height:60px;font-size:11px;gap:4px}.verification .qr-placeholder small{font-size:8px}.verification .qr-layout{grid-template-columns:75px minmax(0,1fr);gap:12px}.qr-layout p{font-size:12px;margin-bottom:6px}.qr-layout .muted{font-size:10px}.verification-body .row button{font-size:12px;padding:5px 7px}.verification .section-heading{margin-bottom:7px;padding-bottom:4px}.verification .section-heading h2{font-size:17px}}
 
 .logs{overflow-anchor:none}
@@ -70,19 +69,6 @@ input:lang(ja):not([type=checkbox]){font-family:"GenRyu PJP","GenRyu TC",serif}
 :root:is(:lang(en),:lang(ja)) .verification-body{font-size:13px}
 :root:is(:lang(en),:lang(ja)) .log-toolbar{flex-wrap:wrap;gap:8px}
 
-/* Reserve usable verification space even when localized hints wrap onto extra lines. */
-.login-column{container-name:login-column;container-type:size;grid-template-rows:minmax(0,auto) minmax(150px,1fr)}
-.login-card{overflow:auto}
-@container login-column (max-height:600px){
- .login-card{padding:14px 20px}
- .login-card .section-heading{margin-bottom:8px;padding-bottom:6px}
- .login-card .section-heading h2{font-size:21px}
- .login-card .field{margin:9px 0;gap:5px}
- .login-card .check{margin:9px 0;font-size:13px}
-
- .login-card .actions{margin-top:10px}
- .login-card .actions button{padding:9px 7px;font-size:14px}
-}
 /* Button heights stay the same in every language; longer labels wrap inside. */
 .actions button{height:54px;min-height:54px;line-height:1.3;padding:4px 8px;white-space:normal}
 .links button{height:48px;line-height:1.3;padding:4px 5px;white-space:normal}
@@ -92,14 +78,14 @@ input:lang(ja):not([type=checkbox]){font-family:"GenRyu PJP","GenRyu TC",serif}
 :root:is(:lang(en),:lang(ja)) .settings-panel .field .row>button{height:44px}
 :root:is(:lang(en),:lang(ja)) .verification button{min-height:38px;line-height:1.25;padding:4px 9px;font-size:12px;white-space:normal}
 
-/* All languages use the same tab widths; labels wrap wrap inside the existing header row and height. */
+/* All languages use the same tab widths; labels wrap inside the existing header row and height. */
 .topbar{gap:14px}
 nav{display:grid;grid-template-columns:.55fr 1.35fr 1.35fr 1.2fr 1.15fr .55fr;gap:4px;min-width:0}
 nav button{height:64px;align-self:end;min-width:0;padding:8px 4px 17px;font-size:14px;line-height:1.25;white-space:normal}
 
 @media(max-width:1250px){nav button{height:48px;padding:4px 5px 12px}}
 @media(max-width:820px){nav{grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}nav button{height:44px;font-size:11px;padding:4px}}
-/* Keep the manual code actions visible in the compact reserved panel. */
+/* Compact manual code actions retain their established sizing. */
 .verification-body:has(#otp) .muted{font-size:11px;line-height:1.4;margin-bottom:4px}
 .verification-body:has(#otp) .field{margin:4px 0;gap:3px;font-size:12px;line-height:1.4}
 .verification-body:has(#otp) input{height:34px;padding:5px 10px;font-size:14px}
@@ -108,9 +94,9 @@ nav button{height:64px;align-self:end;min-width:0;padding:8px 4px 17px;font-size
 :root:lang(ja) nav button{word-break:keep-all;overflow-wrap:normal;text-wrap:balance}
 #otp:focus-visible{outline:none;border-color:#afb2af}
 
-/* Live operation content uses the same reserved, scrollable verification panel. */
+/* Verification content grows with the page instead of introducing another scroll area. */
 .backend-qr { width: min(140px, 100%); height: 140px; object-fit: contain; background: white; padding: 6px; }
-body[data-backend] #verification .verification-body { overflow: auto; min-height: 0; }
+body[data-backend] #verification .verification-body { overflow: visible; min-height: 0; }
 body[data-backend] #verification .row { flex-wrap: wrap; }
 body[data-backend] #backend-feedback { margin: 0 0 8px; font-size: 14px; }
 .settings-panel > .row + .row { margin-top: 16px; }
@@ -182,9 +168,9 @@ input[type=checkbox]:indeterminate::before{visibility:visible;mask:none;width:9p
 
 .log-footer { min-width: 0; min-height: 0; }
 
-.verification-body.web-verification { display:flex; flex-direction:column; overflow:hidden; }
+.verification-body.web-verification { display:flex; flex-direction:column; min-height:280px; }
 .web-verification > p,.web-verification > .row { flex:0 0 auto; margin:3px 0; }
-#captcha-slot { flex:1; min-height:30px; width:100%; }
+#captcha-slot { flex:1; min-height:240px; width:100%; }
 
 /* Empty native pickers retain the same content line as populated ones. */
 select:not([multiple]){min-block-size:calc(1.55em + 20px)}
@@ -212,3 +198,15 @@ select:not([multiple]){min-block-size:calc(1.55em + 20px)}
 .login-card:has(.travel-actions)>.check{padding-right:166px}
 
 #about-content .storage-cleanup-heading{margin-top:18px;margin-bottom:14px}
+
+/* A dialog scrolls as one surface; setup choices open below their owner. */
+.setup-dialog>.dialog-actions{justify-content:flex-end;gap:14px}
+.setup-dialog .settings-pair{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.setup-dialog .settings-pair .field{min-width:0}
+@supports (appearance:base-select) and selector(select::picker(select)){
+ .setup-dialog select::picker(select){position-area:bottom span-right;position-try-fallbacks:none;max-block-size:min(240px,35dvh)}
+}
+#page{padding-inline:5px;scroll-padding-block:10px}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{position:relative;z-index:1;outline-offset:1px}
+
+.steam-keyboard-hint { display:block; margin-block:10px; font-size:.85em; }

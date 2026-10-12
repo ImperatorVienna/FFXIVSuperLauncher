@@ -2,9 +2,9 @@
 // Synthetic browser fixture only, loaded by create-preview-fixture.cjs. No disk/network/game access.
 (() => {
   const ok=result=>Promise.resolve({ok:true,result:structuredClone(result)});
-  const snapshot={protocolVersion:5,autoCheckUpdates:true,setupComplete:new URL(location.href).searchParams.get("setup")!=="new",language:'en',selectedRegion:'ffxiv',protonScript:'/fixture/proton',regions:['ffxiv_cn','ffxiv_tc','ffxiv'].map(id=>({id,gamePath:'/fixture/'+id,clientVersion:'test',dalamudVersion:'test',areaName:'陆行鸟',cdKeyVersion:'NA',euShopLanguage:'en-gb',clientLanguage:1}))};
+  const snapshot={protocolVersion:5,autoCheckUpdates:true,setupComplete:new URL(location.href).searchParams.get("setup")!=="new",language:'en',selectedRegion:'ffxiv',protonScript:'/fixture/proton',regions:['ffxiv_cn','ffxiv_tc','ffxiv'].map(id=>({id,gamePath:'/fixture/'+id,clientVersion:'test',dalamudVersion:'test',enableDalamud:false,areaName:'陆行鸟',cdKeyVersion:'NA',euShopLanguage:'en-gb',clientLanguage:1}))};
   const records={ffxiv_cn:{ChinaFixture:{password:'',secret:''}},ffxiv_tc:{TaiwanFixture:{password:'fixture-password',secret:''}},ffxiv:{FixtureAccount:{password:'fixture-password',secret:'JBSWY3DPEHPK3PXP'}}};
-  const list=region=>({region,selectedAccount:Object.keys(records[region])[0]||'',enableDalamud:false,accounts:Object.entries(records[region]).map(([name,r])=>({name,hasPassword:!!r.password,hasOtp:!!r.secret,steamAccount:false,freeTrial:false}))});
+  const list=region=>({region,selectedAccount:Object.keys(records[region])[0]||'',enableDalamud:snapshot.regions.find(x=>x.id===region).enableDalamud,accounts:Object.entries(records[region]).map(([name,r])=>({name,hasPassword:!!r.password,hasOtp:!!r.secret,steamAccount:false,freeTrial:false}))});
   const repositories=Object.fromEntries(['ffxiv_cn','ffxiv_tc','ffxiv'].map(region=>[region,{revision:'fixture-repositories',main:'https://main.invalid/catalog.json',presetsEnabled:region==='ffxiv_cn',presets:region==='ffxiv_cn'?['https://preset.invalid/catalog.json']:[],entries:[]}]));
   let operation,sequence=0,newsRevision=0,newsKey,newsPolls=0;
   function official({refresh=false}={}) {
@@ -45,6 +45,7 @@
       if(change.autoCheckUpdates!==undefined)snapshot.autoCheckUpdates=change.autoCheckUpdates;
       if(change.language)snapshot.language=change.language;
       if(change.region)snapshot.selectedRegion=change.region;
+      if(change.enableDalamud!==undefined)snapshot.regions.find(x=>x.id===snapshot.selectedRegion).enableDalamud=change.enableDalamud;
       const global=snapshot.regions.find(x=>x.id==='ffxiv');
       for(const key of ['cdKeyVersion','euShopLanguage','clientLanguage'])if(change[key]!==undefined)global[key]=change[key];
       return ok(snapshot);
@@ -91,7 +92,7 @@
     readCompatibility:()=>ok(compatibility),
     applyCompatibility:value=>{
       if(value.useSteamPrefix&&!compatibility.steamPrefix || new URL(location.href).searchParams.get('compatibility')==='failed')return Promise.resolve({ok:false,code:'operation-failed',message:'Synthetic compatibility write failure.'});
-      Object.assign(compatibility,value);compatibility.registeredRoot=compatibility.registered?compatibility.steamRoot:'';return ok(compatibility);
+      Object.assign(compatibility,value);compatibility.registeredRoot=compatibility.registered?compatibility.steamRoot:'';return ok({...compatibility,runtimes:[],prefixes:[]});
     },
     diagnoseCompatibility:()=>{operation={id:'fixture-operation-'+(++sequence),region:snapshot.selectedRegion,state:'running',challenge:null,log:'[TEST] Checking environment.',launched:false};return ok({operationId:operation.id});},
     chooseProtonScript:()=>Promise.resolve('/fixture/proton'),

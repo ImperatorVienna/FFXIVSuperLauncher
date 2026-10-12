@@ -36,7 +36,7 @@ internal sealed class FrontendApplication(string root)
         try { EnsureIntegration(); }
         catch (Exception ex) { diagnostics.Write(FrontendErrors.Diagnostic(ex), "shared", "WARN"); warning = "应用菜单入口初始化失败，可在“关于”页面重试。"; }
         var settings = LinuxSettings.Load(root);
-        return new { settings.WindowPlacement, settings.SetupComplete, warning };
+        return new { settings.WindowPlacement, settings.SetupComplete, steamIntegration = FrontendCompatibility.RegisteredRoot(settings).Length > 0, warning };
     }
     internal void EnsureIntegration()
     {

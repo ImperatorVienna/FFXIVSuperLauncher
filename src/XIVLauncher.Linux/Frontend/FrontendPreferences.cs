@@ -1,7 +1,7 @@
 using XIVLauncher.Common.Unix;
 namespace XIVLauncher.Linux.Frontend;
 internal sealed record PreferenceChange(string? Language=null,string? Region=null,Dictionary<string,string>? ClientPaths=null,
-    string? CdKeyVersion=null,string? EuShopLanguage=null,int? ClientLanguage=null,bool? AutoCheckUpdates=null);
+    string? CdKeyVersion=null,string? EuShopLanguage=null,int? ClientLanguage=null,bool? AutoCheckUpdates=null,bool? EnableDalamud=null);
 internal sealed class FrontendPreferences(string root, Action? ensureGameIdle = null)
 {
     private readonly string root=Path.IsPathFullyQualified(root)?Path.GetFullPath(root):throw new ArgumentException("An absolute data directory is required.");
@@ -24,7 +24,7 @@ internal sealed class FrontendPreferences(string root, Action? ensureGameIdle = 
                 {
                 available,
                 id=region.Id,gamePath=profile?.GamePath??"",clientVersion=profile?.ClientVersion??"",
-                dalamudVersion=profile?.DalamudVersion??"",areaName=profile?.AreaName??"",
+                enableDalamud=profile?.EnableDalamud??false,dalamudVersion=profile?.DalamudVersion??"",areaName=profile?.AreaName??"",
                 cdKeyVersion=region.Id=="ffxiv"?profile?.CdKeyVersion:null,
                 euShopLanguage=region.Id=="ffxiv"?profile?.EuShopLanguage:null,
                 clientLanguage=region.Id=="ffxiv"?(int?)profile?.ClientLanguage:null
@@ -42,17 +42,18 @@ internal sealed class FrontendPreferences(string root, Action? ensureGameIdle = 
         if(change.EuShopLanguage!=null && !InternationalWeb.EuLanguages.Any(x=>x.Value==change.EuShopLanguage))throw new ArgumentException("Unknown language.");
         if(change.ClientLanguage is {} clientLanguage && !Enum.IsDefined((InternationalClientLanguage)clientLanguage))throw new ArgumentException("Unknown client language.");
         if(change==new PreferenceChange())throw new ArgumentException("Empty update.");
-        if(change.ClientLanguage!=null||change.ClientPaths!=null)(ensureGameIdle ?? GameProcessGuard.EnsureGameSettingsIdle)();
+        if(change.ClientLanguage!=null||change.ClientPaths!=null||change.EnableDalamud!=null)(ensureGameIdle ?? GameProcessGuard.EnsureGameSettingsIdle)();
         var settings=LinuxSettings.Load(root);
         if(change.AutoCheckUpdates is {} autoCheck)settings.AutoCheckUpdates=autoCheck;
         if(change.Language!=null)settings.Language=change.Language;
         if(change.Region!=null)settings.SelectedRegion=change.Region;
+        if(change.EnableDalamud is {} enabled)settings.EnableDalamud=enabled;
         if(change.ClientPaths!=null)foreach(var item in change.ClientPaths)settings.RegionProfiles[item.Key].GamePath=item.Value;
         var global=change.CdKeyVersion!=null||change.EuShopLanguage!=null||change.ClientLanguage!=null ? settings.RegionProfiles["ffxiv"] : null;
         if(change.CdKeyVersion!=null)global!.CdKeyVersion=change.CdKeyVersion;
         if(change.EuShopLanguage!=null)global!.EuShopLanguage=change.EuShopLanguage;
         if(change.ClientLanguage!=null)global!.ClientLanguage=(InternationalClientLanguage)change.ClientLanguage;
-        if(change.ClientPaths!=null||change.CdKeyVersion!=null||change.EuShopLanguage!=null||change.ClientLanguage!=null)settings.Save();
+        if(change.EnableDalamud!=null||change.ClientPaths!=null||change.CdKeyVersion!=null||change.EuShopLanguage!=null||change.ClientLanguage!=null)settings.Save();
         else settings.SaveGlobalPreferences();
         return Snapshot(settings);
     }

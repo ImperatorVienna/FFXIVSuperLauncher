@@ -1,22 +1,14 @@
-<table>
-<tr><td>
-
-<h3>这些问题，你也遇到过吗？</h3>
-<ul>
-  <li>即将主动或被迫切换到 <strong>Linux</strong> 系统，但又担心无法畅玩 FFXIV？</li>
-  <li>游玩<strong>多个区服</strong>，但每个启动器都只支持单一区服，所以需要装两三个风格迥异的启动器？</li>
-  <li>某启动器限制一些比较激进的插件，而不设限的版本又<strong>不支持 Linux</strong> 平台？</li>
-  <li>游戏官方强制使用 <strong>2FA 验证</strong>，每次登录都要手动输入？</li>
-  <li>启动器自带的 Wine 性能表现十分的糟糕，想要<strong>切换成 Proton</strong> 却困难重重？</li>
-  <li>启动器的 UI 相较于官方启动器过于<strong>丑陋</strong>？</li>
-  <li>某插件更新炸游戏，每次都要<strong>禁用全部插件</strong>登录，然后才能去一个一个启用其他插件？</li>
-</ul>
-<p>……</p>
+<h3 align="center">这些问题，你也遇到过吗？</h3>
+<p align="center">即将主动或被迫切换到 <strong>Linux</strong> 系统，但又担心无法畅玩 FFXIV？</p>
+<p align="center">游玩<strong>多个区服</strong>，但每个启动器都只支持单一区服，所以需要装两三个风格迥异的启动器？</p>
+<p align="center">某启动器限制一些比较激进的插件，而不设限的版本又<strong>不支持 Linux</strong> 平台？</p>
+<p align="center">游戏官方强制使用 <strong>2FA 验证</strong>，每次登录都要手动输入？</p>
+<p align="center">启动器自带的 Wine 性能表现十分的糟糕，想要<strong>切换成 Proton</strong> 却困难重重？</p>
+<p align="center">启动器的 UI 相较于官方启动器过于<strong>丑陋</strong>？</p>
+<p align="center">某插件更新炸游戏，每次都要<strong>禁用全部插件</strong>登录，然后才能去一个一个启用其他插件？</p>
+<p align="center">……</p>
 <p align="center"><strong>以上问题，下载 FFXIV Super Launcher，一次性为你解决！</strong></p>
 <p align="center"><a href="https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases"><strong>下载 FFXIV Super Launcher →</strong></a></p>
-
-</td></tr>
-</table>
 
 <p align="center">
   <img src="src/XIVLauncher.Linux/Resources/icon.png" width="128" height="128" alt="FFXIV Super Launcher 图标">
@@ -45,7 +37,7 @@
 - **游戏更新**：检查并安装对应游戏区服的客户端补丁，也可以只更新游戏而不启动。
 - **Dalamud 和插件**：可选启用 Dalamud；无需进入游戏即可管理插件启用状态，并检查 Dalamud 与插件更新。
 - **跨游戏区服同步**：通过“同步第三方仓库”“同步已安装插件”和“同步插件设置”分别同步所选类别；选择来源及目标游戏区服后执行。第三方仓库同步仅替换仓库列表及启用状态，始终保留目标主仓库、预置仓库开关和其他 Dalamud 设置；原数据保留备份。
-- **Steam 集成**：支持国际区 Steam 版账户登录；可手动注册为 Steam compatibility tool 以通过 Steam 打开启动器记录游戏时长。
+- **Steam 集成**：支持国际区 Steam 版账户登录；启用“适配从 Steam 启动”后注册为 Steam compatibility tool，通过 Steam 启动时自动全屏，并支持输入框调用 Steam 虚拟键盘；桌面窗口尺寸单独保留。
 - **界面与公告**：Electron 图形界面支持简体中文、繁體中文、日本語、English，即时切换，无须重启；显示对应游戏区服的官方活动与公告，并提供游戏官网、服务器状态等官方页面入口。
 - **第三方插件仓库**：在插件管理右侧添加、编辑、启用/停用、删除仓库或检查连接；国服插件更新同时识别启用的预置仓库。
 - **中国区超域传送**：支持提交传送、查询历史和返回原区，可在完成后启动游戏。适配 DCTravelerX（[Dalamud-DailyRoutines/DCTraveler](https://github.com/Dalamud-DailyRoutines/DCTraveler)）游戏内跨大区及授权恢复。
@@ -79,7 +71,7 @@
 
 从 [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases) 下载 x86_64 AppImage，赋予执行权限后运行，可放在自行选择的可写目录。仅提供 AppImage 发行包。
 
-首次配置向导会引导选择界面语言、游戏区服、Steam / Proton 目录及是否启用 Dalamud。
+首次配置向导默认使用 English，分步选择启动器界面语言、游戏区服和 Steam / Proton 环境。国际区可同时设置客户端语言、CDKey 版本及欧版账户商城偏好语言；初始默认采用 NA、英语客户端及英语（英国）商城偏好。单项选择即时保存，完成配置后才自动检查启动器更新。
 
 之后在“语言和区服”中设置客户端目录。应选择包含 `game` 子目录的游戏安装目录；国际区还需完整的 `boot` 子目录。
 
@@ -104,7 +96,9 @@
 
 ### 从 Steam 启动本启动器
 
-在“兼容性工具设置”中勾选“注册为 Steam compatibility tool（可随时关闭）”，即可将 **FFXIV Super Launcher** 注册。重新启动 Steam 后，在 Steam 库中的 FFXIV 游戏属性中选择该 compatibility tool。取消勾选即可移除注册。
+在“Steam 和 Proton 设置”中勾选“适配从 Steam 启动”，即可将 **FFXIV Super Launcher** 注册为 Steam compatibility tool。重新启动 Steam 后，在 Steam 库中的 FFXIV 游戏属性中选择该 compatibility tool。取消勾选即可移除注册。启用此项后，通过 Steam 启动会自动全屏，点击输入框会尝试调用 Steam 虚拟键盘；无法调用时提示使用键盘输入，不会为了打开键盘强制启动 Steam。桌面窗口尺寸和最大化状态独立保留。
+
+可使用 **Ctrl+Q** 或 **Alt+F4** 正常退出启动器；Esc 用于关闭可取消的弹窗。针对部分 Gamescope 会话仅传入 `dxgi=n`、导致直接启动游戏时图形 DLL 混用的情况，启动器会按条件补齐 D3D11 加载设置，并保留明确的用户配置。此前为这一问题手动添加的 `env WINEDLLOVERRIDES="dxgi,d3d11=n" %command%` 参数可以移除；其他自行配置的启动参数请保留。
 
 这项功能提供 Steam 启动入口，**不等于开启 Steam 账户认证**。账户认证仍由“我的 CDKey 购买自 Steam”控制。
 
@@ -112,7 +106,7 @@
 
 ### 兼容性环境 / pfx
 
-默认使用“兼容性工具设置”中的“Proton 数据目录（自动在此创建 pfx，建议独立使用）”。国际区可勾选“国际区使用 Steam 已有 pfx”，复用已安装 Steam 版 FFXIV 的既有环境，以使用其中已有的本地游戏设置。
+默认使用“Steam 和 Proton 设置”中的“Proton 数据目录（自动在此创建 pfx，建议独立使用）”。国际区可勾选“国际区使用 Steam 已有 pfx”，复用已安装 Steam 版 FFXIV 的既有环境，以使用其中已有的本地游戏设置。
 
 未启用该选项时，国际区与另外两个游戏区服沿用共用环境设置。已有 Steam 环境的选择不等于迁移或同步插件配置。
 

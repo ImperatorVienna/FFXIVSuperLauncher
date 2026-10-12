@@ -6,7 +6,7 @@ Electron 前端已经连接现有三个区服的业务服务。完整测试包�
 
 - 四语言界面即时切换；按区服管理客户端路径、账户凭据和插件，国际区保留 CDKey 版本、EU 语言、客户端语言、Steam 账户及试玩设置。
 - 凭据明确保存后写入既有明文文件；中国区沿用凭据快捷登录、失效后扫码，繁中区及国际区的首次账户引导到凭据管理。选中有密钥的账户默认自动 OTP，独立本地验证码工具无需后端或网络。
-- 三端认证、游戏更新、Proton 启动及 entrypoint 注入共用现有服务；可临时禁用全部插件。二维码、手机确认码、手动 OTP 共用“开始游戏”下方的固定区域，内容不足时内部滚动。
+- 三端认证、游戏更新、Proton 启动及 entrypoint 注入共用现有服务；可临时禁用全部插件。二维码、手机确认码、手动 OTP 共用“开始游戏”下方的验证区域；小窗口下由页面统一滚动，公告、登录卡和验证区不再各自滚动。
 - 繁中区网页验证也使用该区域内的隔离 WebContentsView，沿用原有官方地址、站点密钥和验证码页面生成逻辑。先导航到空白文档再启用调试会话与页面拦截，避免新视图在首次导航前等待调试命令而挂起；初始化命令限时 15 秒，页面导航限时 45 秒，整个验证限时 5 分钟。失败只记录固定阶段，不记录网页内容或令牌；取消会立即中断初始化并销毁视图。网页没有 Node.js、preload 或本地凭据接口；验证令牌只由主进程交给后端，不进入本地页面或日志。后续手动 OTP 隐藏网页但保留会话，认证完成、取消或失败后清理。
 - 三端公告、活动和官方链接，包括服务器状态；切换区服、CDKey 版本或 EU 语言后重新读取。网络失败仅影响对应资讯，支持重试。
 - 插件启用状态读取、刷新及勾选后即时保存；手动更新 Dalamud、从原插件仓库选择更新；按数据类别和所选目标区服同步，保留备份、并发修改检查及繁中插件 DLL 提醒。
@@ -168,3 +168,27 @@ python3 -m http.server 8765 --bind 127.0.0.1
 兼容环境发现通过独立只读任务异步回复，7 秒到期只拒绝该读取。一个扫描即使卡在无法取消的系统文件调用中，也不会继续启动更多扫描；原扫描返回后允许重新刷新。退出时不等待卡住的只读线程。IPC 客户端只对已隔离的 compatibility.read、areas.list 使用局部读取超时，其余请求仍保留 10 秒失效连接保护。Dalamud 网络超时和本地回退不变。插件与仓库的读取忙碌状态独立，后台修改任务仍有必要的互斥。
 
 界面故障注入检查：生成 create-preview-fixture.cjs 的测试页并启动仓库 HTTP 服务后，运行 frontend/tests/failure-boundaries.cjs；UI_TEST_URL 可指定测试页地址。验证单次错误归属、两侧独立刷新、保存成功后刷新失败、首次设置与凭据读取隔离及日志保持折叠。
+
+## 通用界面优化（2026-10-12）
+
+首次设置分为界面语言、游戏区服、兼容环境三步。全新配置默认英文，国际区默认 NA / English，欧服商城偏好默认 English(UK)；已保存的选择不会被向导重置。国际区账户 CDKey 和欧服商城偏好语言在同一行。选择即时串行保存，下一步等待在途保存；失败停留并回报。路径草稿与对应错误保留，未保存输入不能越过完成检查。向导不接受 Esc 或点击外部关闭。完成配置后才开始自动更新检查。
+
+更新提示等待初始化、首次设置和其他弹窗结束，安装提交期间防止重复点击和提前关闭；提交失败留在窗口中提示并允许重试。日志保持用户主动展开。页面级异常边界沿用现有实现，设置已保存而后续列表读取失败时分别回报。
+
+`ui-state.js` 只管理普通 DOM 焦点恢复与兼容环境保存响应合并；不轮询输入设备，不实现方向导航。设置值变化尽量保留原控件，插件与仓库按各自数据／状态更新；切页仍使用现有入口。页面统一负责小窗口滚动，弹窗与日志继续保留自己的高度上限。
+
+Electron 回归使用独立临时配置与合成 bridge，不访问实际账户、Steam 或游戏数据：
+
+```sh
+node frontend/tests/create-preview-fixture.cjs
+FFXIV_ELECTRON=/absolute/path/to/electron node frontend/tests/ui-regressions.cjs
+```
+
+需要 Node 可解析 `playwright`；可通过 `NODE_PATH` 指向已安装目录。测试复制运行时入口到临时目录，不改动原 Electron 包。可设 `UI_TEST_ARTIFACTS=/absolute/output/path` 保存截图。覆盖保存顺序、失败恢复、默认值、多语言、弹窗关闭／重试、独立刷新和 1024×600 页面滚动。不接回手柄导航模块。Steam 虚拟键盘通过独立输入适配调用。
+
+
+Steam 启动适配复用实际的兼容性工具注册状态，不增加第二个偏好开关。
+`steam-integration.cjs` 统一识别兼容性入口和带 Steam 应用标识的非 Steam 快捷方式，管理临时全屏及键盘请求；`window-state.cjs` 在临时全屏期间停止写入桌面窗口状态。重复 Steam 入口复用同一模块。
+`steam-input.js` 只监听用户点击文本框及 Tab 进入文本框，不接管按键、手柄导航或焦点。键盘请求只携带坐标及输入模式，经主进程校验后通过固定的 `steam -ifrunning steam://open/keyboard` 调用；Steam 未运行不启动客户端，失败在输入框旁提示。请求成功仅代表已发送，Steam 覆盖层是否实际显示仍须游戏模式实测。
+
+Window UI sizing is owned by `window-ui.cjs`: scale up from 1320×860 device-independent content pixels, limited by both dimensions; small windows retain normal control sizes and page scrolling. Native verification bounds use the same zoom. Ctrl+Q / Alt+F4 in the launcher or embedded verification use the normal shutdown path. Esc remains a dialog action.

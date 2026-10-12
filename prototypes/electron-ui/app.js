@@ -1,5 +1,5 @@
 'use strict';
-const pages = ['游戏', '登录凭据管理', '兼容性工具设置', '语言和区服', 'Dalamud 和插件', '关于'];
+const pages = ['游戏', '登录凭据管理', 'Steam 和 Proton 设置', '语言和区服', 'Dalamud 和插件', '关于'];
 const regions = [{id:'ffxiv_cn',name:'中国区'},{id:'ffxiv_tc',name:'繁中区'},{id:'ffxiv',name:'国际区'}];
 const state = {page:0, region:0, cdkey:'NA', euLanguage:'English(UK)', clientLanguage:'English', uiLanguage:'简体中文', timer:null, challenge:null, sequence:0, logs:0};
 const {t, apply:localize} = window.previewI18n;
@@ -31,11 +31,12 @@ function regionSettings(){return `<section class="panel settings-panel"><div cla
 function credentials(){return `<section class="panel settings-panel"><div class="section-heading"><h2>登录凭据管理</h2>${regionLink()}</div><label class="field">已保存账户<select id="credential-account"><option>DemoAccount · 示例账户</option></select></label><div class="row"><button data-demo data-action="add-account">添加账户</button><button data-demo data-action="delete-account">删除账户</button></div><label class="field">登录名<input id="credential-name" value="DemoAccount" autocomplete="off"></label>${state.region?'<label class="field">密码<input id="credential-password" type="password" autocomplete="off" placeholder="请勿在原型中输入真实密码"></label><label class="field">2FA 密钥（可选）<input id="credential-secret" type="password" autocomplete="off" placeholder="请勿输入真实密钥"></label>':'<p class="muted">扫码登录后自动保存快捷登录凭据。</p>'}<div class="row"><button data-action="discard-account">放弃修改</button><button class="primary" data-demo data-action="save-account">保存凭据</button>${state.region?'<button data-action="local-otp">查看 2FA 验证码</button>':''}</div></section>`;}
 function plugins(){return `<div class="plugin-layout"><section class="panel settings-panel" data-plugin-ui><div class="section-heading"><h2>Dalamud 和插件</h2>${regionLink()}</div><div data-plugin-body><p class="muted">Dalamud 版本：未读取 · 原型预览</p><div class="row"><button data-demo>检查并更新 Dalamud</button><button data-demo>检查并更新插件</button></div>${['示例插件 A','示例插件 B','示例插件 C'].map((p,i)=>`<label class="check plugin-row"><input type="checkbox" ${i!==1?'checked':''}>${p}<span class="muted">示例数据</span></label>`).join('')}<div class="row"><button data-action="render">刷新插件启用状态</button></div><div class="row plugin-actions"><button data-demo>同步已安装插件</button><button data-demo>同步插件设置</button></div></div></section><section class="panel settings-panel repository-panel" data-plugin-ui data-repository-body></section></div>`;}
 function render(){
+  const restore=window.uiState.capture($('#page'));
   stop();
   document.querySelectorAll('nav button').forEach((b,i)=>{if(i===state.page)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
-  const views=[game,credentials,()=>(window.launcherBridge||new URL(location.href).searchParams.get('integration')==='1')?window.compatibilityTemplate():(()=>'<section class="panel settings-panel"><div class="section-heading"><h2>兼容性工具设置</h2></div><label class="field">Proton 版本<select id="proton-choice"><option>Proton · 示例版本</option></select></label><button data-demo data-action="refresh-proton">刷新已安装的 Proton</button><label class="check"><input type="checkbox">注册为 Steam compatibility tool</label><p class="muted">原型布局，尚未连接系统设置。</p></section>')(),regionSettings,plugins,()=>(window.launcherBridge||new URL(location.href).searchParams.get('integration')==='1')?window.aboutTemplate():(()=>'<section class="panel settings-panel"><div class="section-heading"><h2>关于</h2></div><h3>FFXIV Super Launcher</h3><p>ImperatorVienna</p><p class="muted">前端交互预览 · 非发行版本</p><div class="row"><button data-demo>GitHub 仓库</button><button data-demo>反馈问题</button><button disabled>加入 Discord</button></div><p class="muted divider" style="padding-top:20px">正式版将保留完整的许可证、第三方声明和诊断日志路径。原型未读取真实日志。</p></section>')()];
+  const views=[game,credentials,()=>(window.launcherBridge||new URL(location.href).searchParams.get('integration')==='1')?window.compatibilityTemplate():(()=>'<section class="panel settings-panel"><div class="section-heading"><h2>Steam 和 Proton 设置</h2></div><label class="field">Proton 版本<select id="proton-choice"><option>Proton · 示例版本</option></select></label><button data-demo data-action="refresh-proton">刷新已安装的 Proton</button><label class="check"><input type="checkbox">适配从 Steam 启动</label><p class="muted">原型布局，尚未连接系统设置。</p></section>')(),regionSettings,plugins,()=>(window.launcherBridge||new URL(location.href).searchParams.get('integration')==='1')?window.aboutTemplate():(()=>'<section class="panel settings-panel"><div class="section-heading"><h2>关于</h2></div><h3>FFXIV Super Launcher</h3><p>ImperatorVienna</p><p class="muted">前端交互预览 · 非发行版本</p><div class="row"><button data-demo>GitHub 仓库</button><button data-demo>反馈问题</button><button disabled>加入 Discord</button></div><p class="muted divider" style="padding-top:20px">正式版将保留完整的许可证、第三方声明和诊断日志路径。原型未读取真实日志。</p></section>')()];
   $('#page').innerHTML=views[state.page]();
-  localize();updateLogCount();window.frontendConnection.present();
+  localize();updateLogCount();window.frontendConnection.present();restore();
 }
 function ensureGame(){if(state.page!==0){state.page=0;render();}}
 function showVerification(kind){
@@ -64,7 +65,7 @@ document.addEventListener('click',e=>{
   if(b.hasAttribute('data-demo')){sampleNotice();return;}
   switch(b.dataset.action){
     case 'region-settings':state.page=3;render();break;
-    case 'accounts':$('#account-dialog').showModal();break;
+    case 'accounts':window.uiState.showDialog($('#account-dialog'));break;
     case 'close-dialog':$('#account-dialog').close();break;
     case 'select-account':$('#login-name').value='DemoAccount';$('#account-dialog').close();break;
     case 'status':window.open(window.serverStatus.url(regions[state.region].id,state.cdkey,state.euLanguage),'_blank','noopener,noreferrer');break;
@@ -95,6 +96,7 @@ document.addEventListener('input',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.challenge){stop();log('Cancelled.');}if(e.key==='Enter'&&e.target.id==='otp')submitVerification();});
 render();
 
+let snapshotShape=null;
 void window.frontendConnection.start(snapshot=>{
   const language=Object.entries(window.previewI18n.languages).find(([,id])=>id===snapshot.language)?.[0] || 'English';
   state.uiLanguage=language;
@@ -104,5 +106,7 @@ void window.frontendConnection.start(snapshot=>{
   if(global?.euShopLanguage)state.euLanguage=({'en-gb':'English(UK)','fr-fr':'Français','de-de':'Deutsch'})[global.euShopLanguage];
   if(global?.clientLanguage!==null && global?.clientLanguage!==undefined)state.clientLanguage=['日本語','English','Deutsch','Français'][global.clientLanguage];
   window.previewI18n.set(language);
-  render();
+  const shape=JSON.stringify([language,snapshot.selectedRegion,state.cdkey==='EU']);
+  if(snapshotShape!==shape){snapshotShape=shape;render();}
+  else {for(const [id,value] of [['ui-language',state.uiLanguage],['region',state.region],['cdkey',state.cdkey],['eu-language',state.euLanguage],['client-language',state.clientLanguage]]){const input=$('#'+id);if(input)input.value=value;}window.frontendConnection.present();}
 },(message,{error=true}={})=>log(message,{error}));

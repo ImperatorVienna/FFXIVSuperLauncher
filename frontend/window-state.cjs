@@ -8,10 +8,10 @@ function restoreBounds(saved,displays) {
   return {x:Math.round(Math.max(area.x,Math.min(value.x,area.x+area.width-width))),y:Math.round(Math.max(area.y,Math.min(value.y,area.y+area.height-height))),
     width:Math.round(width),height:Math.round(height),maximized:Boolean(value.maximized)};
 }
-function observePlacement(window,save) {
+function observePlacement(window,save,canSave=()=>true) {
   let last=null,timer=null,pending=Promise.resolve(),serialized='';
-  const capture=()=>{if(window.isDestroyed()||window.isMinimized())return;last={...window.getNormalBounds(),maximized:window.isMaximized()};};
-  const flush=()=>{clearTimeout(timer);capture();if(!last)return pending;const value={...last},text=JSON.stringify(value);
+  const capture=()=>{if(!canSave()||window.isDestroyed()||window.isMinimized())return;last={...window.getNormalBounds(),maximized:window.isMaximized()};};
+  const flush=()=>{clearTimeout(timer);if(!canSave())return pending;capture();if(!last)return pending;const value={...last},text=JSON.stringify(value);
     if(text===serialized)return pending;serialized=text;
     pending=pending.catch(()=>{}).then(()=>save(value)).catch(error=>{serialized='';throw error;});return pending;};
   const changed=()=>{capture();clearTimeout(timer);timer=setTimeout(()=>void flush().catch(()=>{}),250);};

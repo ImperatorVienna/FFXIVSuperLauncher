@@ -2,6 +2,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 // Named local operations only. Saved secrets are read only on an explicit credential-editor request.
 contextBridge.exposeInMainWorld('launcherBridge', Object.freeze({
+  showSteamKeyboard: value => ipcRenderer.invoke('launcher:steam-keyboard',value),
   captchaLayout: value => ipcRenderer.invoke('launcher:captcha-layout',value),
   snapshot: () => ipcRenderer.invoke('launcher:snapshot',{}),
   completeSetup: value => ipcRenderer.invoke('launcher:setup.complete',value),

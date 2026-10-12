@@ -132,9 +132,66 @@ public sealed class DcTravelerBridgeTests
         Assert.DoesNotContain("传送失败", DcTravelerBridge.FormatError(new HttpRequestException("secret")));
     }
 
+    [Fact]
+    public async Task PluginOrderPollingKeepsItsSessionAcrossConfirmationAndCompletion()
+    {
+        using var transport = new TravelTransport();
+        transport.Statuses.Enqueue(2); transport.Statuses.Enqueue(3); transport.Statuses.Enqueue(5);
+        var diagnostics = new List<string>();
+        await using var bridge = new DcTravelerBridge(null, transport: transport,
+            diagnostic: (message, _) => { diagnostics.Add(message); throw new IOException("Log unavailable"); });
+        using var http = new HttpClient();
+        async Task<JsonElement> Call(string method, string args)
+        {
+            using var response = await Post(http, bridge.Port, "{\"Method\":\"" + method + "\",\"Params\":" + args + "}");
+            using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+            Assert.Equal(JsonValueKind.Null, json.RootElement.GetProperty("Error").ValueKind);
+            return json.RootElement.GetProperty("Result").Clone();
+        }
+        await Call("TravelOrder", """[{"AreaId":2,"groupId":20},{"AreaId":9,"groupId":5},{"roleId":"123"}]""");
+        Assert.Equal(2, (await Call("QueryOrderStatus", "[\"order\"]")).GetProperty("Status").GetInt32());
+        await Call("MigrationConfirmOrder", "[\"order\",true]");
+        Assert.Equal(3, (await Call("QueryOrderStatus", "[\"order\"]")).GetProperty("Status").GetInt32());
+        Assert.Equal(5, (await Call("QueryOrderStatus", "[\"order\"]")).GetProperty("Status").GetInt32());
+        Assert.Equal(1, transport.TravelInitializations);
+        Assert.Equal(1, transport.Submissions);
+        Assert.Equal(1, transport.Confirmations);
+        Assert.Contains(diagnostics, x => x.Contains("status=5"));
+    }
+
+    [Fact]
+    public async Task RejectedReadRecoversSessionWithoutResubmittingTravel()
+    {
+        using var transport = new TravelTransport { RejectStatusOnce = true, RejectReinitialization = false };
+        await using var bridge = new DcTravelerBridge(null, transport: transport);
+        using var http = new HttpClient();
+        using var response = await Post(http, bridge.Port, """{"Method":"QueryOrderStatus","Params":["order"]}""");
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal(JsonValueKind.Null, json.RootElement.GetProperty("Error").ValueKind);
+        Assert.Equal(5, json.RootElement.GetProperty("Result").GetProperty("Status").GetInt32());
+        Assert.Equal(2, transport.TravelInitializations);
+        Assert.Equal(0, transport.Submissions);
+    }
+
+    [Fact]
+    public async Task BridgeFailureDiagnosticNamesOperationWithoutReturningPrivateValues()
+    {
+        var diagnostics = new List<string>();
+        await using var bridge = new DcTravelerBridge((_, _) => throw new DCTravelAPIException("secret-ticket order-id", 123),
+            diagnostic: (message, _) => diagnostics.Add(message));
+        using var http = new HttpClient();
+        using var response = await Post(http, bridge.Port, """{"Method":"QueryOrderStatus","Params":["private-order"]}""");
+        var message = Assert.Single(diagnostics);
+        Assert.Contains("QueryOrderStatus", message); Assert.Contains("123", message);
+        Assert.DoesNotContain("secret-ticket", message); Assert.DoesNotContain("private-order", message);
+        Assert.DoesNotContain("secret-ticket", await response.Content.ReadAsStringAsync());
+    }
+
     private sealed class TravelTransport : HttpMessageHandler
     {
-        internal int Calls, Submissions;
+        internal int Calls, Submissions, TravelInitializations, Confirmations;
+        internal bool RejectStatusOnce, RejectReinitialization = true;
+        internal Queue<int> Statuses = new();
         internal bool FailSubmission;
         internal string LastSubmission = "";
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token)
@@ -144,13 +201,27 @@ public sealed class DcTravelerBridgeTests
             object data;
             switch (method)
             {
-                case "pageInit": data = new { resultCode = 0 }; break;
+                case "pageInit":
+                    if (request.RequestUri.Query.Contains("migrationType=4"))
+                    {
+                        TravelInitializations++;
+                        if (RejectReinitialization && Submissions > 0)
+                            throw new IOException("Synthetic pending order: do not reinitialize its session.");
+                    }
+                    data = new { resultCode = 0 }; break;
                 case "queryGroupListTravelSource": case "queryGroupListTravelTarget":
                     data = new { resultCode = 0, groupList = "[]" }; break;
                 case "queryRoleList4Migration": data = new { resultCode = 0, roleList = "[{\"roleId\":\"123\",\"roleName\":\"Name\"}]" }; break;
                 case "queryMigrationOrders": data = new { resultCode = 0, totalCount = 0, totalPageNum = 1, orderlist = "[]" }; break;
-                case "queryOrderStatus": data = new { migrationStatus = 5 }; break;
-                case "migrationConfirmOrder": data = new { resultCode = 0 }; break;
+                case "queryOrderStatus":
+                    if (RejectStatusOnce)
+                    {
+                        RejectStatusOnce = false;
+                        return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                            { Content = new StringContent("{\"return_code\":-1,\"return_message\":\"synthetic expired session\"}") });
+                    }
+                    data = new { migrationStatus = Statuses.Count > 0 ? Statuses.Dequeue() : 5 }; break;
+                case "migrationConfirmOrder": Confirmations++; data = new { resultCode = 0 }; break;
                 case "travelOrder": case "travelBack":
                     Submissions++; LastSubmission = request.RequestUri.Query;
                     if (FailSubmission) throw new HttpRequestException("Ambiguous submission");

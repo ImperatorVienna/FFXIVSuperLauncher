@@ -3,7 +3,8 @@
 window.createPluginPage = ({call,ready,region,start,cancel,operation,report}) => {
   const {t}=window.previewI18n;
   const caches=new Map();
-  let host=null,hostRegion=null,dialog=null;
+  let host=null,hostRegion=null,dialog=null,pluginView=null,repositoryHost=null,repositoryView=null;
+  const unchanged=(a,b)=>a?.length===b.length&&b.every((v,i)=>Object.is(v,a[i]));
   const names={ffxiv_cn:'中国区',ffxiv_tc:'繁中区',ffxiv:'国际区'};
   const labels={'third-party-repositories':'同步第三方仓库','installed-plugins':'同步已安装插件','plugin-settings':'同步插件设置'};
   function state(key=region()) {
@@ -28,22 +29,22 @@ window.createPluginPage = ({call,ready,region,start,cancel,operation,report}) =>
     const f=feedback(key,target);f.error='';f.message='';delete f.url;
   }
   async function load(key=region(),clear=false) {
-    const s=state(key);if(s.loading||!ready())return;
+    const s=state(key);if(s.loading||!ready())return;const restore=window.uiState.capture(document.querySelector('[data-plugin-body]'));
     s.loading=true;if(clear)clearFeedback(key,'plugins');render();
     try {
       const list=await call('readPlugins',{region:key});s.list=list;
       if(clear)report('Plugin status refreshed.',{error:false});
     } catch(err){s.list=null;error(err,'plugins',key);}
-    finally{s.loading=false;if(region()===key)render();}
+    finally{s.loading=false;if(region()===key)render();restore();}
   }
   async function loadRepositories(key=region(),clear=false) {
-    const s=state(key);if(s.repositoryLoading||!ready())return;
+    const s=state(key);if(s.repositoryLoading||!ready())return;const restore=window.uiState.capture(document.querySelector('[data-repository-body]'));
     s.repositoryLoading=true;if(clear)clearFeedback(key,'repositories');render();
     try {
       s.repositories=await call('readPluginRepositories',{region:key});
       if(clear)report('Repository status refreshed.',{error:false});
     } catch(err){error(err,'repositories',key);}
-    finally{s.repositoryLoading=false;if(region()===key)render();}
+    finally{s.repositoryLoading=false;if(region()===key)render();restore();}
   }
   function refreshPlugins(){return load(region(),true);}
   function refreshRepositories(){return loadRepositories(region(),true);}
@@ -57,9 +58,14 @@ window.createPluginPage = ({call,ready,region,start,cancel,operation,report}) =>
   }
   function render() {
     const body=document.querySelector('[data-plugin-body]');if(!body)return;
-    host=body;hostRegion=region();
-    body.dataset.noTranslate='';body.replaceChildren();
     const key=region(),s=state(key);const busy=!ready()||s.loading;
+    renderRepositories(s,!ready()||s.repositoryLoading);
+    const runningForPanel=s.operationTarget==='plugins'?operation():null;
+    const signature=[key,document.documentElement.lang,busy,s.list,s.error,s.message,s.plan,runningForPanel?.operationId,runningForPanel?.state];
+    if(host===body&&unchanged(pluginView,signature))return;
+    const restore=window.uiState.capture(body);
+    host=body;hostRegion=key;pluginView=signature;
+    body.dataset.noTranslate='';body.replaceChildren();
     body.append(node('p',t('Dalamud 版本：{version}',{version:s.list?.dalamudVersion||t('未安装或未读取')}),'muted'));
     const updates=node('div','','row');
     updates.append(button('检查并更新 Dalamud',()=>{return run({kind:'dalamud-update'});},{disabled:busy}),
@@ -92,13 +98,17 @@ window.createPluginPage = ({call,ready,region,start,cancel,operation,report}) =>
       }
     }
     const sync=node('div','','row plugin-actions');for(const [content,label] of Object.entries(labels).filter(([key])=>key!=='third-party-repositories'))sync.append(button(label,()=>chooseSync(content),{disabled:busy}));body.append(sync);
-    renderRepositories(s,!ready()||s.repositoryLoading);
+    restore();
   }
   function renderRepositories(s,busy) {
     const key=region(),repoButton=(text,action,options={})=>button(text,action,{...options,target:'repositories'});
     const panel=document.querySelector('[data-repository-body]');if(!panel)return;
+    const f=s.repositoryFeedback,runningForPanel=s.operationTarget==='repositories'?operation():null;
+    const signature=[key,document.documentElement.lang,busy,s.repositories,f.error,f.message,f.url,runningForPanel?.operationId,runningForPanel?.state];
+    if(repositoryHost===panel&&unchanged(repositoryView,signature))return;
+    repositoryHost=panel;repositoryView=signature;
+    const restore=window.uiState.capture(panel);try{
     panel.dataset.noTranslate='';panel.replaceChildren(node('h2',t('第三方插件仓库')));
-    const f=s.repositoryFeedback;
     if(f.error&&!f.url)panel.append(node('p',f.error,'inline-error'));
     if(f.message&&!f.url)panel.append(node('p',f.message,'muted'));
     const running=operation();if(running&&s.operationTarget==='repositories'){panel.append(node('p',t(running.state==='cancelling'?'正在取消…':'正在处理，请稍候…'),'muted'),repoButton('取消操作',cancel,{disabled:running.state!=='running'}));}
@@ -118,14 +128,14 @@ window.createPluginPage = ({call,ready,region,start,cancel,operation,report}) =>
         input.disabled=true;void save(entries).catch(err=>{input.disabled=false;error(err,'repositories',key);});
       });
       input.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();input.blur();}});
-      const row=node('div','','row dialog-actions');row.append(repoButton('关闭',closeDialog));d.append(row);d.showModal();input.focus();
+      const row=node('div','','row dialog-actions');row.append(repoButton('关闭',closeDialog));d.append(row);window.uiState.showDialog(d);input.focus();
     };
     const controls=node('div','','row');controls.append(repoButton('添加仓库',()=>edit(),{disabled:busy}),repoButton('刷新仓库状态',refreshRepositories,{disabled:busy}),repoButton('同步第三方仓库',()=>chooseSync('third-party-repositories'),{disabled:busy}));panel.append(controls);
     panel.append(node('p',t('仓库设置与游戏内 Dalamud 共用，仅影响当前游戏区服。'),'muted'));
     if(data.presets.length){
       const label=node('label','','check'),check=node('input');check.type='checkbox';check.checked=data.presetsEnabled;check.disabled=busy;
-      check.addEventListener('change',()=>void save(data.entries,check.checked).catch(err=>error(err,'repositories',key)));label.append(check,document.createTextNode(t('启用国服预置仓库')));panel.append(label);
-      panel.append(node('p',t('预置仓库由国服 Dalamud 提供，开启时不受下方同地址条目的停用或删除影响。'),'muted'));
+      check.addEventListener('change',()=>void save(data.entries,check.checked).catch(err=>error(err,'repositories',key)));label.append(check,document.createTextNode(t('启用预置仓库')));panel.append(label);
+      panel.append(node('p',t('预置仓库由 Dalamud 提供，开启时不受下方同地址条目的停用或删除影响。'),'muted'));
       const details=node('details');details.append(node('summary',t('查看预置仓库')));
       for(const url of data.presets)details.append(node('p',url,'plugin-repository'));panel.append(details);
     }
@@ -135,12 +145,13 @@ window.createPluginPage = ({call,ready,region,start,cancel,operation,report}) =>
       label.append(check,document.createTextNode(entry.url));box.append(label);
       const row=node('div','','row');row.append(repoButton('编辑仓库',()=>edit(index),{disabled:busy}),repoButton('检查连接',()=>{return run({kind:'check-repository',url:entry.url});},{disabled:busy}),repoButton('删除仓库',()=>{
         clearRepositoryFeedback();const d=openDialog('删除仓库','repositories');d.append(node('p',entry.url),node('p',t('仅移除仓库地址，不删除已安装插件。'),'muted'));
-        const actions=node('div','','row dialog-actions');actions.append(repoButton('删除仓库',()=>save(data.entries.filter((_,i)=>i!==index))),repoButton('取消',closeDialog));d.append(actions);d.showModal();
+        const actions=node('div','','row dialog-actions');actions.append(repoButton('删除仓库',()=>save(data.entries.filter((_,i)=>i!==index))),repoButton('取消',closeDialog));d.append(actions);window.uiState.showDialog(d);
       },{disabled:busy}));box.append(row);
       if(f.url===entry.url&&(f.error||f.message)){const result=node('p',f.error||f.message,f.error?'inline-error':'muted');result.dataset.repositoryResult='';result.setAttribute('role','status');box.append(result);}
       panel.append(box);
     }
     if(!data.entries.length)panel.append(node('p',t('尚未添加第三方仓库。'),'muted'));
+    }finally{restore();}
   }
   function sync() {
     const body=document.querySelector('[data-plugin-body]');
@@ -165,7 +176,7 @@ window.createPluginPage = ({call,ready,region,start,cancel,operation,report}) =>
     for(const [id,name] of Object.entries(names)){const row=node('label','','check sync-target'),check=node('input');check.type='checkbox';check.value=id;check.addEventListener('change',changed);targets.push(check);row.append(check,document.createTextNode(t(name)));d.append(row);}
     const resetTargets=()=>{for(const check of targets){check.checked=false;check.disabled=!select.value||check.value===select.value;}changed();};select.addEventListener('change',resetTargets);resetTargets();
     if(!select.value)d.append(node('p',t('各游戏区服均无此项数据，请先在来源游戏区服生成设置或安装插件。'),'muted'));
-    const row=node('div','','row');row.append(apply,button('取消',closeDialog));d.append(row);d.showModal();
+    const row=node('div','','row');row.append(apply,button('取消',closeDialog));d.append(row);window.uiState.showDialog(d);
   }
   function showPlan(plan) {
     const d=openDialog('选择更新插件');d.append(node('p',t('可更新插件：{count}。只从各插件原安装仓库更新。',{count:plan.updates.length}),'muted'));
@@ -177,7 +188,7 @@ window.createPluginPage = ({call,ready,region,start,cancel,operation,report}) =>
       const caption=node('span',`${item.name}：${item.fromVersion} → ${item.toVersion}`);caption.append(node('small',item.repository,'plugin-repository'));label.append(check,caption);d.append(label);
     }
     for(const problem of plan.problems)d.append(node('p',problem,'inline-error'));
-    const row=node('div','','row');row.append(button('全选',()=>{checks.forEach(x=>{x.checked=true;});apply.disabled=!checks.length;},{disabled:!checks.length}),apply,button('关闭',closeDialog));d.append(row);d.showModal();
+    const row=node('div','','row');row.append(button('全选',()=>{checks.forEach(x=>{x.checked=true;});apply.disabled=!checks.length;},{disabled:!checks.length}),apply,button('关闭',closeDialog));d.append(row);window.uiState.showDialog(d);
   }
   async function completed(view) {
     const s=state(view.region),f=feedback(view.region,s.operationTarget);f.error=view.state==='failed'?(view.error||t('操作失败，请查看日志。')):'';f.message=view.state==='completed'?t('操作已完成。'):view.state==='failed'?'':t('已取消。');

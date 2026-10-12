@@ -1,22 +1,14 @@
-<table>
-<tr><td>
-
-<h3>這些問題，你也遇過嗎？</h3>
-<ul>
-  <li>即將主動或被迫切換到 <strong>Linux</strong> 系統，卻擔心無法暢玩 FFXIV？</li>
-  <li>遊玩<strong>多個區服</strong>，但每個啟動器都只支援單一區服，所以得安裝兩三個風格迥異的啟動器？</li>
-  <li>某啟動器限制一些比較激進的外掛，而不設限的版本又<strong>不支援 Linux</strong> 平台？</li>
-  <li>遊戲官方強制使用 <strong>2FA 驗證</strong>，每次登入都得手動輸入？</li>
-  <li>啟動器內建的 Wine 效能表現十分糟糕，想要<strong>改用 Proton</strong> 卻困難重重？</li>
-  <li>啟動器的 UI 相較於官方啟動器過於<strong>醜陋</strong>？</li>
-  <li>某個外掛更新導致遊戲崩潰，每次都得<strong>停用全部外掛</strong>登入，才能再逐一啟用其他外掛？</li>
-</ul>
-<p>……</p>
+<h3 align="center">這些問題，你也遇過嗎？</h3>
+<p align="center">即將主動或被迫切換到 <strong>Linux</strong> 系統，卻擔心無法暢玩 FFXIV？</p>
+<p align="center">遊玩<strong>多個區服</strong>，但每個啟動器都只支援單一區服，所以得安裝兩三個風格迥異的啟動器？</p>
+<p align="center">某啟動器限制一些比較激進的外掛，而不設限的版本又<strong>不支援 Linux</strong> 平台？</p>
+<p align="center">遊戲官方強制使用 <strong>2FA 驗證</strong>，每次登入都得手動輸入？</p>
+<p align="center">啟動器內建的 Wine 效能表現十分糟糕，想要<strong>改用 Proton</strong> 卻困難重重？</p>
+<p align="center">啟動器的 UI 相較於官方啟動器過於<strong>醜陋</strong>？</p>
+<p align="center">某個外掛更新導致遊戲崩潰，每次都得<strong>停用全部外掛</strong>登入，才能再逐一啟用其他外掛？</p>
+<p align="center">……</p>
 <p align="center"><strong>以上問題，下載 FFXIV Super Launcher，一次為你解決！</strong></p>
 <p align="center"><a href="https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases"><strong>下載 FFXIV Super Launcher →</strong></a></p>
-
-</td></tr>
-</table>
 
 <p align="center">
   <img src="src/XIVLauncher.Linux/Resources/icon.png" width="128" height="128" alt="FFXIV Super Launcher 圖示">
@@ -45,7 +37,7 @@
 - **遊戲更新**：檢查並安裝對應遊戲區服的用戶端修補程式，也可以只更新遊戲而不啟動。
 - **Dalamud 和外掛**：可選擇啟用 Dalamud；無須進入遊戲即可管理外掛啟用狀態，並檢查 Dalamud 與外掛更新。
 - **跨遊戲區服同步**：透過「同步第三方倉庫」「同步已安裝的外掛程式」和「同步外掛程式設定」分別同步所選類別；選擇來源及目標遊戲區服後執行。第三方倉庫同步僅替換倉庫清單及啟用狀態，始終保留目標主倉庫、預置倉庫開關和其他 Dalamud 設定；原資料保留備份。
-- **Steam 整合**：支援國際區 Steam 版帳號登入；可手動註冊為 Steam compatibility tool，以透過 Steam 開啟啟動器並記錄遊戲時數。
+- **Steam 整合**：支援國際區 Steam 版帳號登入；啟用「適配從 Steam 啟動」後註冊為 Steam compatibility tool，透過 Steam 啟動時自動全螢幕，並支援輸入欄位呼叫 Steam 虛擬鍵盤；桌面視窗尺寸獨立保留。
 - **介面與公告**：Electron 圖形介面支援简体中文、繁體中文、日本語、English，即時切換，無須重新啟動；顯示對應遊戲區服的官方活動與公告，並提供遊戲官網、伺服器狀態等官方頁面入口。
 - **第三方外掛倉庫**：在外掛管理右側新增、編輯、啟用/停用、刪除倉庫或檢查連線；中國區外掛更新同時識別啟用的預置倉庫。
 - **中國區超域傳送**：支援提交傳送、查詢歷史和返回原區，可在完成後啟動遊戲。適配 DCTravelerX（[Dalamud-DailyRoutines/DCTraveler](https://github.com/Dalamud-DailyRoutines/DCTraveler)）遊戲內跨大區及授權恢復。
@@ -79,7 +71,7 @@
 
 從 [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases) 下載 x86_64 AppImage，賦予執行權限後執行，可放在自行選擇的可寫入目錄。僅提供 AppImage 發行套件。
 
-首次設定精靈會引導選擇介面語言、遊戲區服、Steam / Proton 目錄及是否啟用 Dalamud。
+首次設定精靈預設使用 English，分步選擇啟動器介面語言、遊戲區服和 Steam / Proton 環境。國際區可同時設定用戶端語言、CDKey 版本及歐版帳號商城偏好語言；初始預設採用 NA、英語用戶端及英語（英國）商城偏好。單項選擇立即儲存，完成設定後才自動檢查啟動器更新。
 
 之後在「語言和區服」中設定用戶端目錄。應選擇包含 `game` 子資料夾的遊戲安裝目錄；國際區還需要完整的 `boot` 子資料夾。
 
@@ -104,7 +96,9 @@
 
 ### 從 Steam 啟動本啟動器
 
-在「相容性工具設定」中勾選「註冊為 Steam compatibility tool（可隨時停用）」，即可將 **FFXIV Super Launcher** 註冊。重新啟動 Steam 後，在 Steam 收藏庫中的 FFXIV 遊戲內容設定中選擇該 compatibility tool。取消勾選即可移除註冊。
+在「Steam 與 Proton 設定」中勾選「適配從 Steam 啟動」，即可將 **FFXIV Super Launcher** 註冊為 Steam compatibility tool。重新啟動 Steam 後，在 Steam 收藏庫的 FFXIV 遊戲內容中選擇此 compatibility tool。取消勾選即可移除註冊。啟用後，透過 Steam 啟動會自動全螢幕，點擊輸入欄位會嘗試呼叫 Steam 虛擬鍵盤；無法呼叫時提示使用鍵盤輸入，不會為了開啟鍵盤強制啟動 Steam。桌面視窗尺寸與最大化狀態獨立保留。
+
+可使用 **Ctrl+Q** 或 **Alt+F4** 正常結束啟動器；Esc 用於關閉可取消的對話框。針對部分 Gamescope 工作階段僅傳入 `dxgi=n`、導致直接啟動遊戲時混用圖形 DLL 的情況，啟動器會依條件補齊 D3D11 載入設定，並保留明確的使用者設定。先前為此問題手動新增的 `env WINEDLLOVERRIDES="dxgi,d3d11=n" %command%` 參數可以移除；其他自行設定的啟動參數請保留。
 
 這項功能提供 Steam 啟動入口，**不等於啟用 Steam 帳號驗證**。帳號驗證仍由「我的 CDKey 購買自 Steam」控制。
 
@@ -112,7 +106,7 @@
 
 ### 相容性環境 / pfx
 
-預設使用「相容性工具設定」中的「Proton 資料目錄（自動在此建立 pfx，建議獨立使用）」。國際區可勾選「國際區使用 Steam 既有 pfx」，沿用已安裝 Steam 版 FFXIV 的既有環境，以使用其中已有的本機遊戲設定。
+預設使用「Steam 與 Proton 設定」中的「Proton 資料目錄（自動在此建立 pfx，建議獨立使用）」。國際區可勾選「國際區使用 Steam 既有 pfx」，沿用已安裝 Steam 版 FFXIV 的既有環境，以使用其中已有的本機遊戲設定。
 
 未啟用該選項時，國際區與另外兩個遊戲區服沿用共用環境設定。選擇既有 Steam 環境不等於搬移或同步外掛設定。
 

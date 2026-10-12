@@ -33,7 +33,7 @@ internal sealed class FrontendCompatibility(string root, string? launcherEntry =
             SteamPrefixDiscovery.Discover(Roots(settings)).Select(x => new PrefixEntry(x.ToString(), x.DataDirectory)).ToArray());
     }
 
-    private static string RegisteredRoot(LinuxSettings settings) => new[] { settings.RegisteredSteamRoot, settings.SteamRoot }
+    internal static string RegisteredRoot(LinuxSettings settings) => new[] { settings.RegisteredSteamRoot, settings.SteamRoot }
         .FirstOrDefault(x => x.Length > 0 && SteamToolRegistration.IsRegistered(x)) ?? "";
 
     // Acknowledgement of persisted settings, deliberately without a discovery scan.

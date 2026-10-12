@@ -18,6 +18,10 @@ public sealed class FrontendApplicationTests : IDisposable
         Assert.True(File.Exists(Path.Combine(root, "linux-settings.json")));
         var settings = LinuxSettings.Load(root);
         Assert.False(settings.SetupComplete);
+        Assert.Equal("en", settings.Language);
+        Assert.Equal("NA", settings.RegionProfiles["ffxiv"].CdKeyVersion);
+        Assert.Equal("en-gb", settings.RegionProfiles["ffxiv"].EuShopLanguage);
+        Assert.Equal(1, (int)settings.RegionProfiles["ffxiv"].ClientLanguage);
         settings.Save();
         var files = new[] { "ffxiv_cn", "ffxiv_tc", "ffxiv" }.ToDictionary(r => r, r => File.ReadAllBytes(Path.Combine(root, r, "settings.json")));
         var placement = new WindowPlacement(12, 34, 1100, 800, true);
@@ -28,6 +32,20 @@ public sealed class FrontendApplicationTests : IDisposable
         Assert.Throws<CredentialValidationException>(() => application.CompleteSetup(new(true)));
         Assert.False(LinuxSettings.Load(root).SetupComplete);
         Assert.False(application.IsAppImage);
+    }
+
+    [Fact] public void SteamIntegrationUsesExistingRegistrationWithoutAnotherPreference()
+    {
+        var application = new FrontendApplication(root);
+        Assert.False(JsonSerializer.SerializeToElement(application.Initialize()).GetProperty("steamIntegration").GetBoolean());
+        var steam = Path.Combine(root, "synthetic-steam");
+        Directory.CreateDirectory(Path.Combine(steam, "steamapps"));
+        var entry = Path.Combine(root, "launcher");File.WriteAllText(entry, "synthetic");
+        XIVLauncher.Common.Unix.SteamToolRegistration.Install(steam, entry);
+        var settings = LinuxSettings.Load(root);settings.RegisteredSteamRoot = steam;settings.SaveGlobalPreferences();
+        Assert.True(JsonSerializer.SerializeToElement(application.Initialize()).GetProperty("steamIntegration").GetBoolean());
+        XIVLauncher.Common.Unix.SteamToolRegistration.Remove(steam);
+        Assert.False(JsonSerializer.SerializeToElement(application.Initialize()).GetProperty("steamIntegration").GetBoolean());
     }
 
     [Fact] public async Task UpdateCheckFailureDoesNotBlockOtherOperationsAndCanRetry()
@@ -118,6 +136,21 @@ public sealed class FrontendApplicationTests : IDisposable
         Assert.Throws<IOException>(()=>compatibility.Update(new(DataDirectory:"/test/prefix")));
         running=false;preferences.Update(new(ClientLanguage:1));
         Assert.Equal(1,(int)LinuxSettings.Load(root).RegionProfiles["ffxiv"].ClientLanguage);
+    }
+    [Fact] public void SetupDalamudChoicePersistsOnlyForSelectedRegionAndRespectsGameGuard()
+    {
+        new FrontendApplication(root).Initialize();
+        var preferences = new FrontendPreferences(root, () => {});
+        foreach (var region in LinuxSettings.Regions) preferences.Update(new(Region: region.Id, EnableDalamud: false));
+        var result = JsonSerializer.SerializeToElement(preferences.Update(new(Region: "ffxiv_tc", EnableDalamud: true)));
+        Assert.True(result.GetProperty("regions").EnumerateArray().Single(x => x.GetProperty("id").GetString() == "ffxiv_tc").GetProperty("enableDalamud").GetBoolean());
+        var saved = LinuxSettings.Load(root);
+        Assert.True(saved.RegionProfiles["ffxiv_tc"].EnableDalamud);
+        Assert.False(saved.RegionProfiles["ffxiv"].EnableDalamud);
+        Assert.False(saved.RegionProfiles["ffxiv_cn"].EnableDalamud);
+        var blocked = new FrontendPreferences(root, () => throw new IOException("Game running"));
+        Assert.Throws<IOException>(() => blocked.Update(new(EnableDalamud: false)));
+        Assert.True(LinuxSettings.Load(root).RegionProfiles["ffxiv_tc"].EnableDalamud);
     }
     private sealed class Handler(Func<HttpRequestMessage, HttpResponseMessage> send) : HttpMessageHandler
     { protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken token) => Task.FromResult(send(request)); }

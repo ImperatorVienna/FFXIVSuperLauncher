@@ -144,14 +144,14 @@ window.frontendConnection = (() => {
     finally{areaLoading=false;}
   }
   async function apply(change,rethrow=false) {
-    if(!ready()||active())return;
+    if(!ready()||active()){if(rethrow)throw new Error(t('当前操作不可用。'));return;}
     applying=true;present();
     try {
       const previous=region();snapshot=await call('applyPreferences',change);
       if(previous!==region()) {
         travel?.reset();generation++;view=null;editor=editors.get(selections.get(region()))||null;accountList=null;areas=[];
         login={name:'',autoOtp:false,steamAccount:false,freeTrial:false,enableDalamud:false,areaName:snapshot.regions.find(x=>x.id===region())?.areaName||''};
-        await reloadAccounts(true);
+        try{await reloadAccounts(true);}catch(error){fail(error);}
       }
       redraw();
     }catch(error){redraw();if(rethrow)throw error;fail(error);}
@@ -206,7 +206,7 @@ window.frontendConnection = (() => {
     const dialog=$('#account-dialog'),list=dialog.querySelector('.account-options');list.replaceChildren();
     dialog.querySelector('.muted').hidden=true;
     for(const item of accountList?.accounts??[]){const button=document.createElement('button');button.className='account-option';button.dataset.noTranslate='';button.textContent=item.name;button.addEventListener('click',()=>{selectLogin(item.name);dialog.close();present();});list.append(button);}
-    dialog.showModal();
+    window.uiState.showDialog(dialog);
   }
   async function startOperation(kind) {
     if(!ready()||active())return;
@@ -290,7 +290,7 @@ window.frontendConnection = (() => {
     const body=document.createElement('div');body.className='verification-body';panel.append(body);
     const text=document.createElement('p');text.className='muted';text.textContent=t(challenge?.message||'')||t(view.state==='running'?'正在处理，请稍候…':view.state==='cancelling'?'正在取消…':view.state==='completed'?(operationKind==='recovery'?'跨区授权已恢复，请回到游戏重新点击跨区。':'操作已完成。'):view.state==='cancelled'?'已取消。':view.error||'操作失败，请查看日志。');body.append(text);
     const buttons=document.createElement('div');buttons.className='row';
-    const add=(action,label,disabled=false)=>{const button=document.createElement('button');button.dataset.action=action;button.textContent=t(label);button.disabled=disabled;buttons.append(button);};
+    const add=(action,label,disabled=false)=>{const button=document.createElement('button');button.dataset.action=action;button.textContent=t(label);button.disabled=disabled;buttons.append(button);return button;};
     if(challenge?.kind==='qr'&&challenge.image?.startsWith('data:image/png;base64,')){const image=document.createElement('img');image.src=challenge.image;image.alt=t('请使用叨鱼扫描二维码登录。');image.className='backend-qr';body.append(image);}
     if(challenge?.kind==='mobile-confirmation'&&challenge.code){
       const line=document.createElement('div');line.className='mobile-code';
@@ -304,7 +304,7 @@ window.frontendConnection = (() => {
     }
     if(challenge?.kind==='otp'){
       const input=document.createElement('input');input.id='otp';input.maxLength=6;input.inputMode='numeric';input.autocomplete='off';input.type='password';input.setAttribute('aria-label',t('验证码'));body.append(input);
-      add('submit-otp','确认并登录');if(challenge.optional)add('skip-otp','账号未启用 2FA，继续');
+      add('submit-otp','确认并登录').classList.add('primary');if(challenge.optional)add('skip-otp','账号未启用 2FA，继续');
     }
     if(challenge?.kind==='dalamud-timeout'){
       add('dalamud-local','跳过更新，使用本地 Dalamud',!challenge.allowLocal);add('dalamud-disable','禁用 Dalamud 并继续启动');

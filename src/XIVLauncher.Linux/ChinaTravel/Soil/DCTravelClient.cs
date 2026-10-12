@@ -311,6 +311,10 @@ public partial class DCTravelClient : IDisposable
         }
     }
 
+    // Ordinary RPC calls reuse the authenticated session. Reinitialize only on first use
+    // or through the existing rejected-session recovery path.
+    public Task EnsureInitializedAsync() => IsInitialized ? Task.CompletedTask : EnsureSessionRecovered();
+
     public async Task GetValidCookie()
     {
         if (await InitTravelPage())

@@ -2,13 +2,15 @@
 const { app, BrowserWindow, WebContentsView, ipcMain, Menu, session, dialog, screen } = require('electron');
 const path = require('node:path');
 const {mkdirSync,existsSync} = require('node:fs');
+const {observeContentSize,bindExitKeys}=require('./window-ui.cjs');
 const {restoreBounds,observePlacement} = require('./window-state.cjs');
 const {publishSession,waitForPrimary} = require('./steam-session.cjs');
 const {createCaptchaView}=require('./captcha-view.cjs');
 const {shutdown}=require('./shutdown.cjs');
 const {handoff}=require('./session-handoff.cjs');
 const {writeDevelopmentEntry} = require('./launcher-entry.cjs');
-const steamEntry=process.argv.includes('--steam-entry');
+const {isSteamLaunch,createSteamIntegration}=require('./steam-integration.cjs');
+const steamEntry=isSteamLaunch(process.argv,process.env);
 const { pathToFileURL } = require('node:url');
 const { BackendClient } = require('./backend-client.cjs');
 const {contracts} = require('./ipc-contract.cjs');
@@ -30,6 +32,7 @@ if (!app.requestSingleInstanceLock({steamEntry})) {
 else {
   let backend;
   let window;
+  let steamIntegration;
   let closing,placement,verification,removeSession,operationId,attachSteam=steamEntry;
   function quit(code=0){
     return closing??=shutdown({placement,verification,backend,removeSession,
@@ -65,10 +68,18 @@ else {
       ipcMain.handle('launcher:'+method, async (event, params) => {
         checkSender(event);
         if(!validate(params))return {ok:false,code:'invalid-request',message:'Invalid request.'};
-        try {const result=method==='maintenance.browser-cache'?await clearBrowserCache():await backend.request(method,params);if(result?.operationId)operationId=result.operationId;return {ok:true,result};}
+        try {
+          const result=method==='maintenance.browser-cache'?await clearBrowserCache():await backend.request(method,params);
+          if(result?.operationId)operationId=result.operationId;
+          if(['compatibility.read','compatibility.update'].includes(method))steamIntegration?.update(result.registered);
+          return {ok:true,result};
+        }
         catch(error){return {ok:false,code:error.message,message:error.userMessage || (method==='maintenance.browser-cache'?error.message:'The backend request failed.'),logMessage:error.logMessage || 'The backend request failed.'};}
       });
     }
+    ipcMain.handle('launcher:steam-keyboard',async(event,value)=>{
+      checkSender(event);return steamIntegration?.keyboard(value)||{status:'inactive'};
+    });
     ipcMain.handle('launcher:captcha-layout',async(event,value)=>{
       checkSender(event);
       if(value!==null&&(!value||typeof value.operationId!=='string'||value.operationId.length>64||
@@ -120,7 +131,9 @@ else {
       title:'FFXIV Super Launcher',
       icon:path.join(repository,packaged?'icon.png':'src/XIVLauncher.Linux/Resources/icon.png'),
       webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true,webSecurity:true,backgroundThrottling:true}});
-    verification=createCaptchaView({window,backend,WebContentsView,session});
+    observeContentSize(window);
+    bindExitKeys(window.webContents,()=>app.quit());
+    verification=createCaptchaView({window,backend,WebContentsView,session,onQuit:()=>app.quit()});
     window.webContents.on('will-navigate', event => event.preventDefault());
     window.webContents.setWindowOpenHandler(() => ({action:'deny'}));
     window.webContents.on('preload-error', () => rendererFailed('preload-failed'));
@@ -132,12 +145,14 @@ else {
     });
     window.webContents.once('did-finish-load', () => console.info('[frontend] local-page-loaded'));
     if(bounds.maximized)window.maximize();
-    placement=observePlacement(window,value=>backend.request('window.save',value));
+    placement=observePlacement(window,value=>backend.request('window.save',value),()=>!steamIntegration?.active);
+    steamIntegration=createSteamIntegration({window,placement,fromSteam:attachSteam});
+    steamIntegration.update(startup.steamIntegration);
     window.on('closed', () => { window=null; });
     return window.loadFile(page, {query:{integration:'1'}});
   }).catch(() => { console.error('[frontend] startup-failed');void quit(1); });
   app.on('second-instance', (_event,args,_directory,data) => {
-    if(data?.steamEntry||args.includes('--steam-entry')){attachSteam=true;if(backend){backend.waitForGame=true;void backend.request('steam.attach').catch(()=>{});}}
+    if(data?.steamEntry||isSteamLaunch(args,{})){attachSteam=true;steamIntegration?.attach();if(backend){backend.waitForGame=true;void backend.request('steam.attach').catch(()=>{});}}
     if (window) { if(window.isMinimized())window.restore();window.focus(); }
   });
   app.on('before-quit', event => {

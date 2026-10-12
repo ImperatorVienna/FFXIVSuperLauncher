@@ -28,5 +28,5 @@ if(typeof window!=='undefined')window.openLocalOtp=(initial='')=>{
   secret.addEventListener('input',()=>void refresh());const timer=setInterval(()=>void refresh(),1000);
   dialog.addEventListener('close',()=>{closed=true;generation++;clearInterval(timer);secret.value='';code.value='';dialog.remove();},{once:true});
   const actions=document.createElement('div');actions.className='row dialog-actions';actions.append(copy,close);
-  dialog.append(heading,note,secret,code,status,actions);document.body.append(dialog);dialog.showModal();void refresh();
+  dialog.append(heading,note,secret,code,status,actions);document.body.append(dialog);window.uiState.showDialog(dialog);void refresh();
 };

@@ -1,22 +1,14 @@
-<table>
-<tr><td>
-
-<h3>Sound familiar?</h3>
-<ul>
-  <li>Moving to <strong>Linux</strong>, by choice or necessity, but worried you won’t be able to enjoy FFXIV?</li>
-  <li>Playing in <strong>multiple game regions</strong>, but each launcher only supports one, leaving you with two or three launchers that all look and feel different?</li>
-  <li>One launcher restricts more adventurous plugins, while the version without those restrictions <strong>doesn’t support Linux</strong>?</li>
-  <li>The game requires <strong>2FA</strong>, so you have to type a code every time you log in?</li>
-  <li>Your launcher’s bundled Wine performs poorly, but <strong>switching to Proton</strong> is a struggle?</li>
-  <li>Your launcher’s UI looks <strong>far worse</strong> than the official one?</li>
-  <li>A plugin update crashes the game, forcing you to <strong>disable every plugin</strong> just to log in, then re-enable the others one by one?</li>
-</ul>
-<p>……</p>
+<h3 align="center">Sound familiar?</h3>
+<p align="center">Moving to <strong>Linux</strong>, by choice or necessity, but worried you won’t be able to enjoy FFXIV?</p>
+<p align="center">Playing in <strong>multiple game regions</strong>, but each launcher only supports one, leaving you with two or three launchers that all look and feel different?</p>
+<p align="center">One launcher restricts more adventurous plugins, while the version without those restrictions <strong>doesn’t support Linux</strong>?</p>
+<p align="center">The game requires <strong>2FA</strong>, so you have to type a code every time you log in?</p>
+<p align="center">Your launcher’s bundled Wine performs poorly, but <strong>switching to Proton</strong> is a struggle?</p>
+<p align="center">Your launcher’s UI looks <strong>far worse</strong> than the official one?</p>
+<p align="center">A plugin update crashes the game, forcing you to <strong>disable every plugin</strong> just to log in, then re-enable the others one by one?</p>
+<p align="center">……</p>
 <p align="center"><strong>Download FFXIV Super Launcher and tackle all of these problems in one place!</strong></p>
 <p align="center"><a href="https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases"><strong>Download FFXIV Super Launcher →</strong></a></p>
-
-</td></tr>
-</table>
 
 <p align="center">
   <img src="src/XIVLauncher.Linux/Resources/icon.png" width="128" height="128" alt="FFXIV Super Launcher icon">
@@ -45,7 +37,7 @@ The built-in browser is shared by official pages and web verification and is ind
 - **Game updates**: check and install client patches for the corresponding game region, including updating the game without launching it.
 - **Dalamud and plugins**: optionally enable Dalamud; manage plugin enablement states and check for Dalamud and plugin updates without entering the game.
 - **Cross-region synchronization**: use “Sync third-party repositories”, “Sync installed plugins”, and “Sync plugin settings” to synchronize each category after selecting the source and destination game regions. Repository synchronization replaces only the repository list and enablement states, always preserving the destination main repository, preset repository switch, and other Dalamud settings. Original data is backed up.
-- **Steam integration**: supports Global (Steam) account login; manually register as a Steam compatibility tool to open the launcher through Steam and record playtime.
+- **Steam integration**: supports Global (Steam) account login. Enabling “Enable Steam launch integration” registers the launcher as a Steam compatibility tool, automatically enters fullscreen when launched through Steam, and lets input fields request the Steam virtual keyboard. Desktop window dimensions are retained separately.
 - **Interface and announcements**: the Electron graphical interface supports 简体中文, 繁體中文, 日本語, and English, with instant switching and no restart required; it displays official events and announcements for the corresponding game region and provides links to the official game website, server status, and other official pages.
 - **Third-party plugin repositories**: add, edit, enable/disable, delete repositories, or check their connections on the right of plugin management; China region plugin updates also recognize enabled preset repositories.
 - **China cross-data-center travel**: submit travel requests, query history, and return to the original data center, with an option to launch the game upon completion. Supports in-game travel and authorization recovery through DCTravelerX ([Dalamud-DailyRoutines/DCTraveler](https://github.com/Dalamud-DailyRoutines/DCTraveler)).
@@ -79,7 +71,7 @@ The runtime package includes .NET and Electron runtime components (including Chr
 
 Download the x86_64 AppImage from [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases), make it executable, and run it. You may place it in a writable directory of your choice. AppImage is the only release package format.
 
-The first-run wizard guides you through interface language, game region, Steam / Proton directories, and whether to enable Dalamud.
+The first-run wizard starts in English and separates launcher language, game region, and Steam / Proton setup into steps. For Global, you can also select the client language, CDKey version, and preferred store language for EU accounts. Initial defaults are NA, an English client, and English (UK) for the store preference. Individual selections are saved immediately; automatic launcher update checks start only after setup is complete.
 
 Next, configure client directories in “Language and region”. Select the game installation directory containing the `game` subdirectory; Global also requires a complete `boot` subdirectory.
 
@@ -104,7 +96,9 @@ The launcher does not request or store your Steam account password (Steam is use
 
 ### Launching this launcher through Steam
 
-In “Compatibility tools settings”, check “Register as a Steam compatibility tool (can be disabled at any time)” to register **FFXIV Super Launcher**. Restart Steam, then select this compatibility tool in FFXIV's properties in your Steam library. Uncheck the option to remove the registration.
+In “Steam and Proton settings”, enable “Enable Steam launch integration” to register **FFXIV Super Launcher** as a Steam compatibility tool. Restart Steam, then select this compatibility tool in FFXIV’s properties in your Steam library. Disable the option to remove the registration. When enabled, launching through Steam automatically enters fullscreen, and clicking an input field requests the Steam virtual keyboard. If unavailable, the launcher asks you to use a keyboard; it never starts Steam just to open the keyboard. Desktop window dimensions and maximized state are retained separately.
+
+Use **Ctrl+Q** or **Alt+F4** to quit the launcher normally; Esc dismisses cancellable dialogs. In some Gamescope sessions that pass only `dxgi=n`, directly launching the game can mix incompatible graphics DLL implementations. The launcher conditionally adds the missing D3D11 loading setting while preserving explicit user configuration. You can remove the Steam launch option `env WINEDLLOVERRIDES="dxgi,d3d11=n" %command%` previously added for this issue; retain any other custom launch options.
 
 This feature provides a Steam launch entry; **it does not enable Steam account authentication**. Account authentication is still controlled by “My CDKey was purchased on Steam”.
 
@@ -112,7 +106,7 @@ This feature uses a fixed launcher script. After manually moving or renaming the
 
 ### Compatibility environment / pfx
 
-By default, the launcher uses “Proton data directory (pfx is created here automatically; a dedicated directory is recommended)” in “Compatibility tools settings”. For Global, check “Use an existing Steam pfx for Global (Steam)” to reuse the existing environment of an installed Global (Steam) client and its local game settings.
+By default, the launcher uses “Proton data directory (pfx is created here automatically; a dedicated directory is recommended)” in “Steam and Proton settings”. For Global, check “Use an existing Steam pfx for Global (Steam)” to reuse the existing environment of an installed Global (Steam) client and its local game settings.
 
 When this option is disabled, Global uses the shared environment settings used by the other two game regions. Selecting an existing Steam environment does not migrate or synchronize plugin configurations.
 

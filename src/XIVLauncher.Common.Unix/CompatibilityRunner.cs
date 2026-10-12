@@ -78,8 +78,37 @@ public sealed class CompatibilityRunner(CompatibilitySettings settings)
             psi.Environment["DOTNET_ROOT_X64"] = windowsRuntime;
         if (psi.Environment.TryGetValue("STEAM_COMPAT_MOUNTS", out var allMounts) && allMounts != null)
             psi.Environment["STEAM_COMPAT_MOUNTS"] = FilterMounts(allMounts);
+        if (mainSession && protonVerb == "runinprefix") CompleteGraphicsOverrides(psi.Environment);
         foreach (var argument in arguments) psi.ArgumentList.Add(argument);
         return psi;
+    }
+
+    // Gamescope sessions may export only dxgi=n. runinprefix skips Proton's prefix
+    // setup and its per-process DXVK overrides; built-in d3d11 can then load native
+    // DXGI and fail. Complete only that partial pair, never replace an explicit
+    // renderer/D3D11 choice or touch desktop sessions with no DXGI override.
+    private static void CompleteGraphicsOverrides(IDictionary<string, string?> environment)
+    {
+        foreach (var key in new[] { "PROTON_USE_WINED3D", "PROTON_USE_WINED3D11" })
+            if (environment.TryGetValue(key, out var flag) && !string.IsNullOrEmpty(flag) && flag != "0") return;
+        if (environment.TryGetValue("STEAM_COMPAT_CONFIG", out var config) &&
+            (config ?? "").Split(',').Select(x => x.Trim()).Any(x => x is "wined3d" or "wined3d11" or "nod3d11" or "nod3d10")) return;
+        if (!environment.TryGetValue("WINEDLLOVERRIDES", out var overrides) || string.IsNullOrWhiteSpace(overrides)) return;
+        string? dxgi = null;
+        foreach (var entry in overrides.Split(';'))
+        {
+            var equals = entry.IndexOf('=');
+            if (equals < 0) continue;
+            foreach (var part in entry[..equals].Split(','))
+            {
+                var name = part.Trim().TrimStart('*');
+                if (name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)) name = name[..^4];
+                if (name.Equals("d3d11", StringComparison.OrdinalIgnoreCase)) return;
+                if (name.Equals("dxgi", StringComparison.OrdinalIgnoreCase)) dxgi = entry[(equals + 1)..].Trim();
+            }
+        }
+        if (string.Equals(dxgi, "n", StringComparison.OrdinalIgnoreCase))
+            environment["WINEDLLOVERRIDES"] = overrides.TrimEnd(';') + ";d3d11=n";
     }
 
     // pressure-vessel owns /usr and /etc; Proton tools there are exposed via TOOL_PATHS.
