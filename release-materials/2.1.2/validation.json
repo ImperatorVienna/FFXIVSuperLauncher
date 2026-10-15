@@ -1,0 +1,36 @@
+{
+  "version": "2.1.2",
+  "channel": "stable",
+  "localTest": false,
+  "sourceCommit": "f7f537b492d85c4e26c7ed78568851fa7d497762",
+  "backendTestsPassed": 557,
+  "frontendTestsPassed": 90,
+  "frontendTestsSkipped": 2,
+  "electronUiRegressionsPassed": true,
+  "packagedVersionSmokePassed": true,
+  "sourceMatches": true,
+  "sourceFilesChecked": 526,
+  "pinnedFiles": 299,
+  "sha256": {
+    "xivlauncher-super-2.1.2-x86_64.AppImage": "55edaa71367cb4fb8474cb8c19c12fe6d975b913924009d9b18757e8ce123a77",
+    "xivlauncher-super-2.1.2-source.tar.gz": "948790c10e5c4b69f20d63b871f06f16c4ff11e9794269271cb8609c8401113d",
+    "appimage-update.json": "d6f1b6fca8da4f7c5c1bfba59e6396ba99988dbb790890d8c593b59acafc9b15",
+    "appimage-update.sig": "fb7c3dd2ddd49e36de2aac40721a54f4a8f756069fb64906878c0ec3a76e91f8"
+  },
+  "readmeLanguages": [
+    "en",
+    "zh-CN",
+    "zh-TW",
+    "ja"
+  ],
+  "packagedReadmesMatchSources": true,
+  "updateSignatureVerified": true,
+  "thirdPartyRuntimeComponentsUnchanged": true,
+  "isolatedUpgrade": {
+    "from": "2.1.1",
+    "to": "2.1.2",
+    "passed": true,
+    "backupMatchesOriginal": true,
+    "scope": "Old 2.1.1 bundle repackaged as an isolated loopback test fixture. Published 2.1.1 image unchanged; installation and signature verified, not real game login."
+  }
+}
