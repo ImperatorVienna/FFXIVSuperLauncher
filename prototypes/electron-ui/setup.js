@@ -1,6 +1,7 @@
 'use strict';
 window.createSetupWizard=({call,snapshot,apply,completed,chooseProton,chooseDirectory,report})=>{
   const {t,languages}=window.previewI18n;
+  const hasCompatibility=()=>window.uiState.supports(snapshot(),"compatibility");
   let dialog,step=1,compat=null,draft=null,error='',queue=Promise.resolve(),queued=0,renderedShape='';
   const buttonTasks=new Set(),textDrafts=new Map(),fieldErrors=new Map();
   const shape=()=>JSON.stringify([step,draft.language,draft.region,draft.cdKeyVersion==='EU',compat?.runtimes]);
@@ -32,6 +33,17 @@ window.createSetupWizard=({call,snapshot,apply,completed,chooseProton,chooseDire
     const input=dialog?.querySelector('#setup-'+(key==='steamRoot'?'steam':key==='dataDirectory'?'data':key));
     if(input?.tagName==='INPUT'&&input.type!=='checkbox'&&(!textDrafts.has(key)||textDrafts.get(key).trim()===String(value)||(replacement&&textDrafts.get(key)===replacement.text))){textDrafts.delete(key);input.value=draft[key];}
   }
+  async function prepareFinalStep(){
+    if(hasCompatibility()){
+      compat=await call('readCompatibility');
+      if(!compat.steamRoot&&compat.detectedSteamRoot){
+        const saved=await call('applyCompatibility',{steamRoot:compat.detectedSteamRoot});
+        compat=window.uiState.mergeCompatibility(compat,saved);
+      }
+      Object.assign(draft,{proton:compat.protonScript||'',steamRoot:compat.steamRoot||'',dataDirectory:compat.dataDirectory,registered:compat.registered});
+    }
+    step=3;
+  }
   function render(){
     if(!dialog){dialog=node('dialog',null,'setup-dialog');dialog.dataset.setupUi='';dialog.setAttribute('closedby','none');dialog.setAttribute('aria-labelledby','setup-title');dialog.addEventListener('cancel',event=>event.preventDefault());document.body.append(dialog);}
     const focusedId=dialog.contains(document.activeElement)?document.activeElement.id:null,oldStep=dialog.dataset.step;dialog.dataset.step=String(step);
@@ -60,13 +72,15 @@ window.createSetupWizard=({call,snapshot,apply,completed,chooseProton,chooseDire
         if(draft.cdKeyVersion==='EU')select('setup-euShopLanguage','官网及商城偏好语言',[['en-gb','English(UK)'],['fr-fr','Français'],['de-de','Deutsch']],draft.euShopLanguage,async value=>{await apply({euShopLanguage:value},true);draft.euShopLanguage=value;},pair);
       }
       const actions=node('div',null,'row dialog-actions');dialog.append(actions);button('setup-back','上一步',async()=>{step=1;},actions);
-      button('setup-next','下一步：Steam 和 Proton 设置',async()=>{compat=await call('readCompatibility');Object.assign(draft,{proton:compat.protonScript||'',steamRoot:compat.steamRoot||'',dataDirectory:compat.dataDirectory,registered:compat.registered});step=3;},actions).classList.add('primary');
+      button('setup-next',hasCompatibility()?'下一步：Steam 和 Proton 设置':'继续',prepareFinalStep,actions).classList.add('primary');
     }else{
+      if(hasCompatibility()){
       dialog.append(node('p','第三步：确认自动发现的 Steam / Proton。未发现时请手动选择；Steam 启动适配为可选项。','muted'));
       select('setup-proton','Proton 版本',compat.runtimes.map(x=>[x.script,x.name]),draft.proton,value=>saveCompatibility('proton',value));
       button('setup-proton-browse','手动添加 Proton…',async()=>{const script=await chooseProton();if(script){await saveCompatibility('proton',script);try{compat=await call('readCompatibility');}catch(ex){error='修改已保存，但刷新失败，请重新载入。';report('Proton selection saved, but refreshing installed environments failed.');}}});
       field('setup-steam','Steam 安装目录（用于手动添加工具）',draft.steamRoot,'steamRoot');field('setup-data','Proton 数据目录（自动在此创建 pfx，建议独立使用）',draft.dataDirectory,'dataDirectory');
-      for(const [key,label] of [['registered','适配从 Steam 启动'],['enableDalamud','启用 Dalamud']]){
+      }
+      for(const [key,label] of (hasCompatibility()?[['registered','适配从 Steam 启动'],['enableDalamud','启用 Dalamud']]:[['enableDalamud','启用 Dalamud']])){
         const parent=node('label',null,'check'),input=node('input');input.type='checkbox';input.id='setup-'+key;input.checked=draft[key];
         input.addEventListener('change',()=>{const value=input.checked;void execute(async()=>{if(key==='enableDalamud'){await apply({enableDalamud:value},true);draft[key]=value;}else await saveCompatibility(key,value);});});parent.append(input,document.createTextNode(t(label)));dialog.append(parent);if(key==='registered')dialog.append(node('p','勾选后将启动器注册为 Steam 兼容性工具；通过 Steam 启动时自动全屏，点击输入框会调用 Steam 虚拟键盘。桌面窗口尺寸单独保留。更改后请重启 Steam。','muted'));
       }

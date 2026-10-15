@@ -20,9 +20,8 @@ internal static class FrontendHost
         try { await new GameSessionDiscovery(root).CleanupAsync(token); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
         if (launcherEntry != null) LinuxSettings.EnsureCreated(root);
-        XIVLauncher.Common.Unix.CompatibilityRunner? gameSession = null;
+        Platforms.IGameRuntime? gameSession = null;
         var releasedSession = false;
-        var gameTracker = new Processes.GameSessionTracker();
         var travelSessions = new List<XIVLauncher.Linux.ChinaTravel.GameTravelSession>();
         try
         {
@@ -37,7 +36,7 @@ internal static class FrontendHost
         await using var operations=new FrontendOperations(root, async (request, operation) =>
         {
             await FrontendGame.RunAsync(root, request, operation, runner => gameSession = runner, session => travelSessions.Add(session));
-            if (gameSession != null) gameTracker.Observe(Path.Combine(gameSession.Settings.DataDirectory, "pfx"));
+            if (gameSession != null) gameSession.ObserveGame();
         });
         await using var official=new FrontendOfficial(root,fetchOfficial);
         using var lifetime=CancellationTokenSource.CreateLinkedTokenSource(token);
@@ -95,6 +94,7 @@ internal static class FrontendHost
                 T Parse<T>() => request.Params.Deserialize<T>(JsonOptions) ?? throw new JsonException();
                 if(request.Method is "preferences.update" or "accounts.save" or "accounts.read" or "operations.start" or "plugins.read" or "plugins.repositories.save" or "plugins.start" or "compatibility.update" or "compatibility.diagnose" or "travel.start" or "travel.close" or "setup.complete" or "updates.install")operations.EnsureIdle();
                 object result;
+                Platforms.PlatformServices.Capabilities.RequireOperation(request.Method);
                 switch(request.Method)
                 {
                     case "game-auth.check": result = await gameRecovery.CheckAsync(token); break;
@@ -177,20 +177,24 @@ internal static class FrontendHost
         }
         finally
         {
+            OfficialBrowser.CloseOwned();
             try
             {
             // Disposing UI services must not drop the AppImage mount while a game is alive.
             if ((steamEntry || releasedSession) && gameSession != null)
             {
-                try { await gameSession.WaitForPrefixExitAsync(); }
+                try { await gameSession.WaitForExitAsync(); }
                 catch (Exception ex)
                 {
-                    new SessionDiagnostics(root).Write("Prefix wait failed; monitoring the game process instead. " + DiagnosticLog.Format(ex),"shared","WARN");
-                    while(gameTracker.Observe(Path.Combine(gameSession.Settings.DataDirectory,"pfx")))await Task.Delay(1000);
+                    new SessionDiagnostics(root).Write("Platform session wait failed; monitoring the game process instead. " + DiagnosticLog.Format(ex),"shared","WARN");
+                    while(gameSession.ObserveGame())await Task.Delay(1000);
                 }
             }
             }
-            finally { foreach (var bridge in travelSessions) await bridge.DisposeAsync(); }
+            finally
+            {
+                foreach (var bridge in travelSessions) await bridge.DisposeAsync();
+            }
         }
 
         return 0;

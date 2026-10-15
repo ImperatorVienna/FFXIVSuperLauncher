@@ -2,20 +2,22 @@
 
 [English](LINUX.en.md) | [简体中文](LINUX.zh-CN.md) | **繁體中文**
 
-目前正式版本為 1.0.0，僅支援 x86_64 Linux，使用 Proton 執行遊戲。使用者安裝、帳號登入及功能說明以 [簡體中文 README](README.zh-CN.md) 為準；其他語言入口位於 README 頂部。
+目前正式版本為 2.1.2，僅支援 x86_64 Linux，使用 Proton 執行遊戲。使用者安裝、帳號登入及功能說明以 [簡體中文 README](README.zh-CN.md) 為準；其他語言入口位於 README 頂部。
+
+設定、日誌、Electron 與內建瀏覽器資料現在儲存在 AppImage 所在目錄下。舊資料不會自動搬移，既有設定中的 Proton 資料目錄仍沿用原路徑。升級前請閱讀 [2.1.2 更新說明](https://github.com/ImperatorVienna/FFXIVSuperLauncher/blob/main/docs/releases/2.1.2.zh-TW.md)，視需要遷移設定與整個 `compatdata` 資料夾。下一版本計畫提供 Windows 版；本次仍僅發行 Linux 版。
 
 ## 安裝和更新
 
 - 正式發行格式為 AppImage，內建 .NET 和 Electron 執行元件。
 - 直接執行 AppImage 後，啟動器會先建立缺少的預設設定、重新整理固定啟動指令碼和應用程式選單入口，再檢查更新。
-- 固定入口預設為 `~/.local/share/xivlauncher-super/appimage-launcher`；應用程式選單檔案預設為 `~/.local/share/applications/xivlauncher-super.desktop`。兩者遵循 `XDG_DATA_HOME`。
+- 固定入口預設為 `<AppImage directory>/appimage-launcher`；應用程式選單檔案預設為 `~/.local/share/applications/xivlauncher-super.desktop`。僅應用程式選單入口遵循 `XDG_DATA_HOME`。
 - 移動或重新命名 AppImage 後，直接執行一次即可重新整理路徑紀錄。「關於」中的「新增至應用程式選單」用於手動重建入口。
 - 啟動器自動檢查穩定版；使用者確認後下載並驗證簽章、大小及 SHA256，再安裝新版並重新開啟介面。舊套件保留為 `.previous`。
-- Release 保留 AppImage、`appimage-update.json` 和 `appimage-update.sig`。1.0.0 對應原始碼封存檔、相依元件原始碼及校驗檔案位於 [release-materials/1.0.0](release-materials/1.0.0)。
+- Release 保留 AppImage、`appimage-update.json` 和 `appimage-update.sig`。2.1.2 對應原始碼封存檔、相依元件原始碼及校驗檔案位於 [release-materials/2.1.2](release-materials/2.1.2)。
 
 ## 功能與資料分區
 
-中國區、繁中區和國際區的內部識別碼分別為 `ffxiv_cn`、`ffxiv_tc`、`ffxiv`。預設資料根目錄為 `~/.local/share/xivlauncher-super/`，遵循 `XDG_DATA_HOME`。
+中國區、繁中區和國際區的內部識別碼分別為 `ffxiv_cn`、`ffxiv_tc`、`ffxiv`。預設資料根目錄為 `<AppImage directory>/`。
 
 Steam、Proton 和預設 pfx 設定共用；各遊戲區服分別管理用戶端、帳號、Dalamud 和外掛資料。國際區可以選擇使用 Steam 版既有的 pfx。憑證儲存方式和路徑見 README 的「設定與憑證」。
 
@@ -29,7 +31,7 @@ Electron 前端已完成現有功能接入，包含跨區傳送、compatibility 
 
 需要 Node.js 24 或更新版本、.NET 10 SDK、C 編譯器、Python 3、Git 和 `7z`。建置及打包可能需要下載 NuGet 相依套件、固定版本的輔助元件和對應原始碼。
 
-1.0.0 的完整啟動器原始碼位於本倉庫。原始碼封存檔、隨附相依元件的對應原始碼及校驗檔案保存在 [release-materials/1.0.0](release-materials/1.0.0)。Release 下載僅保留 AppImage 和簽章更新所需的兩個小檔案。
+2.1.2 的完整啟動器原始碼位於本倉庫。原始碼封存檔、隨附相依元件的對應原始碼及校驗檔案保存在 [release-materials/2.1.2](release-materials/2.1.2)。Release 下載包含 AppImage、簽章更新中繼資料、校驗檔案及啟動器原始碼封存檔。
 
 在倉庫根目錄執行：
 

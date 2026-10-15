@@ -9,9 +9,6 @@ namespace XIVLauncher.Common.Util;
 public static class PlatformHelpers
 {
 
-    public static string GetTempFileName() =>
-        Path.Combine(Path.GetTempPath(), "xivlauncher_" + Guid.NewGuid());
-
     public static void CopyFilesRecursively(DirectoryInfo source, DirectoryInfo target)
     {
         foreach (var dir in source.GetDirectories())

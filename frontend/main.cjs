@@ -1,5 +1,5 @@
 'use strict';
-const { app, BrowserWindow, WebContentsView, ipcMain, Menu, session, dialog, screen } = require('electron');
+const { app, BrowserWindow, WebContentsView, View, ipcMain, Menu, session, dialog, screen } = require('electron');
 const path = require('node:path');
 const {mkdirSync,existsSync} = require('node:fs');
 const {observeContentSize,bindExitKeys}=require('./window-ui.cjs');
@@ -7,7 +7,7 @@ const {restoreBounds,observePlacement} = require('./window-state.cjs');
 const {publishSession,waitForPrimary} = require('./steam-session.cjs');
 const {createCaptchaView}=require('./captcha-view.cjs');
 const {shutdown}=require('./shutdown.cjs');
-const {handoff}=require('./session-handoff.cjs');
+const {handoff}=process.platform==='win32'?require('./platforms/windows-handoff.cjs'):require('./session-handoff.cjs');
 const {writeDevelopmentEntry} = require('./launcher-entry.cjs');
 const {isSteamLaunch,createSteamIntegration}=require('./steam-integration.cjs');
 const steamEntry=isSteamLaunch(process.argv,process.env);
@@ -17,13 +17,14 @@ const {contracts} = require('./ipc-contract.cjs');
 const {createBrowserCacheCleaner}=require('./browser-cache.cjs');
 const repository = path.resolve(__dirname, '..');
 const packaged=existsSync(path.join(repository,'frontend-package.json'));
-const defaultData=path.join(process.env.XDG_DATA_HOME&&path.isAbsolute(process.env.XDG_DATA_HOME)?process.env.XDG_DATA_HOME:path.join(require('node:os').homedir(),'.local/share'),'xivlauncher-super');
-const dataRoot = path.resolve(process.env.FFXIV_FRONTEND_DATA_DIR || (packaged?defaultData:path.join(repository, 'artifacts/electron-development-data')));
-const executable = packaged?path.join(repository,'xivlauncher-backend'):process.env.FFXIV_BACKEND;
+const platformRuntime=require('./platforms/runtime.cjs').runtime(process.platform,process.env,require('node:os').homedir(),repository);
+const defaultData=platformRuntime.defaultData;
+const dataRoot = path.resolve(packaged?defaultData:(process.env.FFXIV_FRONTEND_DATA_DIR || path.join(repository, 'artifacts/electron-development-data')));
+const executable = packaged?platformRuntime.backend:process.env.FFXIV_BACKEND;
 if (!executable || !path.isAbsolute(executable)) throw new Error('Set FFXIV_BACKEND to the built launcher executable (absolute path).');
 const userData = path.join(dataRoot, 'electron');
 mkdirSync(userData, {recursive:true,mode:0o700});
-app.setPath('userData', userData);
+require('./portable-electron-paths.cjs').configurePaths(app,userData);
 app.enableSandbox();
 if (!app.requestSingleInstanceLock({steamEntry})) {
   if(steamEntry)void waitForPrimary(dataRoot,packaged&&process.env.FFXIV_SESSION_DIRECTORY
@@ -50,11 +51,11 @@ else {
     session.defaultSession.setPermissionRequestHandler((_contents,_permission,callback) => callback(false));
     session.defaultSession.setPermissionCheckHandler(() => false);
     session.defaultSession.on('will-download', event => event.preventDefault());
-    const launcherEntry=packaged?(process.env.APPIMAGE?path.join(dataRoot,'appimage-launcher'):path.join(repository,'xivlauncher-super')):path.join(dataRoot,'electron-launcher');
+    const launcherEntry=packaged?(process.env.APPIMAGE?path.join(dataRoot,'appimage-launcher'):platformRuntime.launcher):path.join(dataRoot,'electron-launcher');
     backend = new BackendClient(executable, ['--frontend-host','--data-root',dataRoot,'--launcher-entry',launcherEntry,...(attachSteam?['--steam-entry']:[])], {waitForGame:attachSteam});
     backend.onFailure=()=>{void verification?.close();};
     const startup=await backend.request('system.initialize');
-    if(!packaged)await writeDevelopmentEntry({root:dataRoot,node:process.env.FFXIV_FRONTEND_NODE,runner:path.join(__dirname,'run.cjs'),
+    if(!packaged&&platformRuntime.steamControls)await writeDevelopmentEntry({root:dataRoot,node:process.env.FFXIV_FRONTEND_NODE,runner:path.join(__dirname,'run.cjs'),
       backend:executable,electron:process.env.FFXIV_ELECTRON,dotnetRoot:process.env.DOTNET_ROOT});
     removeSession=await publishSession(dataRoot,packaged&&/^\d+$/.test(process.env.FFXIV_SESSION_SUPERVISOR||'')?Number(process.env.FFXIV_SESSION_SUPERVISOR):process.pid);
     const clearBrowserCache=createBrowserCacheCleaner({session,busy:async()=>{
@@ -83,7 +84,8 @@ else {
     ipcMain.handle('launcher:captcha-layout',async(event,value)=>{
       checkSender(event);
       if(value!==null&&(!value||typeof value.operationId!=='string'||value.operationId.length>64||
-        value.bounds!==null&&(!value.bounds||Object.keys(value.bounds).sort().join(',')!=='height,width,x,y'||!Object.values(value.bounds).every(v=>Number.isFinite(v)&&v>=0&&v<30000))))throw new Error('Invalid verification bounds.');
+        value.bounds!==null&&(!value.bounds||Object.keys(value.bounds).sort().join(',')!=='height,width,x,y'||!Object.entries(value.bounds).every(([k,v])=>Number.isFinite(v)&&v<30000&&v> -30000&&(!['width','height'].includes(k)||v>=0)))))throw new Error('Invalid verification bounds.');
+      if(value?.clip&&(!['x','y','width','height'].every(k=>Number.isFinite(value.clip[k])&&value.clip[k]>=0&&value.clip[k]<30000)))throw new Error('Invalid verification clip.');
       await verification?.update(value);
     });
     ipcMain.handle('launcher:choose-client',async event=>{
@@ -133,7 +135,7 @@ else {
       webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true,webSecurity:true,backgroundThrottling:true}});
     observeContentSize(window);
     bindExitKeys(window.webContents,()=>app.quit());
-    verification=createCaptchaView({window,backend,WebContentsView,session,onQuit:()=>app.quit()});
+    verification=createCaptchaView({window,backend,WebContentsView,View,session,onQuit:()=>app.quit()});
     window.webContents.on('will-navigate', event => event.preventDefault());
     window.webContents.setWindowOpenHandler(() => ({action:'deny'}));
     window.webContents.on('preload-error', () => rendererFailed('preload-failed'));
@@ -146,8 +148,10 @@ else {
     window.webContents.once('did-finish-load', () => console.info('[frontend] local-page-loaded'));
     if(bounds.maximized)window.maximize();
     placement=observePlacement(window,value=>backend.request('window.save',value),()=>!steamIntegration?.active);
-    steamIntegration=createSteamIntegration({window,placement,fromSteam:attachSteam});
-    steamIntegration.update(startup.steamIntegration);
+    if(platformRuntime.steamControls){
+      steamIntegration=createSteamIntegration({window,placement,fromSteam:attachSteam});
+      steamIntegration.update(startup.steamIntegration);
+    }
     window.on('closed', () => { window=null; });
     return window.loadFile(page, {query:{integration:'1'}});
   }).catch(() => { console.error('[frontend] startup-failed');void quit(1); });

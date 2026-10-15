@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>xivlauncher-backend</AssemblyName>
+    <Product>FFXIV Super Launcher Backend</Product>
+    <RootNamespace>XIVLauncher.Linux</RootNamespace>
+    <Version>2.1.1</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <!-- Share existing application sources while platform boundaries are extracted.
+       No duplicate login, patch, credential or repository implementation. -->
+  <ItemGroup>
+    <Compile Include="../XIVLauncher.Linux/**/*.cs" Exclude="../XIVLauncher.Linux/bin/**;../XIVLauncher.Linux/obj/**;../XIVLauncher.Linux/Platform.cs" />
+    <EmbeddedResource Include="../../LICENSE" LogicalName="About.LICENSE" />
+    <EmbeddedResource Include="../../THIRD-PARTY-NOTICES.txt" LogicalName="About.THIRD-PARTY-NOTICES.txt" />
+    <EmbeddedResource Include="../XIVLauncher.Linux/Resources/Locales/*.json" Link="Resources/Locales/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../XIVLauncher.Linux/Resources/Diagnostics.en.json" Link="Resources/Diagnostics.en.json" WithCulture="false" />
+    <EmbeddedResource Include="../XIVLauncher.Linux/Resources/Status.en.json" Link="Resources/Status.en.json" WithCulture="false" />
+    <PackageReference Include="goaaats.Steamworks" />
+    <ProjectReference Include="../XIVLauncher.Common.Unix/XIVLauncher.Common.Unix.csproj" />
+    <ProjectReference Include="../XIVLauncher.GamePatchV3/XIVLauncher.GamePatchV3.csproj" />
+  </ItemGroup>
+</Project>

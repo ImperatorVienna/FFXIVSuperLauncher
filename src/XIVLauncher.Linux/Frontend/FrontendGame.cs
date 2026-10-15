@@ -1,7 +1,7 @@
 using XIVLauncher.Common.Util;
 using XIVLauncher.Linux.ChinaTravel;
 using XIVLauncher.Common.Http;
-using XIVLauncher.Common.Unix;
+using XIVLauncher.Linux.Platforms;
 using XIVLauncher.Login.Client;
 using XIVLauncher.Login.Models;
 
@@ -9,7 +9,7 @@ namespace XIVLauncher.Linux.Frontend;
 
 internal static class FrontendGame
 {
-    internal static async Task RunAsync(string root, GameOperationRequest request, FrontendOperation operation, Action<CompatibilityRunner>? onStarting = null, Action<GameTravelSession>? registerTravelSession = null)
+    internal static async Task RunAsync(string root, GameOperationRequest request, FrontendOperation operation, Action<IGameRuntime>? onStarting = null, Action<GameTravelSession>? registerTravelSession = null)
     {
         var token=operation.Token;token.ThrowIfCancellationRequested();
         var settings=LinuxSettings.Load(root);
@@ -66,11 +66,7 @@ internal static class FrontendGame
             if(request.Region=="ffxiv") _=await Authenticate(token);else await Update(token);
             operation.Status("Game update completed.");return;
         }
-        if(string.IsNullOrWhiteSpace(settings.ProtonScript))
-            throw new CredentialValidationException("No Proton selected.","请先选择 Proton。");
-        var proton=ProtonDiscovery.FromScript(settings.ProtonScript,settings.SteamRoot);
-        if(request.Region=="ffxiv" && settings.Current.UseSteamPrefix)SteamPrefixDiscovery.EnsureIdle(settings.Current.SteamCompatibilityData);
-        var runner=new CompatibilityRunner(settings.GetCompatibility(proton));runner.Validate();
+        var runner=PlatformServices.CreateGameRuntime(settings);runner.Validate();
         try
         {
         await GameLaunchCoordinator.LaunchAsync(settings,runner,Authenticate,

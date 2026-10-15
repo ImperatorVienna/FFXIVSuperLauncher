@@ -138,6 +138,65 @@ const root=path.resolve(__dirname,'../..');
   await app.evaluate(async({BrowserWindow})=>{const w=BrowserWindow.getAllWindows()[0];w.focus();w.webContents.sendInputEvent({type:'keyDown',keyCode:'Q',modifiers:['control']});w.webContents.sendInputEvent({type:'keyUp',keyCode:'Q',modifiers:['control']});await new Promise(resolve=>setTimeout(resolve,100));});assert.equal(await app.evaluate(()=>globalThis.exitRequests),1);
   pass('actual Electron keyboard input reaches the exit handler while Escape stays separate');
 
+  await open('?setup=new',`window.compatibilityCalls=0;const snap=launcherBridge.snapshot;launcherBridge.snapshot=async()=>{const r=await snap();r.result.capabilities=['setup','accounts','preferences.language','preferences.region','preferences.paths'];return r;};launcherBridge.readCompatibility=async()=>{window.compatibilityCalls++;throw Error('Windows must not scan Proton');};launcherBridge.applyCompatibility=async()=>{window.compatibilityCalls++;throw Error('Windows must not save Proton');};`);
+  await next();await next();
+  assert.equal(await page.locator('#setup-proton,#setup-steam,#setup-data,#setup-registered').count(),0);
+  assert.equal(await page.locator('nav [data-page="2"]').isVisible(),false);
+  await page.locator('#setup-complete').click();await page.waitForFunction(()=>!document.querySelector('.setup-dialog'));
+  assert.equal(await page.evaluate(()=>window.compatibilityCalls),0);
+  pass('Windows setup completes without Steam or Proton reads, writes or controls');
+
+  await open('?setup=new',`window.steamSaves=[];const read=launcherBridge.readCompatibility,save=launcherBridge.applyCompatibility;launcherBridge.readCompatibility=async()=>{const r=await read();r.result.steamRoot='';r.result.detectedSteamRoot='/fixture/auto-Steam';return r;};launcherBridge.applyCompatibility=async v=>{window.steamSaves.push(v);return save(v);};`);
+  await step3();assert.equal(await page.locator('#setup-steam').inputValue(),'/fixture/auto-Steam');
+  assert.deepEqual(await page.evaluate(()=>window.steamSaves),[{steamRoot:'/fixture/auto-Steam'}]);
+  pass('Linux setup saves and displays discovered Steam path through the existing preference operation');
+
+  for(const mode of ['success','failure']){
+    await open('',`const snap=launcherBridge.snapshot;launcherBridge.snapshot=async()=>{const r=await snap();r.result.selectedRegion='ffxiv_cn';return r;};${mode==='failure'?"launcherBridge.startPluginOperation=()=>Promise.resolve({ok:false,message:'Synthetic enable failure.'});":''}`);
+    await tab(4);await page.waitForSelector('[data-plugin-id="Sample"]');
+    await page.locator('[data-plugin-id="Sample"]').click();
+    if(mode==='failure')await page.waitForSelector('[data-plugin-body] .inline-error');
+    else await page.waitForFunction(()=>document.querySelector('#log').textContent.includes('Plugin operation completed: apply'));
+    await page.waitForFunction(()=>!document.querySelector('[data-plugin-id="Sample"]').disabled);
+    assert.equal(await page.locator('[data-plugin-id="Conditional"]').isEnabled(),true);
+    assert.equal(await page.locator('[data-plugin-id="Retired"]').isDisabled(),true);
+    assert.equal(await page.locator('[data-repository-body] input[type=checkbox]').first().isEnabled(),true);
+    await page.locator('[data-repository-body] input[type=checkbox]').first().click();
+    assert.equal(await page.locator('[data-plugin-id="Sample"]').isEnabled(),true);
+    pass('plugin '+mode+' leaves editable controls in both panels enabled, while scheduled deletion remains disabled');
+  }
+
+  await app.evaluate(async({BrowserWindow,View,WebContentsView})=>{
+    const w=new BrowserWindow({width:500,height:400,frame:false,webPreferences:{sandbox:true}});
+    try{
+      await w.loadURL('data:text/html,<body style="margin:0;background:white"></body>');
+      const frame=new View(),child=new WebContentsView({webPreferences:{sandbox:true}});
+      frame.setBounds({x:100,y:100,width:100,height:80});child.setBounds({x:0,y:-40,width:100,height:200});
+      frame.addChildView(child);w.contentView.addChildView(frame);
+      try{
+        await child.webContents.loadURL('data:text/html,<body style="margin:0;background:rgb(0,255,0)"></body>');
+        await new Promise(r=>setTimeout(r,300));
+        const bounds=frame.getBounds(),content=child.getBounds();
+        if(bounds.x!==100||bounds.y!==100||bounds.width!==100||bounds.height!==80)throw Error('Invalid native clipping frame');
+        if(content.y!==-40||content.height!==200)throw Error('Verification page resized instead of scrolling');
+        frame.setBounds({x:100,y:20,width:100,height:50});child.setBounds({x:0,y:-70,width:100,height:200});
+        if(child.getBounds().y!==-70||child.getBounds().height!==200)throw Error('Native scroll offset not applied');
+      }finally{child.webContents.close();}
+    }finally{w.destroy();}
+  });
+  pass('native Electron accepts clipping-frame bounds and negative page offsets without resizing the webpage');
+
+  await page.evaluate(()=>{
+    const parent=document.createElement('div');Object.assign(parent.style,{position:'fixed',top:'100px',left:'100px',width:'200px',height:'100px',overflow:'auto'});
+    const slot=document.createElement('div');slot.style.height='300px';parent.append(slot);document.body.append(parent);
+    try{
+      parent.scrollTop=60;const layout=uiState.clippedBounds(slot);
+      if(!layout||Math.abs(layout.bounds.y-40)>1||Math.abs(layout.clip.y-100)>1||Math.abs(layout.clip.height-100)>1)throw Error('DOM scroll clipping failed');
+      if(layout.bounds.height!==300)throw Error('DOM verification viewport changed size');
+    }finally{parent.remove();}
+  });
+  pass('renderer clips verification geometry to its scroll parent while retaining full page size');
+
   console.log('All Electron UI regressions passed.');
  }finally{if(app)await app.close();if(runtime)await runtime.cleanup();if(server)await new Promise(resolve=>server.close(resolve));await fs.rm(temp,{recursive:true,force:true});}
 })().catch(error=>{console.error(error);process.exitCode=1;});

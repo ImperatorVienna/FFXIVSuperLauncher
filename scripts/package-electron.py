@@ -22,14 +22,15 @@ else:
     for script in ['prepare-cn-launch-support.py','prepare-tc-entrypoint.py','prepare-webview.py']:
         subprocess.run(['python3',str(repo/'scripts'/script),str(bundle)],check=True)
 # Official webpages keep their existing isolated shell. The dispatcher supplies the new launcher entry.
-web=bundle/'Tools/webview/resources/app';shutil.copy2(repo/'packaging/webview/main.cjs',web/'official-main.cjs');shutil.copy2(repo/'packaging/electron/main.cjs',web/'main.cjs')
+web=bundle/'Tools/webview/resources/app';shutil.copy2(repo/'frontend/portable-electron-paths.cjs',web/'portable-electron-paths.cjs');shutil.copy2(repo/'packaging/webview/main.cjs',web/'official-main.cjs');shutil.copy2(repo/'packaging/electron/main.cjs',web/'main.cjs')
 metadata=json.loads((repo/'packaging/webview/package.json').read_text());metadata['version']=a.version
 (web/'package.json').write_text(json.dumps(metadata)+'\n')
 (bundle/'frontend').mkdir()
 for name in ['README.md','CLEANUP-AUDIT.md']:
     shutil.copy2(repo/'frontend'/name,bundle/'frontend'/name)
-for name in ['main.cjs','preload.cjs','backend-client.cjs','ipc-contract.cjs','window-state.cjs','window-ui.cjs','steam-integration.cjs','steam-session.cjs','launcher-entry.cjs','captcha-view.cjs','browser-cache.cjs','shutdown.cjs','session-handoff.cjs']:
+for name in ['portable-electron-paths.cjs','main.cjs','preload.cjs','backend-client.cjs','ipc-contract.cjs','window-state.cjs','window-ui.cjs','steam-integration.cjs','steam-session.cjs','launcher-entry.cjs','captcha-view.cjs','browser-cache.cjs','shutdown.cjs','session-handoff.cjs']:
     shutil.copy2(repo/'frontend'/name,bundle/'frontend'/name)
+shutil.copytree(repo/'frontend/platforms',bundle/'frontend/platforms')
 ui=bundle/'prototypes/electron-ui';shutil.copytree(repo/'prototypes/electron-ui',ui,ignore=shutil.ignore_patterns('README.md'))
 html=(ui/'index.html').read_text().replace('../../src/XIVLauncher.Linux/Resources/icon.png','../../icon.png').replace('FFXIV Super Launcher · 交互预览','FFXIV Super Launcher');(ui/'index.html').write_text(html)
 (bundle/'frontend-package.json').write_text(json.dumps({'version':a.version,'frontend':'electron','protocol':5})+'\n')

@@ -2,20 +2,22 @@
 
 [English](LINUX.en.md) | **简体中文** | [繁體中文](LINUX.zh-TW.md)
 
-当前正式版本为 1.0.0，仅支持 x86_64 Linux，使用 Proton 运行游戏。用户安装、账户登录及功能说明以 [简体中文 README](README.zh-CN.md) 为准；其他语言入口位于 README 顶部。
+当前正式版本为 2.1.2，仅支持 x86_64 Linux，使用 Proton 运行游戏。用户安装、账户登录及功能说明以 [简体中文 README](README.zh-CN.md) 为准；其他语言入口位于 README 顶部。
+
+配置、日志、Electron 与内置浏览器数据现在保存在 AppImage 所在目录下。旧数据不会自动搬迁，已有配置中的 Proton 数据目录仍沿用原路径。升级前请阅读 [2.1.2 更新说明](https://github.com/ImperatorVienna/FFXIVSuperLauncher/blob/main/docs/releases/2.1.2.zh-CN.md)，按需迁移配置和整个 `compatdata` 文件夹。下一版本计划提供 Windows 版；本次仍仅发行 Linux 版。
 
 ## 安装和更新
 
 - 正式发行格式为 AppImage，内置 .NET 和 Electron 运行组件。
 - 直接运行 AppImage 后，启动器会先创建缺失的默认配置、刷新固定启动脚本和应用菜单入口，再检查更新。
-- 固定入口默认为 `~/.local/share/xivlauncher-super/appimage-launcher`；应用菜单文件默认为 `~/.local/share/applications/xivlauncher-super.desktop`。两者遵循 `XDG_DATA_HOME`。
+- 固定入口默认为 `<AppImage directory>/appimage-launcher`；应用菜单文件默认为 `~/.local/share/applications/xivlauncher-super.desktop`。仅应用菜单入口遵循 `XDG_DATA_HOME`。
 - 移动或重命名 AppImage 后，直接运行一次即可刷新路径记录。“关于”中的“添加到应用菜单”用于手动重建入口。
 - 启动器自动检查稳定版；用户确认后下载并验证签名、大小及 SHA256，再安装新版并重新打开界面。旧包保留为 `.previous`。
-- Release 保留 AppImage、`appimage-update.json` 和 `appimage-update.sig`。1.0.0 对应源码归档、依赖源码及校验文件位于 [release-materials/1.0.0](release-materials/1.0.0)。
+- Release 保留 AppImage、`appimage-update.json` 和 `appimage-update.sig`。2.1.2 对应源码归档、依赖源码及校验文件位于 [release-materials/2.1.2](release-materials/2.1.2)。
 
 ## 功能与数据分区
 
-中国区、繁中区和国际区的内部标识分别为 `ffxiv_cn`、`ffxiv_tc`、`ffxiv`。默认数据根目录为 `~/.local/share/xivlauncher-super/`，遵循 `XDG_DATA_HOME`。
+中国区、繁中区和国际区的内部标识分别为 `ffxiv_cn`、`ffxiv_tc`、`ffxiv`。默认数据根目录为 `<AppImage directory>/`。
 
 Steam、Proton 和默认 pfx 配置共用；各游戏区服分别管理客户端、账户、Dalamud 和插件数据。国际区可以选择使用 Steam 版已有的 pfx。凭据保存方式和路径见 README 的“设置与凭据”。
 
@@ -29,7 +31,7 @@ Electron 前端已完成现有功能接入，包含超域传送、兼容性设�
 
 需要 Node.js 24 或更新版本、.NET 10 SDK、C 编译器、Python 3、Git 和 `7z`。构建及打包可能需要下载 NuGet 依赖、固定版本的辅助组件和对应源码。
 
-1.0.0 的完整启动器源码位于本仓库。原始源码归档、随包依赖的对应源码及校验文件保存在 [release-materials/1.0.0](release-materials/1.0.0)。Release 下载仅保留 AppImage 和签名更新所需的两个小文件。
+2.1.2 的完整启动器源码位于本仓库。原始源码归档、随包依赖的对应源码及校验文件保存在 [release-materials/2.1.2](release-materials/2.1.2)。Release 下载包含 AppImage、签名更新元数据、校验文件及启动器源码归档。
 
 在仓库根目录执行：
 

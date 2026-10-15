@@ -122,7 +122,7 @@ public sealed class LauncherUpdateTests : IDisposable
         Directory.CreateDirectory(root);var image=Path.Combine(root,"launcher.AppImage");File.WriteAllText(image,"fixture");
         var icon=Path.Combine(root,"icon.png");File.WriteAllText(icon,"icon");
         DesktopIntegration.PrepareAppImageStartup(image,root,icon);
-        var config=Path.Combine(root,"xivlauncher-super");
+        var config=root;
         Assert.False(LinuxSettings.Load(config).SetupComplete);
         Assert.True(File.Exists(Path.Combine(config,"linux-settings.json")));
         var entry=Path.Combine(config,"appimage-launcher");Assert.True(File.Exists(entry));

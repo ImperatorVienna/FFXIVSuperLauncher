@@ -7,7 +7,7 @@ public static class OfficialBrowser
     {
         foreach(var process in owned.Values)
             try { if(!process.HasExited)process.Kill(entireProcessTree:true); }
-            catch(InvalidOperationException) { }
+            catch(Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception) { }
     }
     public static void Open(string url, string root) => Open(url, root, null);
     internal static void Open(string url, string root, string? browserPath)
@@ -17,7 +17,7 @@ public static class OfficialBrowser
         if (!Path.IsPathFullyQualified(browser) || !File.Exists(browser) || !File.Exists(Path.Combine(Path.GetDirectoryName(browser)!, "resources/app/main.cjs")))
             throw new IOException("无法打开官方页面窗口。");
         var profile = Path.Combine(root, "web-sessions", Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(profile, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        Platforms.PlatformServices.Storage.CreatePrivateDirectory(profile);
         var start = new ProcessStartInfo(browser) { UseShellExecute = false, RedirectStandardError = true, RedirectStandardOutput = true };
         start.Environment.Remove("ELECTRON_RUN_AS_NODE"); start.Environment.Remove("NODE_OPTIONS"); start.Environment["LC_ALL"] = "C.UTF-8";
         start.ArgumentList.Add(Path.Combine(Path.GetDirectoryName(browser)!, "resources/app"));

@@ -8,7 +8,7 @@ internal sealed record RuntimeEntry(string Name, string Script, bool Ready, stri
 internal sealed record PrefixEntry(string Name, string Path);
 internal sealed record CompatibilityView(string ProtonScript, string SteamRoot, string DataDirectory,
     bool Registered, string RegisteredRoot, bool CanRegister, bool UseSteamPrefix, string SteamPrefix,
-    RuntimeEntry[] Runtimes, PrefixEntry[] Prefixes);
+    RuntimeEntry[] Runtimes, PrefixEntry[] Prefixes, string DetectedSteamRoot = "");
 
 // One settings service for all regions. Only the optional existing Steam prefix belongs to Global.
 // The executable comes from the trusted process entry, never from a renderer request.
@@ -21,7 +21,9 @@ internal sealed class FrontendCompatibility(string root, string? launcherEntry =
     internal CompatibilityView Read()
     {
         var settings = LinuxSettings.Load(root);
-        var discovered = ProtonDiscovery.Discover(Roots(settings), steamRoots == null
+        var roots = Roots(settings).Where(Directory.Exists).ToArray();
+        var detectedSteam = settings.SteamRoot.Length == 0 && roots.Length == 1 ? roots[0] : "";
+        var discovered = ProtonDiscovery.Discover(roots, steamRoots == null
             ? ["/usr/share/steam/compatibilitytools.d", "/usr/local/share/steam/compatibilitytools.d"] : []).ToList();
         if (settings.ProtonScript.Length > 0 && File.Exists(settings.ProtonScript) && discovered.All(x => x.Script != settings.ProtonScript))
             discovered.Add(ProtonDiscovery.FromScript(settings.ProtonScript, settings.SteamRoot));
@@ -30,7 +32,7 @@ internal sealed class FrontendCompatibility(string root, string? launcherEntry =
         return new(settings.ProtonScript, settings.SteamRoot, settings.CompatibilityData, registeredRoot.Length > 0,
             registeredRoot, launcherEntry != null && File.Exists(launcherEntry), global.UseSteamPrefix, global.SteamCompatibilityData,
             discovered.Select(x => new RuntimeEntry(x.Name, x.Script, x.IsReady, x.RequiredRuntimeAppId, x.SteamRoot)).ToArray(),
-            SteamPrefixDiscovery.Discover(Roots(settings)).Select(x => new PrefixEntry(x.ToString(), x.DataDirectory)).ToArray());
+            SteamPrefixDiscovery.Discover(roots).Select(x => new PrefixEntry(x.ToString(), x.DataDirectory)).ToArray(), detectedSteam);
     }
 
     internal static string RegisteredRoot(LinuxSettings settings) => new[] { settings.RegisteredSteamRoot, settings.SteamRoot }

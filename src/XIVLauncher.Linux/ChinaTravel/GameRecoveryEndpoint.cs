@@ -24,10 +24,9 @@ internal sealed class GameRecoveryEndpoint : IAsyncDisposable
         try
         {
             listener.Start();
-            Directory.CreateDirectory(directory, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+            Platforms.PlatformServices.Storage.CreatePrivateDirectory(directory);
             using var process = System.Diagnostics.Process.GetCurrentProcess();
-            using (var file = new FileStream(path + ".tmp", new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write,
-                       UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite }))
+            using (var file = Platforms.PlatformServices.Storage.OpenPrivateFile(path + ".tmp", FileMode.CreateNew, FileAccess.Write))
                 JsonSerializer.Serialize(file, new Discovery(port, capability, process.Id, process.StartTime.ToUniversalTime().Ticks));
             File.Move(path + ".tmp", path);
             serving = ServeAsync();

@@ -12,6 +12,31 @@ public sealed class FrontendCompatibilityTests : IDisposable
     private FrontendCompatibility Service(string? entry = null) => new(root, entry, () => [Steam]);
     public void Dispose() { if (Directory.Exists(root)) Directory.Delete(root, true); }
 
+    [Fact] public void DiscoverySuggestsSteamWithoutWritingSettings()
+    {
+        Directory.CreateDirectory(Path.Combine(Steam, "steamapps"));
+        var service = Service(); var view = service.Read();
+        Assert.Equal(Steam, view.DetectedSteamRoot);
+        Assert.Equal("", view.SteamRoot);
+        Assert.False(File.Exists(Path.Combine(root,"linux-settings.json")));
+        service.Update(new(SteamRoot:view.DetectedSteamRoot));
+        Assert.Equal(Steam,LinuxSettings.Load(root).SteamRoot);
+        Assert.Equal("",service.Read().DetectedSteamRoot);
+    }
+    [Fact] public void AmbiguousDiscoveryDoesNotChooseAnInstallation()
+    {
+        var other = Path.Combine(root,"OtherSteam");Directory.CreateDirectory(Steam);Directory.CreateDirectory(other);
+        var view = new FrontendCompatibility(root,steamRoots:()=>[Steam,other]).Read();
+        Assert.Equal("",view.DetectedSteamRoot);
+    }
+    [Fact] public void DiscoveryNeverReplacesAnExplicitPathEvenIfCurrentlyUnavailable()
+    {
+        Directory.CreateDirectory(Steam);
+        var settings=LinuxSettings.Load(root);settings.SteamRoot=Path.Combine(root,"disconnected");settings.Save();
+        var view=Service().Read();Assert.Equal(settings.SteamRoot,view.SteamRoot);Assert.Equal("",view.DetectedSteamRoot);
+    }
+    [Fact] public void EmptyDiscoveryLeavesThePathForManualSelection()
+    { Assert.Equal("",new FrontendCompatibility(root,steamRoots:()=>[]).Read().DetectedSteamRoot); }
     [Fact] public void SavingDoesNotDependOnAnEnvironmentDiscoveryScan()
     {
         var service=new FrontendCompatibility(root,steamRoots:()=>throw new IOException("Synthetic scan failure"));

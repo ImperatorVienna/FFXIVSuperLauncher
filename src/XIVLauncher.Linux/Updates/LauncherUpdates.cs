@@ -33,8 +33,9 @@ public sealed record LauncherRelease(Version Version, string Page, string? Manif
 public sealed record SignedUpdate(string Version, string Channel, string Url, string Sha256, long Size);
 
 // Independent of settings, credentials, game patching and Dalamud services.
-public sealed class LauncherUpdates(HttpClient http, UpdateDistribution distribution)
+public sealed class LauncherUpdates(HttpClient http, UpdateDistribution distribution, IUpdatePackage? package = null)
 {
+    private readonly IUpdatePackage package = package ?? Platforms.PlatformServices.UpdatePackage;
     public static Version? ParseVersion(string tag) => Regex.IsMatch(tag, @"^v?\d+\.\d+\.\d+$") && Version.TryParse(tag.TrimStart('v'), out var version) ? version : null;
     public async Task<LauncherRelease?> CheckAsync(CancellationToken token)
     {
@@ -53,7 +54,7 @@ public sealed class LauncherUpdates(HttpClient http, UpdateDistribution distribu
             if (version == null || best != null && version <= best.Version) continue;
             var page = release.GetProperty("html_url").GetString()!; distribution.ValidateUrl(page);
             string? Find(string name) => release.GetProperty("assets").EnumerateArray().FirstOrDefault(a => a.GetProperty("name").GetString() == name) is var a && a.ValueKind != JsonValueKind.Undefined ? a.GetProperty("browser_download_url").GetString() : null;
-            best = new(version, page, Find("appimage-update.json"), Find("appimage-update.sig"));
+            best = new(version, page, Find(package.ManifestName), Find(package.SignatureName));
         }
         return best;
     }
@@ -75,7 +76,7 @@ public sealed class LauncherUpdates(HttpClient http, UpdateDistribution distribu
     }
     public async Task<SignedUpdate> VerifyAsync(LauncherRelease release, CancellationToken token)
     {
-        if (release.Manifest == null || release.Signature == null || distribution.PublicKey.Length == 0) throw new IOException("This release has no signed AppImage update.");
+        if (release.Manifest == null || release.Signature == null || distribution.PublicKey.Length == 0) throw new IOException("This release has no signed update for this platform.");
         var bytes = await FetchAsync(release.Manifest, 16384, token);
         var signature = await FetchAsync(release.Signature, 4096, token);
         using var rsa = RSA.Create(); rsa.ImportFromPem(distribution.PublicKey);
@@ -86,14 +87,14 @@ public sealed class LauncherUpdates(HttpClient http, UpdateDistribution distribu
     }
     public async Task<string> StageAsync(SignedUpdate update, string currentImage, Action<int> progress, CancellationToken token)
     {
-        ValidateTarget(currentImage);
+        package.ValidateTarget(currentImage);
         distribution.ValidateUrl(update.Url);
         var stage = currentImage + ".download-" + Guid.NewGuid().ToString("N");
         try
         {
             using var response = await http.GetAsync(update.Url, HttpCompletionOption.ResponseHeadersRead, token); response.EnsureSuccessStatusCode();
             if (response.Content.Headers.ContentLength is long length && length != update.Size) throw new IOException("Update download length mismatch.");
-            await using (var output = new FileStream(stage, new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write, UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite }))
+            await using (var output = package.CreateStage(stage))
             {
                 using var input = await response.Content.ReadAsStreamAsync(token); using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
                 byte[] buffer = new byte[131072]; long total = 0; int read; progress(0);
@@ -105,15 +106,10 @@ public sealed class LauncherUpdates(HttpClient http, UpdateDistribution distribu
                 if (total != update.Size || !Convert.ToHexString(hash.GetHashAndReset()).Equals(update.Sha256, StringComparison.OrdinalIgnoreCase)) throw new IOException("Update download checksum mismatch.");
                 await output.FlushAsync(token); output.Flush(true);
             }
-            var header = new byte[11]; using (var file = File.OpenRead(stage)) file.ReadExactly(header);
-            if (!header.AsSpan(0,4).SequenceEqual(new byte[] {127,69,76,70}) || header[8] != 65 || header[9] != 73 || header[10] != 2) throw new IOException("Update is not a type-2 AppImage.");
-            File.SetUnixFileMode(stage, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+            package.CompleteStage(stage);
             return stage;
         }
         catch { if (File.Exists(stage)) File.Delete(stage); throw; }
     }
-    public static void ValidateTarget(string image)
-    {
-        if (!Path.IsPathFullyQualified(image) || !File.Exists(image) || new FileInfo(image).LinkTarget != null) throw new IOException("The AppImage must be a regular file at an absolute, writable location.");
-    }
+    public static void ValidateTarget(string image) => Platforms.PlatformServices.UpdatePackage.ValidateTarget(image);
 }

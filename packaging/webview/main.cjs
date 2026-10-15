@@ -7,7 +7,7 @@ if (!profile) process.exit(2);
 const official = officialArg?.slice('--official-url='.length);
 function webUrl(value) { try { return ['https:', 'http:'].includes(new URL(value).protocol); } catch { return false; } }
 if (!webUrl(official)) process.exit(2);
-app.setPath('userData', profile.slice('--user-data-dir='.length));
+require('./portable-electron-paths.cjs').configurePaths(app,profile.slice('--user-data-dir='.length));
 app.enableSandbox();
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null);

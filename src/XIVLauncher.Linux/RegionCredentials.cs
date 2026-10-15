@@ -68,11 +68,11 @@ public static class RegionCredentials
         ? JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(File.ReadAllText(path)) ?? throw new IOException("凭据文件格式错误。") : new();
     private static void Save(string path, Dictionary<string, Dictionary<string, string>> data)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(path)!, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        Platforms.PlatformServices.Storage.CreatePrivateDirectory(Path.GetDirectoryName(path)!);
         var temp = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try
         {
-            using (var stream = new FileStream(temp, new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write, UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite }))
+            using (var stream = Platforms.PlatformServices.Storage.OpenPrivateFile(temp, FileMode.CreateNew, FileAccess.Write))
                 JsonSerializer.Serialize(stream, data, new JsonSerializerOptions { WriteIndented = true });
             File.Move(temp, path, true);
         }

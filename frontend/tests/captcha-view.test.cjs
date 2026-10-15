@@ -1,3 +1,4 @@
+class ClipView {addChildView(view){this.child=view;}setBounds(bounds){this.bounds=bounds;}}
 'use strict';
 const {test}=require('node:test');const assert=require('node:assert/strict');const {EventEmitter}=require('node:events');const {createCaptchaView}=require('../captcha-view.cjs');
 test('embedded verification isolates remote content, bounds it, keeps it for OTP, and accepts only its origin binding',async()=>{
@@ -5,13 +6,16 @@ test('embedded verification isolates remote content, bounds it, keeps it for OTP
  const backend={async request(method,value){calls.push({method,value});if(method==='operations.poll')return state;if(method==='captcha.page')return {url:'https://launcher.ffxiv.com.tw/index.html',binding:'test-binding',html:'<p>synthetic page</p>'};return {};}};
  class View{constructor(options){view=this;this.options=options;this.webContents=new EventEmitter();const c=this.webContents;c.debugger=new EventEmitter();c.debugger.attach=()=>{};c.debugger.sendCommand=async()=>{};c.setWindowOpenHandler=fn=>this.open=fn;c.loadURL=async url=>this.url=url;c.isDestroyed=()=>this.closed;c.close=()=>{this.closed=true};}setBounds(bounds){this.bounds=bounds}}
  let zoom=1;const window=Object.assign(new EventEmitter(),{contentView:{addChildView:v=>children.add(v),removeChildView:v=>children.delete(v)},getContentSize:()=>[800,700],webContents:{getZoomFactor:()=>zoom}});
- const controller=createCaptchaView({window,backend,WebContentsView:View,session:{fromPartition:()=>({setPermissionRequestHandler(){},setPermissionCheckHandler(){},on(){}})}});
+ const controller=createCaptchaView({View:ClipView,window,backend,WebContentsView:View,session:{fromPartition:()=>({setPermissionRequestHandler(){},setPermissionCheckHandler(){},on(){}})}});
  const request={operationId:'operation',bounds:{x:600,y:650,width:500,height:400}};
  try{
-  await controller.update(request);assert.deepEqual(view.bounds,{x:600,y:650,width:200,height:50});assert.equal(children.size,1);
-  zoom=1.5;window.emit('resize');assert.deepEqual(view.bounds,{x:800,y:700,width:0,height:0});
-  await controller.update({...request,bounds:{x:20,y:40,width:300,height:200}});assert.deepEqual(view.bounds,{x:30,y:60,width:450,height:300});
-  zoom=1;window.emit('resize');assert.deepEqual(view.bounds,{x:20,y:40,width:300,height:200});
+  await controller.update(request);assert.deepEqual([...children][0].bounds,{x:600,y:650,width:200,height:50});assert.equal(children.size,1);
+  zoom=1.5;window.emit('resize');assert.deepEqual([...children][0].bounds,{x:800,y:700,width:0,height:0});
+  await controller.update({...request,bounds:{x:20,y:40,width:300,height:200}});assert.deepEqual([...children][0].bounds,{x:30,y:60,width:450,height:300});
+  zoom=1;window.emit('resize');assert.deepEqual([...children][0].bounds,{x:20,y:40,width:300,height:200});
+  await controller.update({...request,bounds:{x:20,y:-40,width:300,height:200},clip:{x:20,y:25,width:300,height:100}});
+  assert.deepEqual([...children][0].bounds,{x:20,y:25,width:300,height:100});
+  assert.deepEqual(view.bounds,{x:0,y:-65,width:300,height:200});
   assert.equal(view.options.webPreferences.nodeIntegration,false);assert.equal(view.options.webPreferences.sandbox,true);assert.equal(view.options.webPreferences.preload,undefined);
   assert.equal(view.open().action,'deny');let denied=false;view.webContents.emit('will-navigate',{preventDefault(){denied=true}},'file:///private');assert.equal(denied,true);
   const debug=view.webContents.debugger;
@@ -37,7 +41,7 @@ function setup({stall,replyFails=false,commandTimeout=50,watchInterval=1000}={})
   c.setWindowOpenHandler=()=>{};c.loadURL=async url=>{events.push(url);navigated=true;};c.isDestroyed=()=>this.closed;c.close=()=>{this.closed=true};}
   setBounds(){}
  }
- const controller=createCaptchaView({window:{contentView:{addChildView:v=>children.add(v),removeChildView:v=>children.delete(v)},getContentSize:()=>[800,700]},backend,WebContentsView:View,
+ const controller=createCaptchaView({View:ClipView,window:{contentView:{addChildView:v=>children.add(v),removeChildView:v=>children.delete(v)},getContentSize:()=>[800,700]},backend,WebContentsView:View,
   session:{fromPartition:()=>({setPermissionRequestHandler(){},setPermissionCheckHandler(){},on(){sessionListeners++;}})},commandTimeout,watchInterval});
  return {controller,calls,events,view:()=>view,children,listeners:()=>sessionListeners,
   update:()=>controller.update({operationId:'operation',bounds:{x:0,y:0,width:300,height:200}}),
@@ -87,7 +91,7 @@ test('late events from a cancelled verification cannot reply to or destroy a rep
 });
 
 test('view/session construction failures fail the pending challenge promptly',async()=>{
- const calls=[];const controller=createCaptchaView({window:{},backend:{async request(method,value){calls.push({method,value});
+ const calls=[];const controller=createCaptchaView({View:ClipView,window:{},backend:{async request(method,value){calls.push({method,value});
   if(method==='operations.poll')return {state:'running',webVerificationId:'id'};
   if(method==='captcha.page')return {url:'https://launcher.ffxiv.com.tw/index.html',html:'synthetic'};return {}; }},
   session:{fromPartition(){throw new Error('synthetic session failure')}},WebContentsView:class{}});

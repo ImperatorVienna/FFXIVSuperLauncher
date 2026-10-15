@@ -59,3 +59,15 @@ PluginUpdates 只读取 JSON，不加载插件 DLL。通过 InstalledFromUrl 的
 验证视图的生命周期由 Electron 主进程监督。登录取消、结束、错误、网页进程崩溃、主页面重载和应用退出都会释放相应资源；主页面重载还会取消该页面发起的未完成操作。关闭清理逐项执行，异常不跳过后续清理。Steam 模式下，已启动游戏的跟踪进程可以按设计继续等待游戏退出；官方网页窗口是用户主动打开的独立功能，二者都不应被误判为验证码残留进程。
 
 功能对应及回归范围见 [frontend/CLEANUP-AUDIT.md](frontend/CLEANUP-AUDIT.md)。
+
+
+## Windows port and portable data (development)
+
+- Both packaged platforms resolve data beside the external launcher executable. AppImage mounts and Windows extracted runtime directories are not configuration roots. Development profiles remain explicitly isolated.
+- `Platforms/PlatformServices` selects storage, game runtime, update package and installer. Login protocols, credentials, plugin/repository operations, patch verification and IPC stay shared.
+- `CompatibilityView.DetectedSteamRoot` is a read-only discovery suggestion. The Linux setup wizard persists an unambiguous suggestion through the existing settings operation. Explicit user paths are preserved. Windows setup neither scans nor writes Steam/Proton preferences.
+- Steam account authentication is independent of Proton configuration. Windows does not expose Steam fullscreen/keyboard/compatibility settings.
+- Electron main and official browser both use `portable-electron-paths.cjs` before creating sessions. Desktop menu/shortcut files are intentional OS integration exceptions.
+- Windows game handoff waits for an acknowledgement from the portable host before closing backend pipes. The host holds a native process handle, preventing later PID reuse from extending the session incorrectly.
+- Update transport and package validation are shared. Linux replacement/restart is behind `IUpdateInstaller`. Windows replacement/restart remains unavailable, rather than falling through to the Linux shell installer.
+- Current Windows projects temporarily link application sources from `XIVLauncher.Linux`; this is not yet a fully separated shared assembly. Windows distribution assembly, native dependency verification, update installation and real Windows game/Steam acceptance remain outstanding. Cross-compilation or Linux-hosted UI tests do not validate those tasks.

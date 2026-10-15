@@ -1,6 +1,18 @@
 'use strict';
 // Shared DOM continuity only: no device polling or directional navigation.
 window.uiState=Object.freeze({
+  clippedBounds(element){
+    const r=element.getBoundingClientRect();
+    let left=Math.max(0,r.left),top=Math.max(0,r.top),right=Math.min(innerWidth,r.right),bottom=Math.min(innerHeight,r.bottom);
+    for(let parent=element.parentElement;parent;parent=parent.parentElement){
+      const style=getComputedStyle(parent),box=parent.getBoundingClientRect();
+      if(/auto|scroll|hidden|clip/.test(style.overflowX)){left=Math.max(left,box.left);right=Math.min(right,box.right);}
+      if(/auto|scroll|hidden|clip/.test(style.overflowY)){top=Math.max(top,box.top);bottom=Math.min(bottom,box.bottom);}
+    }
+    if(right<=left||bottom<=top)return null;
+    return {bounds:{x:r.x,y:r.y,width:r.width,height:r.height},clip:{x:left,y:top,width:right-left,height:bottom-top}};
+  },
+  supports(snapshot,feature){return !Array.isArray(snapshot?.capabilities)||snapshot.capabilities.includes(feature);},
   mergeCompatibility(previous,saved){return {...saved,runtimes:previous?.runtimes||[],prefixes:previous?.prefixes||[]};},
   capture(root){
     const active=document.activeElement,scroll=root?.scrollTop;

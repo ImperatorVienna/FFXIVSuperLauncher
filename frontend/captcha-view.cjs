@@ -2,7 +2,7 @@
 const {bindExitKeys}=require('./window-ui.cjs');
 // One isolated embedded web view. Only the main process sees the CAPTCHA token;
 // account credentials stay in .NET and the remote page has no preload/launcher IPC.
-function createCaptchaView({window,backend,WebContentsView,session,onQuit,commandTimeout=15000,verificationTimeout=300000,watchInterval=1000}){
+function createCaptchaView({window,backend,WebContentsView,View,session,onQuit,commandTimeout=15000,verificationTimeout=300000,watchInterval=1000}){
  let current=null,serial=Promise.resolve(),disposed=false,generation=0,isolated=null;
  function bounded(task,signal,timeout=commandTimeout){
   return new Promise((resolve,reject)=>{
@@ -16,7 +16,7 @@ function createCaptchaView({window,backend,WebContentsView,session,onQuit,comman
  function clear(){
   const old=current;current=null;if(!old)return;
   old.abort.abort();clearTimeout(old.timer);clearTimeout(old.watch);
-  try{window.contentView.removeChildView(old.view);}catch{}
+  try{window.contentView.removeChildView(old.frame);}catch{}
   try{if(!old.view.webContents.isDestroyed())old.view.webContents.close();}catch{}
  }
  function position(){
@@ -25,8 +25,10 @@ function createCaptchaView({window,backend,WebContentsView,session,onQuit,comman
   const [width,height]=window.getContentSize();
   const zoom=window.webContents?.getZoomFactor()??1;
   current.view.webContents.setZoomFactor?.(zoom);
-  const x=Math.max(0,Math.min(Math.round(bounds.x*zoom),width)),y=Math.max(0,Math.min(Math.round(bounds.y*zoom),height));
-  current.view.setBounds({x,y,width:Math.max(0,Math.min(Math.round(bounds.width*zoom),width-x)),height:Math.max(0,Math.min(Math.round(bounds.height*zoom),height-y))});
+  const clip=current.clip||bounds;
+  const x=Math.max(0,Math.min(Math.round(clip.x*zoom),width)),y=Math.max(0,Math.min(Math.round(clip.y*zoom),height));
+  current.frame.setBounds({x,y,width:Math.max(0,Math.min(Math.round(clip.width*zoom),width-x)),height:Math.max(0,Math.min(Math.round(clip.height*zoom),height-y))});
+  current.view.setBounds({x:Math.round(bounds.x*zoom)-x,y:Math.round(bounds.y*zoom)-y,width:Math.round(bounds.width*zoom),height:Math.round(bounds.height*zoom)});
  }
  window.on?.('resize',position);
  function watch(item){
@@ -35,7 +37,7 @@ function createCaptchaView({window,backend,WebContentsView,session,onQuit,comman
     const state=await bounded(backend.request('operations.poll',{operationId:item.operationId}),item.abort.signal);
     if(current!==item)return;
     if(state.state!=='running'||state.webVerificationId!==item.id){clear();return;}
-    if(state.challenge?.kind!=='web-captcha'&&item.attached){window.contentView.removeChildView(item.view);item.attached=false;}
+    if(state.challenge?.kind!=='web-captcha'&&item.attached){window.contentView.removeChildView(item.frame);item.attached=false;}
     watch(item);
    }catch{if(current===item){clear();void bounded(backend.request('operations.cancel',{operationId:item.operationId})).catch(()=>{});}}
   })(),watchInterval);
@@ -58,7 +60,8 @@ function createCaptchaView({window,backend,WebContentsView,session,onQuit,comman
     isolated.setPermissionCheckHandler(()=>false);isolated.on('will-download',event=>event.preventDefault());
    }
    const view=new WebContentsView({webPreferences:{session:isolated,sandbox:true,nodeIntegration:false,contextIsolation:true,webSecurity:true,backgroundThrottling:true}});
-   const item={id,operationId:request.operationId,view,contexts:new Set(),status:'waiting',abort:new AbortController(),timer:null,watch:null};current=item;watch(item);
+   const frame=new View();frame.addChildView(view);
+   const item={id,operationId:request.operationId,view,frame,contexts:new Set(),status:'waiting',abort:new AbortController(),timer:null,watch:null};current=item;watch(item);
    if(onQuit)bindExitKeys(view.webContents,onQuit);
    const contents=view.webContents,debug=contents.debugger,signal=item.abort.signal;
    contents.on('did-finish-load',()=>{if(current===item)position();});
@@ -105,9 +108,9 @@ function createCaptchaView({window,backend,WebContentsView,session,onQuit,comman
   }
   const bounds=request.bounds;
   if(current&&bounds&&state.challenge?.kind==='web-captcha'){
-   current.bounds=bounds;position();
-   if(!current.attached){window.contentView.addChildView(current.view);current.attached=true;}
-  }else if(current?.attached){window.contentView.removeChildView(current.view);current.attached=false;}
+   current.bounds=bounds;current.clip=request.clip;position();
+   if(!current.attached){window.contentView.addChildView(current.frame);current.attached=true;}
+  }else if(current?.attached){window.contentView.removeChildView(current.frame);current.attached=false;}
  }
  return {
   isActive(){return Boolean(current);},
