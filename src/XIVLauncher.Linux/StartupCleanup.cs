@@ -30,7 +30,7 @@ internal static class StartupCleanup
                 {
                     var info = new FileInfo(path);
                     if (info.LinkTarget != null || info.LastWriteTimeUtc > DateTime.UtcNow.AddDays(-1)) continue;
-                    using var file = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                    using var file = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.Delete);
                     File.Delete(path);
                 }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }

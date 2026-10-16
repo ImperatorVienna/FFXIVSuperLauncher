@@ -11,10 +11,15 @@ internal static class Program
     private static Stream Resource(string name) => Assembly.GetExecutingAssembly().GetManifestResourceStream(name)
         ?? throw new IOException("Windows runtime payload is missing.");
     private static string Script(string name) { using var stream = Resource(name); using var reader = new StreamReader(stream); return reader.ReadToEnd(); }
-    private static async Task<int> Main()
+    private static async Task<int> Main(string[] args)
     {
         if (!OperatingSystem.IsWindows()) return 2;
         var root = Path.GetDirectoryName(Environment.ProcessPath ?? throw new IOException("Launcher executable path is unavailable."))!;
+        if (args.Length == 2 && args[0] == "--install-update")
+            return await WindowsUpdateJob.RunAsync(args[1], Script("Portable.Launch"));
+        if (args.Length == 1 && args[0] == "--launcher-version")
+        { Console.WriteLine(Assembly.GetExecutingAssembly().GetName().Version?.ToString(3)); return 0; }
+        if (args.Length != 0) return 2;
         Directory.CreateDirectory(root);
         try
         {
@@ -24,9 +29,14 @@ internal static class Program
             {
                 WindowsPortableEntry.Write(executable, Script("Portable.Launch"));
                 using var registration = Process.Start(WindowsPortableEntry.DesktopRegistration(Path.GetDirectoryName(executable)!, Script("Portable.Desktop")));
-                if (registration != null) await registration.WaitForExitAsync();
+                if (registration != null)
+                {
+                    try { await registration.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(20)); }
+                    catch (TimeoutException) { if (!registration.HasExited) registration.Kill(); throw; }
+                }
             }
             catch (Exception ex) { await File.AppendAllTextAsync(Path.Combine(root,"portable.log"), "Desktop entry: " + ex.Message + Environment.NewLine); }
+            CleanupUpdateHelpers(root);
             var runtime = Extract(root);
             var session = Path.Combine(root,"sessions",Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(session);
@@ -72,6 +82,27 @@ internal static class Program
             return 1;
         }
     }
+    private static void CleanupUpdateHelpers(string root)
+    {
+        // The helper cannot delete its own executable on Windows. Reap only
+        // completed, precisely named helper directories on a later launch.
+        try
+        {
+            foreach (var directory in Directory.EnumerateDirectories(root, ".launcher-update-*"))
+            {
+                try
+                {
+                    if (!Guid.TryParseExact(Path.GetFileName(directory)[17..], "N", out _) ||
+                        (File.GetAttributes(directory) & FileAttributes.ReparsePoint) != 0 ||
+                        !File.Exists(Path.Combine(directory, "job.json.finished"))) continue;
+                    Directory.Delete(directory, true);
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+    }
+
     private static string Extract(string root)
     {
         using var payload = Resource("Portable.Payload");

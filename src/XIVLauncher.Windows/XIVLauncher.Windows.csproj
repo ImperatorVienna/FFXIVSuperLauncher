@@ -17,7 +17,9 @@
     <EmbeddedResource Include="../XIVLauncher.Linux/Resources/Locales/*.json" Link="Resources/Locales/%(Filename)%(Extension)" />
     <EmbeddedResource Include="../XIVLauncher.Linux/Resources/Diagnostics.en.json" Link="Resources/Diagnostics.en.json" WithCulture="false" />
     <EmbeddedResource Include="../XIVLauncher.Linux/Resources/Status.en.json" Link="Resources/Status.en.json" WithCulture="false" />
-    <PackageReference Include="goaaats.Steamworks" />
+    <PackageReference Include="goaaats.Steamworks" GeneratePathProperty="true" />
+    <None Include="$(Pkggoaaats_Steamworks)/content/steam_api64.dll" Link="steam_api64.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="../XIVLauncher.Linux/Resources/icon.png" Link="icon.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <ProjectReference Include="../XIVLauncher.Common.Unix/XIVLauncher.Common.Unix.csproj" />
     <ProjectReference Include="../XIVLauncher.GamePatchV3/XIVLauncher.GamePatchV3.csproj" />
   </ItemGroup>

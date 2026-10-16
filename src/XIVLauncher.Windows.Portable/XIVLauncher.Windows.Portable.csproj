@@ -8,6 +8,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../XIVLauncher.Linux/Platforms/Windows/WindowsPortableEntry.cs" Link="WindowsPortableEntry.cs" />
+    <Compile Include="../XIVLauncher.Linux/Platforms/Windows/WindowsUpdateJob.cs" Link="WindowsUpdateJob.cs" />
+    <Compile Include="../XIVLauncher.Linux/Platforms/Windows/WindowsExecutablePackage.cs" Link="WindowsExecutablePackage.cs" />
+    <Compile Include="../XIVLauncher.Linux/Updates/IUpdatePackage.cs" Link="IUpdatePackage.cs" />
     <EmbeddedResource Include="../../packaging/windows/launch.ps1" LogicalName="Portable.Launch" />
     <EmbeddedResource Include="../../packaging/windows/desktop.ps1" LogicalName="Portable.Desktop" />
     <EmbeddedResource Include="$(PortablePayload)" LogicalName="Portable.Payload" Condition="'$(PortablePayload)' != ''" />

@@ -3,6 +3,14 @@ internal static class ProcessFileOwner
 {
     internal static string Stamp(int pid)
     {
+        if (!OperatingSystem.IsLinux())
+        {
+            var fact = ProcessFacts.Read(pid);
+            if (fact.Presence == ProcessPresence.Gone) throw new FileNotFoundException("Process has exited.");
+            return fact.StartedAt is long started
+                ? "utc:" + started.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                : throw new IOException("Cannot identify process start time.");
+        }
         var stat = File.ReadAllText($"/proc/{pid}/stat");
         return stat[(stat.LastIndexOf(')') + 2)..].Split(' ', StringSplitOptions.RemoveEmptyEntries)[19];
     }

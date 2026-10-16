@@ -20,7 +20,7 @@ public sealed class SessionDiagnostics(string root)
                     Processes.ProcessFacts.Read(pid).Presence != Processes.ProcessPresence.Gone)
                     throw new IOException("Other log owner is active or unknown.");
             }
-            using var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            using var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.Delete);
             var size = stream.Length;
             // Preserve the current log inode; subsequent writes continue normally.
             if (Path.GetFullPath(path) == file.Path) stream.SetLength(0);

@@ -9,11 +9,8 @@ internal static class DownloadCacheLock
         Directory.CreateDirectory(root);
         try
         {
-            return new FileStream(Path.Combine(root, ".download-cache.lock"), new FileStreamOptions
-            {
-                Mode = FileMode.OpenOrCreate, Access = FileAccess.ReadWrite, Share = FileShare.None,
-                UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite
-            });
+            return Platforms.PlatformServices.Storage.OpenPrivateFile(
+                Path.Combine(root, ".download-cache.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite);
         }
         catch (IOException)
         {

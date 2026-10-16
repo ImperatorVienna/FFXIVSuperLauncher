@@ -38,7 +38,7 @@ def source_archive(repo, output, version):
     return target
 
 
-def package_notices(repo, bundle, assets_file=None):
+def package_notices(repo, bundle, assets_file=None, deps_name="xivlauncher-super.deps.json"):
     assets = json.loads((assets_file or repo / 'src/XIVLauncher.Linux/obj/project.assets.json').read_text())
     destination = bundle / 'licenses'
     destination.mkdir(exist_ok=True)
@@ -46,7 +46,7 @@ def package_notices(repo, bundle, assets_file=None):
     helper_metadata = {item['package']: item['package_metadata'] for item in
                        json.loads((repo / 'compliance/provenance/helper-dependencies.json').read_text())['packages']}
     results = []
-    contexts = [('launcher', bundle / 'xivlauncher-super.deps.json'),
+    contexts = [('launcher', bundle / deps_name),
                 ('cn-launch-support', bundle / 'Tools/cn-launch-support/injector/Dalamud.Injector.deps.json')]
     libraries = []
     for scope, deps_path in contexts:

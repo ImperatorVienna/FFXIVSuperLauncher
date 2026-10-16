@@ -21,8 +21,8 @@ internal static class PlatformServices
     internal static PlatformCapabilities Capabilities { get; } = new(OperatingSystem.IsLinux());
     internal static IGameRuntime CreateGameRuntime(LinuxSettings settings) => OperatingSystem.IsLinux()
         ? new Linux.LinuxGameRuntime(settings) : OperatingSystem.IsWindows() ? new Windows.WindowsGameRuntime() : throw new PlatformNotSupportedException("No game runtime adapter is registered for this platform.");
-    // Windows replacement/restart is not yet enabled; never call the shell installer there.
-    internal static IUpdateInstaller? UpdateInstaller { get; } = OperatingSystem.IsLinux() ? new Linux.AppImageInstaller() : null;
+    // Download/signature validation stays shared; installers own platform replacement and restart.
+    internal static IUpdateInstaller? UpdateInstaller { get; } = OperatingSystem.IsLinux() ? new Linux.AppImageInstaller() : OperatingSystem.IsWindows() ? new Windows.WindowsUpdateInstaller() : null;
     internal static IUpdatePackage UpdatePackage { get; } = OperatingSystem.IsLinux()
         ? new Linux.AppImagePackage()
         : OperatingSystem.IsWindows() ? new Windows.WindowsExecutablePackage() : throw new PlatformNotSupportedException("No update package adapter is registered for this platform.");
