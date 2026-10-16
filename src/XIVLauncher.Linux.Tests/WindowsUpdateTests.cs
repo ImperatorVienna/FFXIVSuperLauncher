@@ -1,4 +1,4 @@
-using System.Buffers.Binary;
+using System.IO.Compression;
 using System.Text.Json;
 using XIVLauncher.Linux.Platforms.Windows;
 using Xunit;
@@ -9,59 +9,71 @@ public sealed class WindowsUpdateTests : IDisposable
     private readonly string root = Path.Combine(Path.GetTempPath(), "windows update & 测试 " + Guid.NewGuid());
     public WindowsUpdateTests() => Directory.CreateDirectory(root);
     public void Dispose() => Directory.Delete(root, true);
+    private static readonly string[] Required = ["FFXIVSuperLauncher.exe", "FFXIVSuperLauncher.dll", "FFXIVSuperLauncher.deps.json", "FFXIVSuperLauncher.runtimeconfig.json",
+        "runtime/electron.exe", "runtime/xivlauncher-backend.exe", "runtime/frontend/main.cjs", "runtime/resources/app/main.cjs"];
+    private void Populate(string directory, string value, string version)
+    {
+        var files = new Dictionary<string, string>();
+        foreach (var name in Required)
+        {
+            var file = Path.Combine(directory, name); Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+            File.WriteAllText(file, value); files.Add(name, WindowsUpdateJob.Hash(file));
+        }
+        File.WriteAllText(Path.Combine(directory, WindowsZipPackage.Inventory), JsonSerializer.Serialize(new WindowsPackageManifest(version, files)));
+    }
     private WindowsUpdateJob Job()
     {
-        var original = Path.Combine(root, "old launcher.exe"); File.WriteAllText(original, "original");
-        var stage = Path.Combine(root, "new.download");
-        var bytes = new byte[512];
-        bytes[0] = (byte)'M'; bytes[1] = (byte)'Z';
-        BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(0x3c), 0x80);
-        bytes[0x80] = (byte)'P'; bytes[0x81] = (byte)'E';
-        BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(0x84), 0x8664);
-        BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(0x94), 240);
-        BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(0x96), 2);
-        BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(0x98), 0x20b);
-        File.WriteAllBytes(stage, bytes);
-        return WindowsUpdateJob.Create(original, stage, WindowsUpdateJob.Hash(stage), Path.Combine(root,"update.log"), "2.2.0", []);
+        Populate(root, "old", "2.1.2");
+        var temporary = Path.Combine(root, "package"); var folder = Path.Combine(temporary, WindowsZipPackage.Folder);
+        Populate(folder, "new", "2.2.0");
+        var stage = Path.Combine(root, "update.download"); ZipFile.CreateFromDirectory(temporary, stage); Directory.Delete(temporary, true);
+        return WindowsUpdateJob.Create(Path.Combine(root, "FFXIVSuperLauncher.exe"), stage, WindowsUpdateJob.Hash(stage), Path.Combine(root, "update.log"), "2.2.0", []);
     }
-    [Fact] public void SuccessfulInstallPreservesBackupAndRefreshesPortableEntry()
+    [Fact] public void SuccessfulInstallPreservesUserDataAndBackup()
     {
         var job = Job(); string? started = null;
+        File.WriteAllText(Path.Combine(root, "windows-settings.json"), "user-settings");
+        Directory.CreateDirectory(Path.Combine(root, "ffxiv_cn")); File.WriteAllText(Path.Combine(root, "ffxiv_cn", "credential"), "private");
         job.Install("exit 0", path => started = path);
-        Assert.Equal(job.Destination, started); Assert.False(File.Exists(job.Original));
-        Assert.Equal("original", File.ReadAllText(job.Original + ".previous"));
-        Assert.Equal(Path.GetFileName(job.Destination), File.ReadAllText(Path.Combine(root,"launcher-executable.txt")));
-        Assert.Equal(job.ExpectedHash, WindowsUpdateJob.Hash(job.Destination));
+        Assert.Equal(job.Original, started); Assert.Equal("new", File.ReadAllText(job.Original));
+        Assert.Equal("old", File.ReadAllText(Directory.GetFiles(Path.Combine(root, "update-backups"), "FFXIVSuperLauncher.exe", SearchOption.AllDirectories).Single()));
+        Assert.Equal("user-settings", File.ReadAllText(Path.Combine(root, "windows-settings.json")));
+        Assert.Equal("private", File.ReadAllText(Path.Combine(root, "ffxiv_cn", "credential")));
+        Assert.False(File.Exists(job.Stage));
     }
-    [Fact] public void RestartFailureRestoresOldEntryAndRetainsDownloadedStage()
+    [Fact] public void FailedRestartRestoresEveryProgramFile()
     {
         var job = Job();
-        Assert.Throws<IOException>(() => job.Install("exit 0", _ => throw new IOException("Synthetic restart failure")));
-        Assert.Equal("original", File.ReadAllText(job.Original)); Assert.True(File.Exists(job.Stage));
-        Assert.False(File.Exists(job.Destination));
-        Assert.Equal(Path.GetFileName(job.Original), File.ReadAllText(Path.Combine(root,"launcher-executable.txt")));
+        Assert.Throws<IOException>(() => job.Install("exit 0", _ => throw new IOException("restart failed")));
+        foreach (var name in Required) Assert.Equal("old", File.ReadAllText(Path.Combine(root, name)));
+        Assert.True(File.Exists(job.Stage));
+        Assert.Equal("FFXIVSuperLauncher.exe", File.ReadAllText(Path.Combine(root, "launcher-executable.txt")));
     }
-    [Theory][InlineData(true)][InlineData(false)]
-    public void ChangedFilesAreRejectedBeforeAnyReplacement(bool stage)
+    [Fact] public void ChangedStageOrOriginalCannotInstall()
     {
-        var job = Job(); File.AppendAllText(stage ? job.Stage : job.Original, "changed");
-        Assert.Throws<IOException>(() => job.Install("exit 0", _ => Assert.Fail("Must not launch")));
-        Assert.True(File.Exists(job.Original)); Assert.False(File.Exists(job.Destination));
+        var job = Job(); File.AppendAllText(job.Stage, "changed"); Assert.Throws<IOException>(job.Validate);
     }
-    [Fact] public void RejectsExistingDestinationAndEscapingStage()
+    [Fact] public void ChangedOriginalCannotInstall()
     {
-        var job = Job(); File.WriteAllText(job.Destination, "user file");
-        Assert.Throws<IOException>(() => job.Validate());
-        Assert.Equal("user file", File.ReadAllText(job.Destination));
-        File.Delete(job.Destination);
-        var dir = Path.Combine(root,"elsewhere"); Directory.CreateDirectory(dir);
-        var other = Path.Combine(dir,"stage"); File.Copy(job.Stage,other);
-        Assert.Throws<IOException>(() => (job with { Stage = other }).Validate());
+        var job = Job(); File.AppendAllText(job.Original, "changed"); Assert.Throws<IOException>(job.Validate);
     }
-    [Fact] public void JobUsesAotCompatibleDataSerialization()
+    [Fact] public void WrongVersionCannotInstall()
+    { var job = Job(); Assert.Throws<IOException>(() => (job with { Version = "9.0.0" }).Validate()); }
+    [Theory]
+    [InlineData("../escape.dll")][InlineData("windows-settings.json")][InlineData("ffxiv_cn/credentials.json")]
+    [InlineData("runtime/../../escape.exe")][InlineData("runtime/CON.txt")][InlineData("runtime/file:stream")]
+    public void UserDataAndUnsafeNamesCannotEnterPackage(string name) => Assert.False(WindowsZipPackage.IsProgramFile(name));
+    [Fact] public void UnlistedEntryIsRejected()
+    {
+        var job = Job();
+        using (var zip = ZipFile.Open(job.Stage, ZipArchiveMode.Update))
+        using (var writer = new StreamWriter(zip.CreateEntry(WindowsZipPackage.Folder + "/windows-settings.json").Open())) writer.Write("overwrite");
+        Assert.Throws<IOException>(() => new WindowsZipPackage().CompleteStage(job.Stage));
+    }
+    [Fact] public void UpdateJobRoundTripsWithGeneratedSerializer()
     {
         var job = Job(); var json = JsonSerializer.Serialize(job, WindowsUpdateJsonContext.Default.WindowsUpdateJob);
         var restored = JsonSerializer.Deserialize(json, WindowsUpdateJsonContext.Default.WindowsUpdateJob)!;
-        Assert.Equal(job.Original,restored.Original); Assert.Equal(job.ExpectedHash,restored.ExpectedHash); restored.Validate();
+        Assert.Equal(job.Original, restored.Original); Assert.Equal(job.Version, restored.Version); restored.Validate();
     }
 }

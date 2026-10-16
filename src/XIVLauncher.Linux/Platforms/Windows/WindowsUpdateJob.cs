@@ -7,7 +7,7 @@ namespace XIVLauncher.Linux.Platforms.Windows;
 // Data-only handoff to a copy of the portable host. No command text or user paths
 // are interpolated into a shell, and the game is never restarted by this helper.
 internal sealed record WindowsUpdateOwner(int Id, long StartedAt, string Executable);
-internal sealed record WindowsUpdateJob(string Original, string Stage, string Destination,
+internal sealed record WindowsUpdateJob(string Original, string Stage, string Version,
     string OriginalHash, string ExpectedHash, string Log, WindowsUpdateOwner[] Owners)
 {
     internal static string Hash(string file)
@@ -27,53 +27,87 @@ internal sealed record WindowsUpdateJob(string Original, string Stage, string De
     internal static WindowsUpdateJob Create(string original, string stage, string expected, string log,
         string version, WindowsUpdateOwner[] owners)
     {
-        new WindowsExecutablePackage().ValidateTarget(original);
-        if (!System.Text.RegularExpressions.Regex.IsMatch(version, @"^\d+\.\d+\.\d+$") || !Version.TryParse(version, out _))
+        new WindowsZipPackage().ValidateTarget(original);
+        if (!System.Text.RegularExpressions.Regex.IsMatch(version, @"^\d+\.\d+\.\d+$") || !System.Version.TryParse(version, out _))
             throw new IOException("Invalid update version.");
         var root = Path.GetDirectoryName(original)!;
-        var job = new WindowsUpdateJob(original, stage, Path.Combine(root, $"FFXIVSuperLauncher-{version}-win-x64.exe"),
+        var job = new WindowsUpdateJob(original, stage, version,
             Hash(original), expected, log, owners);
         job.Validate();
         return job;
     }
     internal void Validate()
     {
-        new WindowsExecutablePackage().ValidateTarget(Original); RegularFile(Stage);
+        new WindowsZipPackage().ValidateTarget(Original); RegularFile(Stage);
         var root = Path.GetDirectoryName(Path.GetFullPath(Original));
-        if (!Path.IsPathFullyQualified(Destination) || !Path.IsPathFullyQualified(Log) ||
+        if (!Path.IsPathFullyQualified(Log) ||
             !string.Equals(Path.GetDirectoryName(Path.GetFullPath(Stage)), root, StringComparison.OrdinalIgnoreCase) ||
-            !string.Equals(Path.GetDirectoryName(Path.GetFullPath(Destination)), root, StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(Stage, Original, StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(Stage, Destination, StringComparison.OrdinalIgnoreCase) || Path.Exists(Destination))
-            throw new IOException("Update files must be distinct and staged beside the portable launcher.");
+            string.Equals(Stage, Original, StringComparison.OrdinalIgnoreCase))
+            throw new IOException("Update must be staged beside the launcher.");
         if (!string.Equals(Hash(Original), OriginalHash, StringComparison.OrdinalIgnoreCase) ||
             !string.Equals(Hash(Stage), ExpectedHash, StringComparison.OrdinalIgnoreCase))
             throw new IOException("Update files changed after verification.");
-        new WindowsExecutablePackage().CompleteStage(Stage);
+        var package = WindowsZipPackage.Inspect(Stage);
+        if (package.Version != Version) throw new IOException("Windows package version mismatch.");
     }
-    // The original stays available until the new launcher starts. On any failure
-    // restore the entry and leave the old executable usable for retry/rollback.
+    internal static void CheckParents(string root, string target)
+    {
+        for (var path = target; path != null; path = Path.GetDirectoryName(path))
+        {
+            if (Path.Exists(path) && (File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
+                throw new IOException("Update cannot follow filesystem links.");
+            if (string.Equals(path, root, StringComparison.OrdinalIgnoreCase)) return;
+        }
+        throw new IOException("Update target is outside the launcher directory.");
+    }
     internal void Install(string launchScript, Action<string> start)
     {
         Validate();
-        var backup = Original + ".previous";
-        if (Path.Exists(backup) && (File.GetAttributes(backup) & FileAttributes.ReparsePoint) != 0)
-            throw new IOException("Update backup cannot be a link.");
-        File.Move(Stage, Destination);
+        var root = Path.GetDirectoryName(Original)!;
+        CheckParents(root, Path.Combine(root, WindowsZipPackage.Inventory));
+        using var oldFile = File.OpenRead(Path.Combine(root, WindowsZipPackage.Inventory));
+        var previous = WindowsZipPackage.ReadManifest(oldFile); oldFile.Dispose();
+        var work = Path.Combine(root, "update-backups", Guid.NewGuid().ToString("N"));
+        CheckParents(root, work);
+        var incoming = Path.Combine(work, "incoming");
+        var backup = Path.Combine(work, "previous");
+        Directory.CreateDirectory(incoming);
+        var next = WindowsZipPackage.Inspect(Stage, incoming);
+        var names = previous.Files.Keys.Union(next.Files.Keys, StringComparer.OrdinalIgnoreCase).Append(WindowsZipPackage.Inventory).ToArray();
+        string Target(string name) => name == "FFXIVSuperLauncher.exe" ? Original : Path.Combine(root, name);
+        foreach (var name in names) CheckParents(root, Target(name));
+        var changed = new List<(string Target, string Backup, bool Existed)>();
         try
         {
-            File.Copy(Original, backup, overwrite: true);
-            WindowsPortableEntry.Write(Destination, launchScript);
-            start(Destination);
-        }
-        catch
-        {
+            foreach (var name in names)
+            {
+                var target = Target(name); var saved = Path.Combine(backup, name);
+                var existed = File.Exists(target);
+                if (existed) { Directory.CreateDirectory(Path.GetDirectoryName(saved)!); File.Move(target, saved); }
+                changed.Add((target, saved, existed));
+                var replacement = Path.Combine(incoming, name);
+                if (File.Exists(replacement))
+                { Directory.CreateDirectory(Path.GetDirectoryName(target)!); File.Move(replacement, target); }
+            }
             WindowsPortableEntry.Write(Original, launchScript);
-            File.Move(Destination, Stage);
+            start(Original);
+        }
+        catch (Exception failure)
+        {
+            var errors = new List<Exception> { failure };
+            foreach (var file in changed.AsEnumerable().Reverse())
+            {
+                try { File.Delete(file.Target); if (file.Existed) File.Move(file.Backup, file.Target); }
+                catch (Exception rollback) { errors.Add(rollback); }
+            }
+            try { WindowsPortableEntry.Write(Original, launchScript); }
+            catch (Exception rollback) { errors.Add(rollback); }
+            if (errors.Count > 1) throw new AggregateException("Windows update rollback requires recovery from " + backup, errors);
             throw;
         }
-        // A virus scanner may briefly hold the old file; it is safe to retain it.
-        try { File.Delete(Original); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+        // Keep the previous program files for recovery; user data was never in the plan.
+        try { File.Delete(Stage); Directory.Delete(incoming, true); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
     }
     internal static async Task<int> RunAsync(string jobFile, string launchScript)
     {

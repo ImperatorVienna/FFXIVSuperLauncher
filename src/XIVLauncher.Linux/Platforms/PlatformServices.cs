@@ -25,5 +25,5 @@ internal static class PlatformServices
     internal static IUpdateInstaller? UpdateInstaller { get; } = OperatingSystem.IsLinux() ? new Linux.AppImageInstaller() : OperatingSystem.IsWindows() ? new Windows.WindowsUpdateInstaller() : null;
     internal static IUpdatePackage UpdatePackage { get; } = OperatingSystem.IsLinux()
         ? new Linux.AppImagePackage()
-        : OperatingSystem.IsWindows() ? new Windows.WindowsExecutablePackage() : throw new PlatformNotSupportedException("No update package adapter is registered for this platform.");
+        : OperatingSystem.IsWindows() ? new Windows.WindowsZipPackage() : throw new PlatformNotSupportedException("No update package adapter is registered for this platform.");
 }

@@ -63,6 +63,6 @@ public sealed class WindowsPlatformTests : IDisposable
     [Fact] public void WindowsUpdateRejectsAnAppImage()
     {
         var path=Path.Combine(root,"fake.exe");File.WriteAllBytes(path,new byte[128]);
-        Assert.ThrowsAny<Exception>(()=>new WindowsExecutablePackage().CompleteStage(path));
+        Assert.ThrowsAny<Exception>(()=>new WindowsZipPackage().CompleteStage(path));
     }
 }

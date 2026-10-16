@@ -1,11 +1,9 @@
 using System.Diagnostics;
-using System.IO.Compression;
 using System.Reflection;
-using System.Security.Cryptography;
 using XIVLauncher.Linux.Platforms.Windows;
 
 // The outer process remains Steam's lifetime anchor after Chromium exits.
-// Runtime payloads are versioned by content hash; never overwrite a running DLL.
+// Program files are shipped in a portable folder; updates wait for all owners to exit.
 internal static class Program
 {
     private static Stream Resource(string name) => Assembly.GetExecutingAssembly().GetManifestResourceStream(name)
@@ -37,7 +35,9 @@ internal static class Program
             }
             catch (Exception ex) { await File.AppendAllTextAsync(Path.Combine(root,"portable.log"), "Desktop entry: " + ex.Message + Environment.NewLine); }
             CleanupUpdateHelpers(root);
-            var runtime = Extract(root);
+            var runtime = Path.Combine(root, "runtime");
+            foreach (var required in new[] { "electron.exe", "xivlauncher-backend.exe", "frontend/main.cjs", "resources/app/main.cjs" })
+                if (!File.Exists(Path.Combine(runtime, required))) throw new IOException("Incomplete Windows package: " + required);
             var session = Path.Combine(root,"sessions",Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(session);
             try
@@ -103,31 +103,4 @@ internal static class Program
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
     }
 
-    private static string Extract(string root)
-    {
-        using var payload = Resource("Portable.Payload");
-        var digest = Convert.ToHexString(SHA256.HashData(payload)); payload.Position=0;
-        var runtimes = Path.Combine(root,"runtime"); Directory.CreateDirectory(runtimes);
-        var destination = Path.Combine(runtimes,digest);
-        using var mutex = new Mutex(false,"Local\\FFXIVSuperLauncher.Extract."+digest);
-        try { if (!mutex.WaitOne(TimeSpan.FromMinutes(2))) throw new IOException("Runtime extraction is busy."); }
-        catch (AbandonedMutexException) { }
-        try
-        {
-            if (File.Exists(Path.Combine(destination,".complete"))) return destination;
-            var stage = destination+"."+Guid.NewGuid().ToString("N")+".tmp";
-            try
-            {
-                Directory.CreateDirectory(stage);
-                ZipFile.ExtractToDirectory(payload,stage); // Framework rejects path traversal.
-                foreach (var required in new[]{"electron.exe","xivlauncher-backend.exe","frontend/main.cjs","resources/app/main.cjs"})
-                    if (!File.Exists(Path.Combine(stage,required))) throw new IOException("Incomplete Windows payload: "+required);
-                File.WriteAllText(Path.Combine(stage,".complete"),digest);
-                Directory.Move(stage,destination);
-            }
-            finally { if(Directory.Exists(stage))Directory.Delete(stage,true); }
-            return destination;
-        }
-        finally { mutex.ReleaseMutex(); }
-    }
 }

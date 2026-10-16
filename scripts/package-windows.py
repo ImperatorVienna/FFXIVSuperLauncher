@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Build a portable Windows x64 EXE on Windows. No installer or registry writes.
-Requires .NET 10 SDK, the MSVC x64 Native Tools environment, a verified Electron
-ZIP, and the existing pinned support bundle. Never downloads replacement helpers.
+"""Build a portable Windows x64 ZIP on Linux or Windows.
+Requires .NET 10 SDK, MinGW-w64 GCC (Linux) or MSVC (Windows), a verified
+Electron ZIP and the existing pinned support bundle.
 """
 import argparse, hashlib, importlib.util, json, os, pathlib, shutil, subprocess, zipfile
 
@@ -30,16 +30,16 @@ def main():
     p.add_argument('--electron-zip', type=pathlib.Path, required=True)
     p.add_argument('--support-bundle', type=pathlib.Path, required=True)
     a = p.parse_args()
-    if os.name != 'nt':
-        p.error('Run on Windows in an x64 Native Tools terminal. Native AOT cannot be cross-published from Linux.')
-    if not shutil.which('cl'):
-        p.error('The MSVC x64 Native Tools environment is required.')
+    compiler = os.environ.get('WINDOWS_CC', 'cl' if os.name == 'nt' else 'x86_64-w64-mingw32-gcc')
+    if not shutil.which(compiler):
+        p.error('A Windows x64 C compiler is required (WINDOWS_CC).')
     repo = pathlib.Path(__file__).resolve().parent.parent
     output = a.output.resolve()
     if output.exists():
         p.error('Choose a fresh output directory; existing builds are never overwritten.')
     output.mkdir(parents=True)
-    bundle = output / 'payload'; bundle.mkdir()
+    folder = output / 'FFXIV Super Launcher'; folder.mkdir()
+    bundle = folder / 'runtime'; bundle.mkdir()
     extract_verified_electron(a.electron_zip, bundle)
     dotnet = os.environ.get('DOTNET', 'dotnet')
     # Exercise the Windows transport and shared travel/authentication contract on
@@ -62,15 +62,20 @@ def main():
     definitions = ['XD3_MAIN=1','XD3_POSIX=0','XD3_WIN32=1','XD3_STDIO=0','SIZEOF_SIZE_T=8',
         'SIZEOF_UNSIGNED_LONG=4','SIZEOF_UNSIGNED_LONG_LONG=8','SIZEOF_UNSIGNED_INT=4',
         'EXTERNAL_COMPRESSION=0','HAVE_CONFIG_H=0','_CRT_SECURE_NO_WARNINGS']
-    subprocess.run(['cl','/nologo','/O2',*[('/D'+v) for v in definitions],
-        str(repo/'src/native/xdelta3/xdelta3.c'),'/Fe:'+str(xdelta),'/Fo:'+str(output/'xdelta3.obj')],check=True)
-    # Validate the actual built differential worker, not just PE headers.
-    sample = output/'xdelta-smoke'; sample.mkdir()
-    old, new, patch, decoded = [sample/n for n in ['old','new','delta','decoded']]
-    old.write_bytes(b'launcher base\n'*100); new.write_bytes(b'launcher updated\n'*100)
-    subprocess.run([str(xdelta),'-e','-f','-s',str(old),str(new),str(patch)],check=True)
-    subprocess.run([str(xdelta),'-d','-D','-f','-s',str(old),str(patch),str(decoded)],check=True)
-    if decoded.read_bytes() != new.read_bytes(): raise ValueError('Windows xdelta roundtrip failed.')
+    if os.name == 'nt':
+        command = [compiler,'/nologo','/O2',*[('/D'+v) for v in definitions],
+            str(repo/'src/native/xdelta3/xdelta3.c'),'/Fe:'+str(xdelta),'/Fo:'+str(output/'xdelta3.obj')]
+    else:
+        command = [compiler,'-O2','-static',*[('-D'+v) for v in definitions],str(repo/'src/native/xdelta3/xdelta3.c'),'-o',str(xdelta)]
+    subprocess.run(command,check=True)
+    # Execute the worker on Windows; Linux checks the PE target without claiming native execution.
+    if os.name == 'nt':
+        sample = output/'xdelta-smoke'; sample.mkdir()
+        old, new, patch, decoded = [sample/n for n in ['old','new','delta','decoded']]
+        old.write_bytes(b'launcher base\n'*100); new.write_bytes(b'launcher updated\n'*100)
+        subprocess.run([str(xdelta),'-e','-f','-s',str(old),str(new),str(patch)],check=True)
+        subprocess.run([str(xdelta),'-d','-D','-f','-s',str(old),str(patch),str(decoded)],check=True)
+        if decoded.read_bytes() != new.read_bytes(): raise ValueError('Windows xdelta roundtrip failed.')
     frontend = bundle/'frontend'; frontend.mkdir()
     for name in ['portable-electron-paths.cjs','main.cjs','preload.cjs','backend-client.cjs','ipc-contract.cjs',
         'window-state.cjs','window-ui.cjs','steam-integration.cjs','steam-session.cjs','launcher-entry.cjs',
@@ -86,7 +91,7 @@ def main():
     for source,target in [(repo/'packaging/webview/main.cjs','official-main.cjs'),(repo/'frontend/portable-electron-paths.cjs','portable-electron-paths.cjs')]:shutil.copy2(source,app/target)
     (app/'package.json').write_text(json.dumps({'name':'ffxiv-super-launcher','version':a.version,'main':'main.cjs','private':True}),encoding='utf-8')
     (bundle/'frontend-package.json').write_text(json.dumps({'version':a.version,'frontend':'electron','protocol':5}),encoding='utf-8')
-    (bundle/'distribution.json').write_text(json.dumps({'Kind':'windows-portable','Channel':'stable','LocalTest':False,
+    (bundle/'distribution.json').write_text(json.dumps({'Kind':'windows-folder','Channel':'preview' if '-' in a.version else 'stable','LocalTest':'-' in a.version,
         'PublicKey':(repo/'packaging/linux/appimage-public.pem').read_text()}),encoding='utf-8')
     for name in ['README.md','README.zh-CN.md','README.zh-TW.md','README.ja.md','LICENSE']:
         shutil.copy2(repo/name,bundle/name)
@@ -99,20 +104,20 @@ def main():
     (bundle/'WINDOWS-RUNTIME.json').write_text(json.dumps({'electronVersion':ELECTRON_VERSION,'electronArchiveSha256':ELECTRON_SHA256,
         'electronArchiveUrl':f'https://github.com/electron/electron/releases/download/v{ELECTRON_VERSION}/electron-v{ELECTRON_VERSION}-win32-x64.zip',
         'xdeltaSource':'src/native/xdelta3','xdeltaSha256':digest(xdelta),'steamApiSha256':digest(bundle/'steam_api64.dll')},indent=2),encoding='utf-8')
-    # Native AOT avoids .NET bundle extraction into the user's global temp folder.
-    # The embedded payload is extracted only beside the outer launcher EXE.
-    payload=output/'payload.zip'
-    with zipfile.ZipFile(payload,'x',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as archive:
-        for file in sorted(bundle.rglob('*')):
-            if file.is_file():archive.write(file,file.relative_to(bundle).as_posix())
-    host=output/'host'
+    # A conventional self-contained apphost is cross-publishable and does not self-extract.
     subprocess.run([dotnet,'publish',str(repo/'src/XIVLauncher.Windows.Portable/XIVLauncher.Windows.Portable.csproj'),
-        '-c','Release','-r','win-x64','--self-contained','true','-o',str(host),'-p:PublishAot=true',
-        '-p:Version='+a.version,'-p:PortablePayload='+str(payload),'-p:NuGetAudit=false','-m:1'],check=True)
-    executable=output/f'FFXIVSuperLauncher-{a.version}-win-x64.exe';shutil.copy2(host/'FFXIVSuperLauncher.exe',executable)
-    subprocess.run([str(executable),'--launcher-version'],check=True,timeout=30)
+        '-c','Release','-r','win-x64','--self-contained','true','-o',str(folder),'-p:PublishAot=false',
+        '-p:PublishSingleFile=false','-p:Version='+a.version,'-p:NuGetAudit=false','-m:1'],check=True)
+    files = {f.relative_to(folder).as_posix():digest(f) for f in sorted(folder.rglob('*')) if f.is_file()}
+    (folder/'windows-package.json').write_text(json.dumps({'Version':a.version,'Files':files},indent=2),encoding='utf-8')
+    archive = output/f'FFXIVSuperLauncher-{a.version}-win-x64.zip'
+    with zipfile.ZipFile(archive,'x',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as zip:
+        for file in sorted(folder.rglob('*')):
+            if file.is_file(): zip.write(file,file.relative_to(output).as_posix())
+    if os.name == 'nt':
+        subprocess.run([str(folder/'FFXIVSuperLauncher.exe'),'--launcher-version'],check=True,timeout=30)
     source.source_archive(repo,output,a.version)
-    (output/'SHA256SUMS').write_text(''.join(f'{digest(f)}  {f.name}\n' for f in [executable,output/f'xivlauncher-super-{a.version}-source.tar.gz']),encoding='utf-8')
-    print(executable)
+    (output/'SHA256SUMS').write_text(''.join(f'{digest(f)}  {f.name}\n' for f in [archive,output/f'xivlauncher-super-{a.version}-source.tar.gz']),encoding='utf-8')
+    print(archive)
 
 if __name__=='__main__':main()

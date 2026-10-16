@@ -24,8 +24,17 @@ internal sealed class WindowsUpdateInstaller : IUpdateInstaller
         Process? helper = null;
         try
         {
-            var executable = Path.Combine(directory, "update-helper.exe");
-            File.Copy(LauncherPath, executable);
+            // The helper is a self-contained folder application, not a copied single EXE.
+            var root = Path.GetDirectoryName(LauncherPath)!;
+            using var inventory = File.OpenRead(Path.Combine(root, WindowsZipPackage.Inventory));
+            var manifest = WindowsZipPackage.ReadManifest(inventory);
+            foreach (var name in manifest.Files.Keys.Where(name => !name.Contains('/')))
+            {
+                var source = name == "FFXIVSuperLauncher.exe" ? LauncherPath : Path.Combine(root, name);
+                WindowsUpdateJob.CheckParents(root, source);
+                File.Copy(source, Path.Combine(directory, name));
+            }
+            var executable = Path.Combine(directory, "FFXIVSuperLauncher.exe");
             var request = Path.Combine(directory, "job.json");
             File.WriteAllText(request, JsonSerializer.Serialize(job, WindowsUpdateJsonContext.Default.WindowsUpdateJob));
             var start = new ProcessStartInfo(executable) { UseShellExecute = false, CreateNoWindow = true, WorkingDirectory = directory };
