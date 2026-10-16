@@ -20,6 +20,10 @@
 
 # FFXIV Super Launcher
 
+## Version 2.1.2
+
+Settings, logs, Electron and internal-browser data are now stored beside the AppImage. Old data is not moved automatically, and Proton data paths saved in existing settings are preserved. Before upgrading, read the [2.1.2 release notes](https://github.com/ImperatorVienna/FFXIVSuperLauncher/blob/main/docs/releases/2.1.2.en.md) and relocate settings and the entire `compatdata` folder if needed. A Windows version is planned for the next release; this release remains Linux-only.
+
 A community launcher for FINAL FANTASY XIV (hereafter FFXIV) on **Linux**, using **Proton** to run the game. It supports the **China, Traditional Chinese, and Global** game clients.
 
 Maintained by **[ImperatorVienna](https://github.com/ImperatorVienna)**, this project continues development based on the source code and experience of [XIVLauncher](https://github.com/goatcorp/FFXIVQuickLauncher), [XIVLauncherCN](https://github.com/ottercorp/FFXIVQuickLauncher), and [XIVLauncherCN (Soil)](https://github.com/AtmoOmen/FFXIVQuickLauncher), with reference to [XIVTCLauncher](https://github.com/cycleapple/XIVTCLauncher) for the Traditional Chinese login protocol and feature design. It is an independently maintained community derivative, not an official release of Square Enix, Shengqu Games, or USERJOY, nor maintained or endorsed by those upstream projects. The original authors' copyright and license notices are retained.
@@ -47,7 +51,7 @@ Before using a third-party launcher, Dalamud, or plugins, read the game's applic
 
 ## Project highlights
 
-- **Built specifically for Linux**: only x86_64 Linux is maintained; no Windows, macOS, ARM, or 32-bit x86 versions are provided. AppImage distribution facilitates deployment on Linux desktops, including immutable systems; consult release notes for specific compatibility information.
+- **Linux distribution**: an x86_64 Linux AppImage is currently available, with a Windows version planned for the next release. No macOS, ARM, or 32-bit x86 version is provided. AppImage distribution facilitates deployment on Linux desktops, including immutable systems; consult release notes for specific compatibility information.
 - **Uses Proton for compatibility**: removes the bundled Wine + DXVK approach of XIVLauncher and XIVLauncherCN and calls an installed Proton instead. The launcher automatically discovers installed Proton versions and has been verified on real hardware using CachyOS's proton-cachyos-slr.
 - **Unified management of game regions**: switch between China, Traditional Chinese, and Global logins in one launcher, with separate account, client, and plugin data. Each game region's Dalamud application is downloaded on demand; the runtime package may include shared or preinstalled helper components.
 - **Plugin management outside the game**: change plugin enablement states, select plugins to update, or synchronize settings between game regions without entering the game.
@@ -112,7 +116,7 @@ When this option is disabled, Global uses the shared environment settings used b
 
 ## Updates
 
-Automatic update checks are enabled by default. The launcher checks for stable releases after initial setup is complete and on each subsequent launch. You can turn off “Automatically check for updates” to the right of “Add to applications menu” in “About”; regardless of the toggle state, you can click “Check for updates” beside the version in “About”. There is no update-channel selector. AppImage updates require user confirmation. After the complete download, the manifest signature and SHA256 are verified before the original file is replaced. The updated file is saved in the same directory with the new version number in its filename, and the old version is retained as `.previous`. Steam and application-menu entries launch through `~/.local/share/xivlauncher-super/appimage-launcher`. After manually moving or renaming the AppImage, double-click it once to refresh the path automatically; Steam and application-menu entries will then continue to work. If there are multiple copies, the last one launched is used. Exit the game before updating. After installation, the interface opens automatically using the new AppImage’s absolute path, independently of application-menu registration. Accounts and settings are stored separately, and failed background update checks do not block game login.
+Automatic update checks are enabled by default. The launcher checks for stable releases after initial setup is complete and on each subsequent launch. You can turn off “Automatically check for updates” to the right of “Add to applications menu” in “About”; regardless of the toggle state, you can click “Check for updates” beside the version in “About”. There is no update-channel selector. AppImage updates require user confirmation. After the complete download, the manifest signature and SHA256 are verified before the original file is replaced. The updated file is saved in the same directory with the new version number in its filename, and the old version is retained as `.previous`. Steam and application-menu entries launch through `<AppImage directory>/appimage-launcher`. After manually moving or renaming the AppImage, double-click it once to refresh the path automatically; Steam and application-menu entries will then continue to work. If there are multiple copies, the last one launched is used. Exit the game before updating. After installation, the interface opens automatically using the new AppImage’s absolute path, independently of application-menu registration. Accounts and settings are stored separately, and failed background update checks do not block game login.
 
 Run an older AppImage to roll back the launcher, then turn off automatic update checks. Whether an older version supports this toggle depends on that version. When multiple AppImages share the same launch entry, the last file launched is used.
 
@@ -162,7 +166,7 @@ Startup also checks session records and known temporary files, reclaiming record
 The default data directory is:
 
 ```text
-~/.local/share/xivlauncher-super/
+<AppImage directory>/
 ├── ffxiv_cn/     # China data
 ├── ffxiv_tc/     # Traditional Chinese data
 ├── ffxiv/        # Global data
@@ -170,7 +174,7 @@ The default data directory is:
 └── logs/        # Diagnostic logs
 ```
 
-The application honors `XDG_DATA_HOME`. Shared Steam and Proton settings are stored in the launcher data directory; account and Dalamud data are isolated by game region.
+Application data is stored beside the AppImage; only the application-menu entry honors `XDG_DATA_HOME`. Shared Steam and Proton settings are stored in the launcher data directory; account and Dalamud data are isolated by game region.
 
 Credentials are stored only as plaintext in `credentials.json` inside each game-region directory. Passwords, 2FA secrets, and quick-login credentials are not encrypted. Credential files created by the launcher allow only the current user to read and write them; do not upload or share these files.
 

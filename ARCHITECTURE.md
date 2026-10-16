@@ -59,3 +59,11 @@ PluginUpdates 只读取 JSON，不加载插件 DLL。通过 InstalledFromUrl 的
 验证视图的生命周期由 Electron 主进程监督。登录取消、结束、错误、网页进程崩溃、主页面重载和应用退出都会释放相应资源；主页面重载还会取消该页面发起的未完成操作。关闭清理逐项执行，异常不跳过后续清理。Steam 模式下，已启动游戏的跟踪进程可以按设计继续等待游戏退出；官方网页窗口是用户主动打开的独立功能，二者都不应被误判为验证码残留进程。
 
 功能对应及回归范围见 [frontend/CLEANUP-AUDIT.md](frontend/CLEANUP-AUDIT.md)。
+
+## Linux portable storage and platform interfaces
+
+- Packaged Linux data lives beside the external AppImage, not inside its temporary mount. Explicit development profiles remain isolated.
+- `Platforms/PlatformServices` supplies Linux storage, game runtime, update package and installer adapters. Login, credentials, plugins, patch validation and IPC use shared interfaces.
+- `CompatibilityView.DetectedSteamRoot` is a read-only discovery suggestion. Initial setup saves an unambiguous suggestion through the existing settings operation, preserving explicit user paths.
+- Electron and the official browser configure their writable paths before sessions are created. Application-menu entries remain in the system XDG applications directory.
+- This public release contains Linux adapters only. Windows implementation work remains separate until its release is ready.

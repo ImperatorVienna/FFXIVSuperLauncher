@@ -79,8 +79,7 @@ public static class RegionDataSync
                 {
                     entry.OriginalText = File.Exists(entry.Target) ? File.ReadAllText(entry.Target) : null;
                     var merged = MergeRepositories(File.ReadAllText(snapshot), entry.OriginalText);
-                    using var output = new FileStream(entry.Prepared, new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write,
-                        UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite });
+                    using var output = Platforms.PlatformServices.Storage.OpenPrivateFile(entry.Prepared, FileMode.CreateNew, FileAccess.Write);
                     using var writer = new StreamWriter(output); writer.Write(merged);
                 }
             }
@@ -192,17 +191,14 @@ public static class RegionDataSync
         else
         {
             using var input = new FileStream(source, FileMode.Open, FileAccess.Read, FileShare.Read);
-            using var output = new FileStream(target, new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write,
-                UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite });
-            if ((File.GetUnixFileMode(source) & (UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute)) != 0)
-                File.SetUnixFileMode(target, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+            using var output = Platforms.PlatformServices.Storage.OpenPrivateFile(target, FileMode.CreateNew, FileAccess.Write);
+            Platforms.PlatformServices.Storage.PreserveExecutable(source, target);
             var buffer = new byte[128 * 1024];
             int read;
             while ((read = input.Read(buffer)) != 0) { token.ThrowIfCancellationRequested(); output.Write(buffer, 0, read); }
         }
     }
-    private static void PrivateDirectory(string path) => Directory.CreateDirectory(path,
-        UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+    private static void PrivateDirectory(string path) => Platforms.PlatformServices.Storage.CreatePrivateDirectory(path);
     private static void Move(string from, string to, bool directory)
     {
         if (directory) Directory.Move(from, to); else File.Move(from, to);

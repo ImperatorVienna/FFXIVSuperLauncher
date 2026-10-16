@@ -20,6 +20,10 @@
 
 # FFXIV Super Launcher
 
+## 2.1.2 更新
+
+配置、日志、Electron 与内置浏览器数据现在保存在 AppImage 所在目录下。旧数据不会自动搬迁，已有配置中的 Proton 数据目录仍沿用原路径。升级前请阅读 [2.1.2 更新说明](https://github.com/ImperatorVienna/FFXIVSuperLauncher/blob/main/docs/releases/2.1.2.zh-CN.md)，按需迁移配置和整个 `compatdata` 文件夹。下一版本计划提供 Windows 版；本次仍仅发行 Linux 版。
+
 面向 **Linux** 平台，通过 **Proton** 运行游戏的社区版 FINAL FANTASY XIV（以下简称 FFXIV）启动器，支持**中国区、繁中区和国际区**游戏客户端。
 
 本项目由 **[ImperatorVienna](https://github.com/ImperatorVienna)** 维护，基于 [XIVLauncher](https://github.com/goatcorp/FFXIVQuickLauncher)、[XIVLauncherCN](https://github.com/ottercorp/FFXIVQuickLauncher) 和 [XIVLauncherCN (Soil)](https://github.com/AtmoOmen/FFXIVQuickLauncher) 的源码与经验继续开发，并参考 [XIVTCLauncher](https://github.com/cycleapple/XIVTCLauncher) 的繁中区登录协议与功能设计。它是独立维护的社区衍生项目，不是 Square Enix、Shengqu Games、USERJOY 的官方发行版本，也并非由上述上游项目维护或背书。原作者的版权与许可证声明予以保留。
@@ -47,7 +51,7 @@
 
 ## 特色
 
-- **专为 Linux 平台打造**：仅维护 x86_64 Linux，不提供 Windows、macOS、ARM 或 32 位 x86 版本。采用 AppImage 分发，便于在包括不可变系统在内的 Linux 桌面上部署；具体兼容情况以发行说明为准。
+- **Linux 发行版**：当前提供 x86_64 Linux AppImage，下一版本计划提供 Windows 版；不提供 macOS、ARM 或 32 位 x86 版本。 采用 AppImage 分发，便于在包括不可变系统在内的 Linux 桌面上部署；具体兼容情况以发行说明为准。
 - **使用 Proton 兼容性方案**：移除了 XIVLauncher 和 XIVLauncherCN 的自带 Wine + DXVK 方案，改为调用已安装的 Proton。启动器可自动发现已安装的 Proton，已使用 CachyOS 的 proton-cachyos-slr 进行实机验证。
 - **各区服统一管理**：同一个启动器即可切换登录中国区、繁中区和国际区，各自保存账户、客户端与插件数据，各游戏区服的 Dalamud 主程序按需下载；运行包中可包含共用或预置的辅助组件。
 - **游戏外管理插件**：无需进入游戏即可调整插件启用状态、选择更新插件，或在游戏区服之间同步设置。
@@ -112,7 +116,7 @@
 
 ## 更新方式
 
-自动检查更新默认开启，首次配置完成后检查稳定版，之后每次启动也会检查。可在“关于”的“添加到应用菜单”右侧关闭“自动检查更新”；无论开关状态如何，均可点击“关于”版本号旁的“检查更新”；不提供更新通道选择。AppImage 更新须经用户确认，完整下载后验证清单签名及 SHA256，再替换原文件。更新文件保存在原目录，文件名使用新版版本号，旧版保留为 `.previous`。Steam 和应用菜单通过 `~/.local/share/xivlauncher-super/appimage-launcher` 启动。手动移动或重命名 AppImage 后，请双击运行一次，以自动刷新路径；之后即可继续从 Steam 或应用菜单启动。有多个副本时，以最后运行的文件为准。请退出游戏后更新。安装完成后会直接通过新版 AppImage 的绝对路径自动打开界面，不依赖应用菜单注册。账户和设置独立保存，后台检查失败不阻塞游戏登录。
+自动检查更新默认开启，首次配置完成后检查稳定版，之后每次启动也会检查。可在“关于”的“添加到应用菜单”右侧关闭“自动检查更新”；无论开关状态如何，均可点击“关于”版本号旁的“检查更新”；不提供更新通道选择。AppImage 更新须经用户确认，完整下载后验证清单签名及 SHA256，再替换原文件。更新文件保存在原目录，文件名使用新版版本号，旧版保留为 `.previous`。Steam 和应用菜单通过 `<AppImage directory>/appimage-launcher` 启动。手动移动或重命名 AppImage 后，请双击运行一次，以自动刷新路径；之后即可继续从 Steam 或应用菜单启动。有多个副本时，以最后运行的文件为准。请退出游戏后更新。安装完成后会直接通过新版 AppImage 的绝对路径自动打开界面，不依赖应用菜单注册。账户和设置独立保存，后台检查失败不阻塞游戏登录。
 
 运行旧 AppImage 可回滚启动器，回滚后请关闭自动检查更新；旧版本是否支持该开关取决于该版本自身。多个 AppImage 共用入口时，以最后运行的文件为准。
 
@@ -162,7 +166,7 @@ Dalamud 更新连接超时时，可以选择使用现有可用版本继续启动
 默认数据目录为：
 
 ```text
-~/.local/share/xivlauncher-super/
+<AppImage directory>/
 ├── ffxiv_cn/     # 中国区数据
 ├── ffxiv_tc/     # 繁中区数据
 ├── ffxiv/        # 国际区数据
@@ -170,7 +174,7 @@ Dalamud 更新连接超时时，可以选择使用现有可用版本继续启动
 └── logs/        # 诊断日志
 ```
 
-程序遵循 `XDG_DATA_HOME`。Steam 与 Proton 等共用设置保存在启动器数据目录中，账户与 Dalamud 数据按游戏区服隔离。
+程序数据保存在 AppImage 所在目录下；仅应用菜单入口遵循 `XDG_DATA_HOME`。Steam 与 Proton 等共用设置保存在启动器数据目录中，账户与 Dalamud 数据按游戏区服隔离。
 
 凭据仅以明文保存在各游戏区服目录下的 `credentials.json` 中，密码、2FA 密钥和快捷登录凭据均不加密。启动器创建的凭据文件仅允许当前用户读写，请勿上传或分享。
 

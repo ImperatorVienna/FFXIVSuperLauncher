@@ -2,20 +2,22 @@
 
 **English** | [简体中文](LINUX.zh-CN.md) | [繁體中文](LINUX.zh-TW.md)
 
-The current stable release is 1.0.0. It supports only x86_64 Linux and runs the game through Proton. For installation, account login and features, see the [README](README.md); links to other languages appear at the top of that document.
+The current stable release is 2.1.2. It supports only x86_64 Linux and runs the game through Proton. For installation, account login and features, see the [README](README.md); links to other languages appear at the top of that document.
+
+Settings, logs, Electron and internal-browser data are now stored beside the AppImage. Old data is not moved automatically, and Proton data paths saved in existing settings are preserved. Before upgrading, read the [2.1.2 release notes](https://github.com/ImperatorVienna/FFXIVSuperLauncher/blob/main/docs/releases/2.1.2.en.md) and relocate settings and the entire `compatdata` folder if needed. A Windows version is planned for the next release; this release remains Linux-only.
 
 ## Installation and updates
 
 - AppImage is the release format and includes the .NET and Electron runtime components.
 - When the AppImage runs directly, the launcher first creates any missing default configuration and refreshes the fixed launch script and application menu entry, then checks for updates.
-- The fixed entry defaults to `~/.local/share/xivlauncher-super/appimage-launcher`; the application menu file defaults to `~/.local/share/applications/xivlauncher-super.desktop`. Both respect `XDG_DATA_HOME`.
+- The fixed entry defaults to `<AppImage directory>/appimage-launcher`; the application menu file defaults to `~/.local/share/applications/xivlauncher-super.desktop`. Only the application-menu entry respects `XDG_DATA_HOME`.
 - After moving or renaming the AppImage, run it directly once to refresh the recorded path. “Add to application menu” in “About” manually recreates the entry.
 - The launcher automatically checks for stable releases. After the user confirms, it downloads and verifies the signature, size and SHA256, then installs the new version and reopens the interface. The old package is retained as `.previous`.
-- The Release contains the AppImage, `appimage-update.json` and `appimage-update.sig`. The corresponding source archive, dependency sources and checksum files for 1.0.0 are in [release-materials/1.0.0](release-materials/1.0.0).
+- The Release contains the AppImage, `appimage-update.json` and `appimage-update.sig`. The corresponding source archive, dependency sources and checksum files for 2.1.2 are in [release-materials/2.1.2](release-materials/2.1.2).
 
 ## Features and data separation
 
-The internal identifiers for the China, Traditional Chinese and Global regions are `ffxiv_cn`, `ffxiv_tc` and `ffxiv`, respectively. The default data root is `~/.local/share/xivlauncher-super/`, respecting `XDG_DATA_HOME`.
+The internal identifiers for the China, Traditional Chinese and Global regions are `ffxiv_cn`, `ffxiv_tc` and `ffxiv`, respectively. The default data root is `<AppImage directory>/`.
 
 Steam, Proton and the default pfx configuration are shared; each game region manages its own client, accounts, Dalamud and plugin data. Global can optionally use an existing Global (Steam) pfx. See “Settings and credentials” in the README for credential storage and paths.
 
@@ -29,7 +31,7 @@ The Electron frontend now connects the existing features, including cross-region
 
 Requires Node.js 24 or later, the .NET 10 SDK, a C compiler, Python 3, Git, and `7z`. Building and packaging may require downloading NuGet dependencies, pinned helper components, and corresponding source code.
 
-The complete 1.0.0 launcher source is in this repository. Original source archives, corresponding sources for bundled dependencies, and checksum files are retained in [release-materials/1.0.0](release-materials/1.0.0). Release downloads contain only the AppImage and the two small files required for signed updates.
+The complete 2.1.2 launcher source is in this repository. Original source archives, corresponding sources for bundled dependencies, and checksum files are retained in [release-materials/2.1.2](release-materials/2.1.2). Release downloads include the AppImage, signed update metadata, checksums and the launcher source archive.
 
 Run from the repository root:
 

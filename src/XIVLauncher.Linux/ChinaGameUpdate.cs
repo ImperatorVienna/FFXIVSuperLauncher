@@ -13,7 +13,7 @@ internal static class ChinaGameUpdate
         var check = await XIVLauncher.GamePatchV3.Update.GameUpdater.Check(game, false, token);
         if (check.NeedsUpdate && check.UpdatePlan == null) throw new IOException("游戏更新计划缺失。");
         if (!check.NeedsUpdate) { progress("游戏已是最新版本。"); return; }
-        var nativeWorker = Path.Combine(AppContext.BaseDirectory, "Tools/xdelta3");
+        var nativeWorker = Path.Combine(AppContext.BaseDirectory, OperatingSystem.IsWindows() ? "Tools/xdelta3.exe" : "Tools/xdelta3");
         if (!File.Exists(nativeWorker)) throw new FileNotFoundException(Localization.T("缺少随包提供的 Linux 差分工具，请重新安装启动器。"), nativeWorker);
         var versionBackups = Enum.GetValues<Repository>().Select(repo => repo.GetVerFile(game).FullName)
             .Distinct().Where(File.Exists).ToDictionary(path => path, File.ReadAllBytes);

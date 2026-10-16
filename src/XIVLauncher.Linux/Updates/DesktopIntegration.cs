@@ -4,11 +4,13 @@ internal static class DesktopIntegration
     public static void PrepareAppImageStartup(string image, string dataRoot, string icon)
     {
         // Refresh creates default configuration first and never overwrites existing preferences.
-        var entry = AppImageEntry.Refresh(image, Path.Combine(dataRoot, "xivlauncher-super"));
+        var entry = AppImageEntry.Refresh(image, Path.GetDirectoryName(Path.GetFullPath(image))!);
         Install(entry, dataRoot, icon);
     }
 
-    public static string DataRoot => Path.GetDirectoryName(LinuxSettings.DataRoot)!;
+    // Desktop entries still belong in XDG applications, independently of portable data.
+    public static string DataRoot => Environment.GetEnvironmentVariable("XDG_DATA_HOME") is { Length: > 0 } xdg && Path.IsPathFullyQualified(xdg)
+        ? xdg : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local/share");
 
     public static Task<string[]> RefreshCachesAsync() => Task.Run(async () =>
     {

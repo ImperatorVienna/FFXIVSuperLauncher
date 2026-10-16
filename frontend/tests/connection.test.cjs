@@ -22,7 +22,8 @@ async function noBackend(query,bridge) {
   const window={launcherBridge:bridge,previewI18n:{t:value=>value,apply(){},languages:{English:'en'}}};
   host.ownerDocument=document;
   vm.runInNewContext(await readFile(path.join(__dirname,'../../prototypes/electron-ui/log-view.js'),'utf8'),{window,document});
-  vm.runInNewContext(await readFile(path.join(__dirname,'../../prototypes/electron-ui/connection.js'),'utf8'),
+  vm.runInNewContext(await readFile(path.join(__dirname,'../../prototypes/electron-ui/ui-state.js'),'utf8'),{window,document});
+ vm.runInNewContext(await readFile(path.join(__dirname,'../../prototypes/electron-ui/connection.js'),'utf8'),
     {window,document,URL,location:{href:'file:///index.html'+query}});
   await window.frontendConnection.start(()=>assert.fail('Unexpected snapshot'),error=>errors.push(error));
   return {document,buttons,errors};
@@ -60,7 +61,8 @@ async function operationHarness(recovery=false){
   const window={launcherBridge:bridge,previewI18n:{t:v=>v,apply(){},languages:{English:'en'}},
     createLogView:()=>({lines:()=>[],update:lines=>updates.push(lines),clear(){}}),
     createCompatibilityPage:({start})=>{startTask=start;return {sync(){renders++;},completed(){}};},addEventListener(){}};
-  vm.runInNewContext(await readFile(path.join(__dirname,'../../prototypes/electron-ui/connection.js'),'utf8'),{window,document,URL,location:{href:'file:///index.html?integration=1'},
+  vm.runInNewContext(await readFile(path.join(__dirname,'../../prototypes/electron-ui/ui-state.js'),'utf8'),{window,document});
+ vm.runInNewContext(await readFile(path.join(__dirname,'../../prototypes/electron-ui/connection.js'),'utf8'),{window,document,URL,location:{href:'file:///index.html?integration=1'},
     setTimeout:(fn,delay)=>{const id=++nextTimer;timers.set(id,{fn,delay});return id;},clearTimeout:id=>timers.delete(id)});
   await window.frontendConnection.start(()=>{},()=>{});
   return {start:()=>startTask({}),timers,calls,updates,renders:()=>renders,polls:()=>polls,state:state=>{value={...value,...state};},
@@ -91,6 +93,7 @@ test('plugin rendering and account read failures cannot prevent setup, About or 
   createCompatibilityPage:()=>({sync(){calls.push('compatibility')}}),
   createAboutPage:()=>({sync(){calls.push('about')},start(){calls.push('about.start')}}),
   createSetupWizard:()=>({start(){calls.push('setup')}})};
+ vm.runInNewContext(await readFile(path.join(__dirname,'../../prototypes/electron-ui/ui-state.js'),'utf8'),{window,document});
  vm.runInNewContext(await readFile(path.join(__dirname,'../../prototypes/electron-ui/connection.js'),'utf8'),{window,document,URL,location:{href:'file:///index.html?integration=1'}});
  await window.frontendConnection.start(()=>{},error=>errors.push(error));
  assert.ok(calls.includes('compatibility'));assert.ok(calls.includes('about.start'));assert.ok(calls.includes('setup'));

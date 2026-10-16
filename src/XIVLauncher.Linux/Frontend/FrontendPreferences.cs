@@ -15,7 +15,7 @@ internal sealed class FrontendPreferences(string root, Action? ensureGameIdle = 
         return new
         {
             protocolVersion=5,launcherVersion=typeof(FrontendHost).Assembly.GetName().Version?.ToString(3),
-            capabilities=new[]{"preferences.language","preferences.region","preferences.paths","compatibility","accounts","launch","game-update","official-news","official-browser","plugins","plugin-sync","dalamud-update","travel","setup","about","launcher-update"},
+            capabilities=Platforms.PlatformServices.Capabilities.Features,
             isAppImage=new FrontendApplication(root).IsAppImage,setupComplete=settings.SetupComplete,autoCheckUpdates=settings.AutoCheckUpdates,language=settings.Language,selectedRegion=settings.SelectedRegion,protonScript=settings.ProtonScript,
             regions=LinuxSettings.Regions.Select(region=>
             {

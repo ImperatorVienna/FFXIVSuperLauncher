@@ -104,8 +104,10 @@ window.frontendConnection = (() => {
     }
     const fields=new Set(['ui-language','region','client-language','cdkey','eu-language','login-name','auto-otp','steam-account','free-trial','enable-dalamud','no-plugins','china-area','credential-account','credential-name','credential-password','credential-secret']);
     for(const field of document.querySelectorAll('#page input,#page select')) {
-      if(field.closest('[data-compatibility-ui],[data-about-ui]'))continue;
-      field.disabled=!(editable&&(fields.has(field.id)||field.dataset.clientPath));
+      // Each page controller owns its fields. Do not disable unrelated controls
+      // that its unchanged-state render cache will intentionally leave intact.
+      if(!fields.has(field.id)&&!field.dataset.clientPath&&field.id!=='otp')continue;
+      field.disabled=!editable;
       if(field.id==='otp')field.disabled=!active()||replying||view?.state!=='running';
       if(field.id.startsWith('credential-')&&field.id!=='credential-account')field.disabled ||= !editor||editor.loading||editor.readFailed;
     }
@@ -124,7 +126,7 @@ window.frontendConnection = (() => {
     if($('#credential-name'))renderEditor();
     if($('#verification')&&view&&(traits().verification))renderOperation();
     const count=logView.lines().length;if($('#log-count'))$('#log-count').textContent=t(count===1?'1 条':'{count} 条',{count});
-    official?.sync(snapshot);official?.present();plugins?.sync();compatibility?.sync();travel?.present();about?.sync();
+    official?.sync(snapshot);official?.present();plugins?.sync();if(window.uiState.supports(snapshot,"compatibility"))compatibility?.sync();travel?.present();about?.sync();
   }
   function redraw() {if(document.hidden){pendingRedraw=true;return;}pendingRedraw=false;if(snapshot)receive(snapshot);else present();}
   async function reloadAccounts(reset=false) {
@@ -270,11 +272,11 @@ window.frontendConnection = (() => {
     // Cancellation must interrupt initialization rather than queue behind a CDP wait.
     if(!live){if(captchaLayoutKey!=='null'){captchaLayoutKey='null';try{await bridge.captchaLayout(null);}catch{report(t('网页验证显示失败，请取消后重试。'));}}return;}
     if(captchaLayoutBusy){captchaLayoutPending=true;return;}
-    const slot=$('#captcha-slot');let bounds=null;
+    const slot=$('#captcha-slot');let layout=null;
     if(live&&!document.hidden&&slot&&currentPage()==='0'&&!document.querySelector('dialog[open],.logs[open],select:open,[popover]:popover-open')){
-      const r=slot.getBoundingClientRect();if(r.width>0&&r.height>0)bounds={x:Math.max(0,r.x),y:Math.max(0,r.y),width:r.width,height:r.height};
+      layout=window.uiState.clippedBounds(slot);
     }
-    const request=live?{operationId:operation,bounds}:null;
+    const request=live?{operationId:operation,bounds:layout?.bounds??null,clip:layout?.clip??null}:null;
     const key=live?JSON.stringify([view.webVerificationId,view.challenge?.kind,request]):'null';
     if(key===captchaLayoutKey)return;captchaLayoutBusy=true;captchaLayoutKey=key;
     try{await bridge.captchaLayout(request);}catch{report(t('网页验证显示失败，请取消后重试。'));}

@@ -117,7 +117,7 @@ public static class OfflinePluginManager
         }
         var backup = Path.Combine(root, "plugin-state-backups", DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N"), region);
         SafePath(Path.GetFullPath(root), backup);
-        Directory.CreateDirectory(backup, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        Platforms.PlatformServices.Storage.CreatePrivateDirectory(backup);
         if (original != null) WritePrivate(Path.Combine(backup, "dalamudConfig.json"), original);
         var temp = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try
@@ -195,8 +195,7 @@ public static class OfflinePluginManager
     }
     private static void WritePrivate(string path, string content)
     {
-        using var stream = new FileStream(path, new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write,
-            UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite });
+        using var stream = Platforms.PlatformServices.Storage.OpenPrivateFile(path, FileMode.CreateNew, FileAccess.Write);
         using var writer = new StreamWriter(stream); writer.Write(content);
     }
 }

@@ -36,8 +36,7 @@ public sealed class SessionDiagnostics(string root)
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
-                using var stream = new FileStream(FilePath, new FileStreamOptions { Mode = FileMode.Append, Access = FileAccess.Write, Share = FileShare.Read,
-                    UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite });
+                using var stream = Platforms.PlatformServices.Storage.OpenPrivateFile(FilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
                 using var writer = new StreamWriter(stream);
                 writer.WriteLine($"[{DateTimeOffset.Now:O}] [{level}] [{region}] {message}");
             }

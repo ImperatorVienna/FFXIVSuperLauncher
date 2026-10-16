@@ -1,3 +1,4 @@
+class ClipView {addChildView(view){this.child=view;}setBounds(bounds){this.bounds=bounds;}}
 'use strict';
 const {test}=require('node:test');const assert=require('node:assert/strict');const vm=require('node:vm');const fs=require('node:fs');const {EventEmitter}=require('node:events');
 async function start(packaged=true,verification=null,release=false){
@@ -6,14 +7,14 @@ async function start(packaged=true,verification=null,release=false){
  class Window extends EventEmitter{constructor(options){super();this.options=options;this.webContents=new EventEmitter();this.webContents.mainFrame={url:''};this.webContents.isDestroyed=()=>false;this.webContents.getZoomFactor=()=>1;this.webContents.setZoomFactor=()=>{};this.webContents.setWindowOpenHandler=fn=>this.navigation=fn;current=this;calls.push('window');}loadFile(file,{query}){this.webContents.mainFrame.url=require('node:url').pathToFileURL(file).href+'?integration='+query.integration;return Promise.resolve();}getContentSize(){return [1280,800]}isDestroyed(){return false}maximize(){}isMinimized(){return false}focus(){}}
  class Backend{constructor(executable,args){calls.push({executable,args});}async request(method){calls.push(method);if(method==='system.initialize')return {windowPlacement:null,setupComplete:false};if(method==='operations.poll')return {state:'completed',launched:release,result:{exitForUpdate:true}};if(method==='session.release')return {ready:release};return {saved:true};}async close(){calls.push('backend.close')}}
  const electron={app,BrowserWindow:Window,ipcMain:{handle:(name,fn)=>handlers.set(name,fn)},Menu:{setApplicationMenu(){}},session:{defaultSession:{setPermissionRequestHandler(){},setPermissionCheckHandler(){},on(){}}},dialog:{},screen:{getPrimaryDisplay:()=>({workArea:{x:0,y:0,width:1280,height:800}}),getAllDisplays:()=>[]}};
- const mocks={'./session-handoff.cjs':{handoff:async()=>calls.push('handoff')},'electron':electron,'node:fs':{mkdirSync(){},existsSync:()=>packaged},'./captcha-view.cjs':{createCaptchaView:()=>verification||({update:async()=>{},close:async()=>{}})},'./backend-client.cjs':{BackendClient:Backend},'./launcher-entry.cjs':{writeDevelopmentEntry:async()=>calls.push('entry')},'./steam-session.cjs':{publishSession:async()=>{calls.push('session');return async()=>calls.push('remove-session')}},'./window-state.cjs':{...require('../window-state.cjs'),observePlacement:()=>({flush:async()=>calls.push('flush'),stop(){},minimize:()=>calls.push('minimize')})}};
+ const mocks={'./portable-electron-paths.cjs':{configurePaths:()=>{}},'./session-handoff.cjs':{handoff:async()=>calls.push('handoff')},'electron':electron,'node:fs':{mkdirSync(){},existsSync:()=>packaged},'./captcha-view.cjs':{createCaptchaView:()=>verification||({update:async()=>{},close:async()=>{}})},'./backend-client.cjs':{BackendClient:Backend},'./launcher-entry.cjs':{writeDevelopmentEntry:async()=>calls.push('entry')},'./steam-session.cjs':{publishSession:async()=>{calls.push('session');return async()=>calls.push('remove-session')}},'./window-state.cjs':{...require('../window-state.cjs'),observePlacement:()=>({flush:async()=>calls.push('flush'),stop(){},minimize:()=>calls.push('minimize')})}};
  vm.runInNewContext(fs.readFileSync(require.resolve('../main.cjs'),'utf8'),{require:name=>mocks[name]||require(name.startsWith('./')?'../'+name.slice(2):name),__dirname:'/fixture/frontend',console,process:{once(){},argv:['electron','--super-launcher'],env:{APPIMAGE:'/test/renamed.AppImage',FFXIV_BACKEND:'/stale/backend',FFXIV_ELECTRON:'/runtime/electron',FFXIV_FRONTEND_NODE:'/runtime/node',FFXIV_FRONTEND_DATA_DIR:'/isolated',...(release?{FFXIV_SESSION_DIRECTORY:'/private-session',FFXIV_SESSION_SUPERVISOR:'123'}:{})}}});
  await Promise.all(ready);
  return {calls,handlers,current,app,event:{sender:current.webContents,senderFrame:current.webContents.mainFrame}};
 }
 test('packaged startup creates configuration before windows and ignores stale inherited backend',async()=>{
  const {calls,handlers,current,event}=await start();
- assert.equal(calls[0].executable,'/fixture/xivlauncher-backend');assert.ok(calls[0].args.includes('/isolated/appimage-launcher'));
+ assert.equal(calls[0].executable,'/fixture/xivlauncher-backend');assert.ok(calls[0].args.includes('/test/appimage-launcher'));
  assert.ok(calls.indexOf('system.initialize')<calls.indexOf('session'));assert.ok(calls.indexOf('session')<calls.indexOf('window'));
  assert.equal(current.options.webPreferences.nodeIntegration,false);assert.equal(current.options.webPreferences.sandbox,true);
  assert.equal(handlers.has('launcher:system.initialize'),false);assert.equal(handlers.has('launcher:window.save'),false);
@@ -37,7 +38,7 @@ test('closing after a stalled verification releases the view, backend and owning
     c.setWindowOpenHandler=()=>{};c.loadURL=async()=>{};c.isDestroyed=()=>this.closed;c.close=()=>{this.closed=true};}
    setBounds(){}
   }
-  const verification=createCaptchaView({window:{contentView:{addChildView(){},removeChildView(){}},getContentSize:()=>[800,700]},
+  const verification=createCaptchaView({View:ClipView,window:{contentView:{addChildView(){},removeChildView(){}},getContentSize:()=>[800,700]},
    backend:{async request(method){if(method==='operations.poll')return {state:'running',webVerificationId:'test-id',challenge:{kind:'web-captcha'}};
     if(method==='captcha.page')return {url:'https://launcher.ffxiv.com.tw/index.html',binding:'synthetic-binding',html:'synthetic page'};return {};}},
    WebContentsView:View,session:{fromPartition:()=>({setPermissionRequestHandler(){},setPermissionCheckHandler(){},on(){}})},commandTimeout:5000});

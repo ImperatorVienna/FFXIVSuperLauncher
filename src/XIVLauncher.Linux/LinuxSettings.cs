@@ -51,16 +51,7 @@ public sealed class LinuxSettings
     [JsonIgnore] public string Account { get => Current.Account; set => Current.Account = value; }
     [JsonIgnore] public string AreaName { get => Current.AreaName; set => Current.AreaName = value; }
     [JsonIgnore] public bool EnableDalamud { get => Current.EnableDalamud; set => Current.EnableDalamud = value; }
-    public static string DataRoot
-    {
-        get
-        {
-            var root = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
-            if (string.IsNullOrEmpty(root) || !Path.IsPathRooted(root))
-                root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local/share");
-            return Path.Combine(root, "xivlauncher-super");
-        }
-    }
+    public static string DataRoot => Platforms.PlatformServices.Storage.DataRoot;
 
     public void EnsureRegionAvailable()
     {
@@ -70,15 +61,14 @@ public sealed class LinuxSettings
 
     internal static void EnsureCreated(string root)
     {
-        Directory.CreateDirectory(root, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
-        var path = Path.Combine(root, "linux-settings.json");
+        Platforms.PlatformServices.Storage.CreatePrivateDirectory(root);
+        var path = Path.Combine(root, Platforms.PlatformServices.Storage.SettingsFileName);
         if (File.Exists(path)) return;
         var initial = new LinuxSettings { Root = root, CompatibilityData = Path.Combine(root, "compatdata") };
         var temp = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try
         {
-            using (var stream = new FileStream(temp, new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write,
-                UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite }))
+            using (var stream = Platforms.PlatformServices.Storage.OpenPrivateFile(temp, FileMode.CreateNew, FileAccess.Write))
             using (var writer = new StreamWriter(stream)) writer.Write(JsonSerializer.Serialize(initial, JsonOptions));
             try { File.Move(temp, path, false); }
             catch (IOException) when (File.Exists(path)) { } // Another instance created it first.
@@ -89,7 +79,7 @@ public sealed class LinuxSettings
     public static LinuxSettings Load(string? dataRoot = null)
     {
         var root = dataRoot ?? DataRoot;
-        var path = Path.Combine(root, "linux-settings.json");
+        var path = Path.Combine(root, Platforms.PlatformServices.Storage.SettingsFileName);
         if (!File.Exists(path)) return new() { Root = root, CompatibilityData = Path.Combine(root, "compatdata") };
         var json = File.ReadAllText(path);
         using var doc = JsonDocument.Parse(json);
@@ -117,13 +107,13 @@ public sealed class LinuxSettings
 
     public void Save()
     {
-        Directory.CreateDirectory(Root, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        Platforms.PlatformServices.Storage.CreatePrivateDirectory(Root);
         foreach (var region in Regions)
         {
             if(!RegionProfiles.TryGetValue(region.Id,out _))continue;
             AccountProfiles.Capture(RegionProfiles[region.Id]);
             var dir = Path.Combine(Root, region.Id);
-            Directory.CreateDirectory(dir, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+            Platforms.PlatformServices.Storage.CreatePrivateDirectory(dir);
             AtomicWrite(Path.Combine(dir, "settings.json"), RegionSettingsStorage.Serialize(region.Id, RegionProfiles[region.Id]));
         }
         SaveGlobalPreferences();
@@ -131,7 +121,7 @@ public sealed class LinuxSettings
     internal void SaveGlobalPreferences()
     {
         Directory.CreateDirectory(Root);
-        AtomicWrite(Path.Combine(Root, "linux-settings.json"), JsonSerializer.Serialize(this, JsonOptions));
+        AtomicWrite(Path.Combine(Root, Platforms.PlatformServices.Storage.SettingsFileName), JsonSerializer.Serialize(this, JsonOptions));
     }
     internal void SaveRegionPreferences(string region)
     {
@@ -139,7 +129,7 @@ public sealed class LinuxSettings
         EnsureCreated(Root);
         AccountProfiles.Capture(RegionProfiles[region]);
         var directory = Path.Combine(Root, region);
-        Directory.CreateDirectory(directory, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        Platforms.PlatformServices.Storage.CreatePrivateDirectory(directory);
         AtomicWrite(Path.Combine(directory, "settings.json"), RegionSettingsStorage.Serialize(region, RegionProfiles[region]));
     }
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
@@ -148,8 +138,7 @@ public sealed class LinuxSettings
         var temp = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try
         {
-            using (var stream = new FileStream(temp, new FileStreamOptions { Mode = FileMode.CreateNew, Access = FileAccess.Write,
-                UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite }))
+            using (var stream = Platforms.PlatformServices.Storage.OpenPrivateFile(temp, FileMode.CreateNew, FileAccess.Write))
             using (var writer = new StreamWriter(stream)) writer.Write(content);
             File.Move(temp, path, true);
         }

@@ -34,7 +34,7 @@ public sealed class FrontendSessionReleaseTests
         {
             Assert.True(SpinWait.SpinUntil(()=>FrontendSessionRelease.HasGame(Path.Combine(root,"pfx")),TimeSpan.FromSeconds(2)));
             Assert.False(FrontendSessionRelease.HasGame(Path.Combine(root,"other")));
-            var runner=new XIVLauncher.Common.Unix.CompatibilityRunner(new(){DataDirectory=root});
+            var runner=new Platforms.Linux.LinuxGameRuntime(new XIVLauncher.Common.Unix.CompatibilityRunner(new(){DataDirectory=root}));
             Assert.True(FrontendSessionRelease.CanRelease(new("id","ffxiv","completed",null,"",null,true),runner));
             Assert.False(FrontendSessionRelease.CanRelease(new("id","ffxiv","running",null,"",null,true),runner));
             process.Kill();process.WaitForExit();

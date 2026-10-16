@@ -7,9 +7,10 @@ internal sealed record UpdateInstallRequest(string Release);
 internal sealed record LauncherUpdateView(string State, string? Release, string? Version, bool Available, bool CanInstall, string? Error);
 
 // Version checks run independently of authentication and game operations. Installation shares the busy guard.
-internal sealed class FrontendLauncherUpdates(string root, FrontendApplication application, LauncherUpdates? service = null) : IAsyncDisposable
+internal sealed class FrontendLauncherUpdates(string root, FrontendApplication application, LauncherUpdates? service = null, IUpdateInstaller? installer = null) : IAsyncDisposable
 {
     private static readonly HttpClient Http = new(new SocketsHttpHandler { ConnectTimeout = TimeSpan.FromSeconds(15) }) { Timeout = TimeSpan.FromMinutes(15) };
+    private readonly IUpdateInstaller? installation = installer ?? Platforms.PlatformServices.UpdateInstaller;
     private LauncherUpdates? updateService = service;
     private LauncherUpdates Updates => updateService ??= new LauncherUpdates(Http, UpdateDistribution.Load());
     private readonly CancellationTokenSource lifetime = new();
@@ -31,7 +32,7 @@ internal sealed class FrontendLauncherUpdates(string root, FrontendApplication a
                 task = Task.Run(Check);
             }
             return new(state, releaseId, release?.Version.ToString(), release != null && release.Version > Current,
-                application.IsAppImage && release?.Manifest != null && release.Signature != null, error);
+                installation?.CanInstall(root) == true && release?.Manifest != null && release.Signature != null, error);
         }
     }
     private async Task Check()
@@ -58,7 +59,7 @@ internal sealed class FrontendLauncherUpdates(string root, FrontendApplication a
     internal object Install(UpdateInstallRequest request, FrontendOperations operations)
     {
         operations.EnsureIdle(); var selected = Find(request.Release);
-        if (!application.IsAppImage || selected.Version <= Current) throw new ArgumentException("No installable update selected.");
+        if (installation?.CanInstall(root) != true || selected.Version <= Current) throw new ArgumentException("No installable update selected.");
         return operations.Start(LinuxSettings.Load(root).SelectedRegion, async operation =>
         {
             using var cacheLease = DownloadCacheLock.Acquire(root);
@@ -67,15 +68,15 @@ internal sealed class FrontendLauncherUpdates(string root, FrontendApplication a
             var token = timeout.Token;
             operation.Status("Verifying launcher update.");
             var update = await Updates.VerifyAsync(selected, token);
-            var image = UpdateInstallation.LauncherPath;
+            var image = installation.LauncherPath;
             operation.Status("Downloading launcher update.");
             var stage = await Updates.StageAsync(update, image,
-                percent => operation.Download(new("appimage", Path.GetFileName(image), update.Size * percent / 100, update.Size, true)), token);
+                percent => operation.Download(new("launcher", Path.GetFileName(image), update.Size * percent / 100, update.Size, true)), token);
             try
             {
                 token.ThrowIfCancellationRequested(); GameProcessGuard.EnsureGamesStopped();
-                using var helper = UpdateInstallation.Start(image, stage, update.Sha256, new SessionDiagnostics(root).FilePath, update.Version);
-                // The helper waits for the backend to exit and directly launches the new AppImage.
+                using var helper = installation.Start(stage, update.Sha256, new SessionDiagnostics(root).FilePath, update.Version);
+                // The platform helper waits for shutdown before replacing/restarting the launcher.
                 operation.Status("Update verified. Restarting the launcher to finish installation.");
                 operation.CommitResult(new { exitForUpdate = true });
             }

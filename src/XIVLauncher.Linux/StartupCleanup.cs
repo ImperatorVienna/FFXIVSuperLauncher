@@ -6,7 +6,7 @@ internal static class StartupCleanup
 {
     internal static void Run(string root)
     {
-        Clean(root, ["linux-settings.json", "appimage-launcher"]);
+        Clean(root, [Platforms.PlatformServices.Storage.SettingsFileName, "appimage-launcher"]);
         foreach (var region in new[] { "ffxiv_cn", "ffxiv", "ffxiv_tc" })
         {
             var directory = Path.Combine(root, region);

@@ -1,4 +1,3 @@
-using XIVLauncher.Common.Unix;
 using XIVLauncher.Linux.Updates;
 
 namespace XIVLauncher.Linux.Frontend;
@@ -10,7 +9,7 @@ internal sealed class FrontendApplication(string root)
 {
     private readonly SessionDiagnostics diagnostics = new(root);
     private bool initialized;
-    internal bool IsAppImage => Path.GetFullPath(root) == Path.GetFullPath(LinuxSettings.DataRoot)
+    internal bool IsAppImage => OperatingSystem.IsLinux() && Path.GetFullPath(root) == Path.GetFullPath(LinuxSettings.DataRoot)
         && Environment.GetEnvironmentVariable("APPIMAGE") is { Length: > 0 };
     internal static readonly Dictionary<string, string> Links = new()
     {
@@ -36,7 +35,7 @@ internal sealed class FrontendApplication(string root)
         try { EnsureIntegration(); }
         catch (Exception ex) { diagnostics.Write(FrontendErrors.Diagnostic(ex), "shared", "WARN"); warning = "应用菜单入口初始化失败，可在“关于”页面重试。"; }
         var settings = LinuxSettings.Load(root);
-        return new { settings.WindowPlacement, settings.SetupComplete, steamIntegration = FrontendCompatibility.RegisteredRoot(settings).Length > 0, warning };
+        return new { settings.WindowPlacement, settings.SetupComplete, steamIntegration = Platforms.PlatformServices.Capabilities.CompatibilityTools && FrontendCompatibility.RegisteredRoot(settings).Length > 0, warning };
     }
     internal void EnsureIntegration()
     {
@@ -82,9 +81,7 @@ internal sealed class FrontendApplication(string root)
     internal object CompleteSetup(SetupRequest request)
     {
         var settings = LinuxSettings.Load(root);
-        if (settings.ProtonScript.Length == 0) throw new CredentialValidationException("No Proton selected.", "请先选择 Proton。");
-        var proton = ProtonDiscovery.FromScript(settings.ProtonScript, settings.SteamRoot);
-        new CompatibilityRunner(settings.GetCompatibility(proton)).Validate();
+        Platforms.PlatformServices.ValidateSetup(settings);
         settings.EnableDalamud = request.EnableDalamud;
         settings.SaveRegionPreferences(settings.SelectedRegion);
         settings.SetupComplete = true; settings.SaveGlobalPreferences();
