@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <ProjectReference Include="../XIVLauncher.Windows/XIVLauncher.Windows.csproj" />
+    <Compile Include="../XIVLauncher.Linux.Tests/DcTravelerBridgeTests.cs" Link="DcTravelerBridgeTests.cs" />
+    <Compile Include="../XIVLauncher.Linux.Tests/GameSessionAuthenticationTests.cs" Link="GameSessionAuthenticationTests.cs" />
+    <Compile Include="../XIVLauncher.Linux.Tests/WindowsUpdateTests.cs" Link="WindowsUpdateTests.cs" />
+  </ItemGroup>
+</Project>

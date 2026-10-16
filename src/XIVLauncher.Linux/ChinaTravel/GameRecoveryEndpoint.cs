@@ -1,4 +1,5 @@
 using System.Net;
+using XIVLauncher.Linux.Platforms;
 using System.Security.Cryptography;
 using System.Text.Json;
 
@@ -9,7 +10,7 @@ internal sealed class GameRecoveryEndpoint : IAsyncDisposable
 {
     internal sealed record Discovery(int Port, string Token, int ProcessId = 0, long StartedAt = 0);
     private readonly GameSessionAuthentication authentication;
-    private readonly HttpListener listener = new();
+    private readonly LocalHttpListener listener;
     private readonly CancellationTokenSource lifetime = new();
     private readonly Task serving;
     private readonly string path;
@@ -18,12 +19,11 @@ internal sealed class GameRecoveryEndpoint : IAsyncDisposable
     public GameRecoveryEndpoint(string root, int port, GameSessionAuthentication authentication)
     {
         this.authentication = authentication;
-        listener.Prefixes.Add($"http://127.0.0.1:{port}/game-auth/");
         var directory = Path.Combine(root, "ffxiv_cn", "game-sessions");
         path = Path.Combine(directory, Guid.NewGuid().ToString("N") + ".json");
         try
         {
-            listener.Start();
+            listener = LocalHttpListener.Listen(port, "/game-auth/");
             Platforms.PlatformServices.Storage.CreatePrivateDirectory(directory);
             using var process = System.Diagnostics.Process.GetCurrentProcess();
             using (var file = Platforms.PlatformServices.Storage.OpenPrivateFile(path + ".tmp", FileMode.CreateNew, FileAccess.Write))
@@ -33,7 +33,7 @@ internal sealed class GameRecoveryEndpoint : IAsyncDisposable
         }
         catch
         {
-            listener.Close();
+            listener?.Close();
             DeleteDiscovery();
             lifetime.Dispose();
             throw;
@@ -43,29 +43,29 @@ internal sealed class GameRecoveryEndpoint : IAsyncDisposable
     {
         while (!lifetime.IsCancellationRequested)
         {
-            HttpListenerContext context;
+            LocalHttpContext context;
             try { context = await listener.GetContextAsync().WaitAsync(lifetime.Token); }
             catch (Exception ex) when (ex is OperationCanceledException or ObjectDisposedException or HttpListenerException) { break; }
             try
             {
-                var request = context.Request;
+                var request = context;
                 if (request.HttpMethod != "POST" || request.Headers["Origin"] != null || request.Headers["Sec-Fetch-Site"] != null ||
                     request.Headers["Authorization"] != "Bearer " + capability)
-                { context.Response.StatusCode = 403; continue; }
-                var command = request.Url!.AbsolutePath;
+                { context.StatusCode = 403; continue; }
+                var command = request.Path;
                 RecoveryState state;
                 switch (command)
                 {
                     case "/game-auth/state": state = authentication.State; break;
                     case "/game-auth/start": state = authentication.StartScan(); break;
                     case "/game-auth/cancel": authentication.CancelScan(); state = authentication.State; break;
-                    default: context.Response.StatusCode = 404; continue;
+                    default: context.StatusCode = 404; continue;
                 }
-                context.Response.ContentType = "application/json";
-                await JsonSerializer.SerializeAsync(context.Response.OutputStream, state, cancellationToken: lifetime.Token);
+                context.ContentType = "application/json";
+                await JsonSerializer.SerializeAsync(context.OutputStream, state, cancellationToken: lifetime.Token);
             }
             catch (Exception ex) when (ex is IOException or HttpListenerException or OperationCanceledException or ObjectDisposedException) { }
-            finally { context.Response.Close(); }
+            finally { context.Close(); }
         }
     }
     private void DeleteDiscovery()

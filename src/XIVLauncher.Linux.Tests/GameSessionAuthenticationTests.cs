@@ -102,7 +102,7 @@ public sealed class GameSessionAuthenticationTests : IDisposable
         var auth = Auth((_, _, _) => throw new Exception("Must not authenticate"));
         await using var bridge = await GameTravelSession.CreateAsync(root, auth, [], _ => { });
         var path = Directory.GetFiles(Path.Combine(root, "ffxiv_cn", "game-sessions")).Single();
-        Assert.Equal(UnixFileMode.UserRead | UnixFileMode.UserWrite, File.GetUnixFileMode(path));
+        if (!OperatingSystem.IsWindows()) Assert.Equal(UnixFileMode.UserRead | UnixFileMode.UserWrite, File.GetUnixFileMode(path));
         var entry = JsonSerializer.Deserialize<GameRecoveryEndpoint.Discovery>(await File.ReadAllTextAsync(path))!;
         using var http = new HttpClient();
         var url = $"http://127.0.0.1:{entry.Port}/game-auth/start";

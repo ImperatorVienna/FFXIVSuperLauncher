@@ -1,5 +1,5 @@
 using System.Net;
-using System.Net.Sockets;
+using XIVLauncher.Linux.Platforms;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -14,7 +14,7 @@ namespace XIVLauncher.Linux.ChinaTravel;
 // reject browser requests, and expose an explicit method list rather than reflection.
 public sealed class DcTravelerBridge : IAsyncDisposable
 {
-    private readonly HttpListener listener = new();
+    private readonly LocalHttpListener listener;
     private readonly CancellationTokenSource lifetime = new();
     private readonly DCTravelClient client;
     private int disposed;
@@ -34,18 +34,9 @@ public sealed class DcTravelerBridge : IAsyncDisposable
         client = new DCTravelClient("", transport);
         if (refresh != null) client.BindLoginSessionRefresh(refresh);
         dispatch = handler ?? DispatchAsync;
-        // HttpListener cannot report an OS-assigned port. Retry the small reservation race.
-        for (var attempt = 0; ; attempt++)
-        {
-            using var reservation = new TcpListener(IPAddress.Loopback, 0);
-            reservation.Start();
-            Port = ((IPEndPoint)reservation.LocalEndpoint).Port;
-            reservation.Stop();
-            listener.Prefixes.Clear();
-            listener.Prefixes.Add($"http://127.0.0.1:{Port}/dctravel/");
-            try { listener.Start(); break; }
-            catch (HttpListenerException) when (attempt < 9) { }
-        }
+        try { listener = LocalHttpListener.Listen(0, "/dctravel/"); }
+        catch { client.Dispose(); lifetime.Dispose(); throw; }
+        Port = listener.Port;
         serving = ServeAsync();
         Log.Information("[DCTravelerX] Local bridge listening on port {Port}", Port);
 
@@ -109,16 +100,16 @@ public sealed class DcTravelerBridge : IAsyncDisposable
     {
         while (!lifetime.IsCancellationRequested)
         {
-            HttpListenerContext context;
+            LocalHttpContext context;
             try { context = await listener.GetContextAsync().WaitAsync(lifetime.Token); }
             catch (Exception ex) when (ex is OperationCanceledException or HttpListenerException or ObjectDisposedException) { break; }
             try
             {
-                var request = context.Request;
-                if (request.HttpMethod != "POST" || request.Url?.AbsolutePath != "/dctravel/" ||
+                var request = context;
+                if (request.HttpMethod != "POST" || request.Path != "/dctravel/" ||
                     request.Headers["Origin"] != null || request.Headers["Sec-Fetch-Site"] != null ||
-                    request.ContentType?.Split(';')[0].Trim() != "application/json")
-                { context.Response.StatusCode = 403; continue; }
+                    request.RequestContentType?.Split(';')[0].Trim() != "application/json")
+                { context.StatusCode = 403; continue; }
                 object? result = null;
                 string? error = null;
                 var diagnosticMethod = "InvalidRequest";
@@ -153,11 +144,11 @@ public sealed class DcTravelerBridge : IAsyncDisposable
                     Record(FailureDiagnostic(diagnosticMethod, ex), "ERROR");
                     error = FormatError(ex);
                 }
-                context.Response.ContentType = "application/json; charset=utf-8";
-                await JsonSerializer.SerializeAsync(context.Response.OutputStream, new { Result = result, Error = error }, WireOptions, lifetime.Token);
+                context.ContentType = "application/json; charset=utf-8";
+                await JsonSerializer.SerializeAsync(context.OutputStream, new { Result = result, Error = error }, WireOptions, lifetime.Token);
             }
             catch (Exception ex) when (ex is IOException or HttpListenerException or OperationCanceledException or ObjectDisposedException) { }
-            finally { context.Response.Close(); }
+            finally { context.Close(); }
         }
     }
 

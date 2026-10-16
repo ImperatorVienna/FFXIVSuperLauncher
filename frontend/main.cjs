@@ -28,7 +28,7 @@ require('./portable-electron-paths.cjs').configurePaths(app,userData);
 app.enableSandbox();
 if (!app.requestSingleInstanceLock({steamEntry})) {
   if(steamEntry)void waitForPrimary(dataRoot,packaged&&process.env.FFXIV_SESSION_DIRECTORY
-    ? {transfer:pid=>handoff({child:{pid},release(){}},process.env.FFXIV_SESSION_DIRECTORY)} : {}).catch(()=>{}).finally(()=>app.quit());else app.quit();
+    ? {transfer:(pid,id)=>handoff({child:{pid},release(){}},process.env.FFXIV_SESSION_DIRECTORY,{primarySession:id})} : {}).catch(()=>{}).finally(()=>app.quit());else app.quit();
 }
 else {
   let backend;

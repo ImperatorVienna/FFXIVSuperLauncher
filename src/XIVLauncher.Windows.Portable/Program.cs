@@ -59,12 +59,12 @@ internal static class Program
                         var request = Path.Combine(session,"backend");
                         if (backend == null && File.Exists(request))
                         {
-                            if (!int.TryParse(await File.ReadAllTextAsync(request),out var pid) || pid <= 0) throw new IOException("Invalid backend handoff.");
+                            var handoff = WindowsSessionHandoff.Parse(await File.ReadAllTextAsync(request), Environment.ProcessId);
+                            var pid = handoff.ProcessId;
                             backend = Process.GetProcessById(pid);
                             _ = backend.Handle;
-                            var image = backend.MainModule?.FileName;
-                            if (!string.Equals(image,Path.Combine(runtime,"xivlauncher-backend.exe"),StringComparison.OrdinalIgnoreCase))
-                                throw new IOException("Unexpected session process.");
+                            handoff.Validate(backend.MainModule?.FileName, Path.Combine(runtime,"xivlauncher-backend.exe"), executable,
+                                handoff.PrimarySession == null ? null : await File.ReadAllTextAsync(Path.Combine(root,"electron-session.json")));
                             await File.WriteAllTextAsync(Path.Combine(session,"accepted"),pid.ToString());
                         }
                         await Task.Delay(100);

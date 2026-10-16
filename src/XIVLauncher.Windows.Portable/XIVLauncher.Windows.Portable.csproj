@@ -7,6 +7,7 @@
     <Version>2.1.1</Version>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../XIVLauncher.Linux/Platforms/Windows/WindowsSessionHandoff.cs" Link="WindowsSessionHandoff.cs" />
     <Compile Include="../XIVLauncher.Linux/Platforms/Windows/WindowsPortableEntry.cs" Link="WindowsPortableEntry.cs" />
     <Compile Include="../XIVLauncher.Linux/Platforms/Windows/WindowsUpdateJob.cs" Link="WindowsUpdateJob.cs" />
     <Compile Include="../XIVLauncher.Linux/Platforms/Windows/WindowsExecutablePackage.cs" Link="WindowsExecutablePackage.cs" />

@@ -7,10 +7,13 @@
     <RootNamespace>XIVLauncher.Linux</RootNamespace>
     <Version>2.1.1</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>$(DefineConstants);WINDOWS_BACKEND</DefineConstants>
   </PropertyGroup>
   <!-- Share existing application sources while platform boundaries are extracted.
        No duplicate login, patch, credential or repository implementation. -->
   <ItemGroup>
+    <InternalsVisibleTo Include="XIVLauncher.Windows.Tests" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Compile Include="../XIVLauncher.Linux/**/*.cs" Exclude="../XIVLauncher.Linux/bin/**;../XIVLauncher.Linux/obj/**;../XIVLauncher.Linux/Platform.cs" />
     <EmbeddedResource Include="../../LICENSE" LogicalName="About.LICENSE" />
     <EmbeddedResource Include="../../THIRD-PARTY-NOTICES.txt" LogicalName="About.THIRD-PARTY-NOTICES.txt" />

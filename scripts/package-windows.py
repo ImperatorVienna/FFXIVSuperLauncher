@@ -42,6 +42,10 @@ def main():
     bundle = output / 'payload'; bundle.mkdir()
     extract_verified_electron(a.electron_zip, bundle)
     dotnet = os.environ.get('DOTNET', 'dotnet')
+    # Exercise the Windows transport and shared travel/authentication contract on
+    # the native build host before producing a distributable payload.
+    subprocess.run([dotnet, 'test', str(repo/'src/XIVLauncher.Windows.Tests/XIVLauncher.Windows.Tests.csproj'),
+        '-c', 'Release', '-m:1', '-p:NuGetAudit=false'], check=True)
     build = output / 'build'
     subprocess.run([dotnet, 'publish', str(repo/'src/XIVLauncher.Windows/XIVLauncher.Windows.csproj'),
         '-c', 'Release', '-r', 'win-x64', '--self-contained', 'true', '--artifacts-path', str(build),
@@ -106,6 +110,7 @@ def main():
         '-c','Release','-r','win-x64','--self-contained','true','-o',str(host),'-p:PublishAot=true',
         '-p:Version='+a.version,'-p:PortablePayload='+str(payload),'-p:NuGetAudit=false','-m:1'],check=True)
     executable=output/f'FFXIVSuperLauncher-{a.version}-win-x64.exe';shutil.copy2(host/'FFXIVSuperLauncher.exe',executable)
+    subprocess.run([str(executable),'--launcher-version'],check=True,timeout=30)
     source.source_archive(repo,output,a.version)
     (output/'SHA256SUMS').write_text(''.join(f'{digest(f)}  {f.name}\n' for f in [executable,output/f'xivlauncher-super-{a.version}-source.tar.gz']),encoding='utf-8')
     print(executable)

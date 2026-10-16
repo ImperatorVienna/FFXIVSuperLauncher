@@ -15,7 +15,7 @@ async function waitForPrimary(root,{delay=()=>new Promise(resolve=>setTimeout(re
     await delay();
   }
   if(!first)return;
-  if(transfer){await transfer(first.pid);return;}
+  if(transfer){await transfer(first.pid,first.id);return;}
   while(alive(first.pid)){
     await delay();
     try{if(JSON.parse(await fs.readFile(file(root),'utf8')).id!==first.id)return;}catch{return;}
