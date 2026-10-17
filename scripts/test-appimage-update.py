@@ -30,10 +30,11 @@ with tempfile.TemporaryDirectory(prefix='super-update-e2e-') as temp:
   distribution=json.loads((bundle/'distribution.json').read_text())
   if not distribution.get('LocalTest') or distribution.get('Channel')!='preview':
    raise RuntimeError('Use an isolated AppImage fixture packaged with --test, never a production image.')
+  # Portable data must be beside the copied AppImage, still inside this isolated test directory.
   backend_env=dict(env,APPIMAGE=str(image),DISPLAY='',WAYLAND_DISPLAY='')
   # Headless test: use the exact protocol behind the Electron update controls.
   # The installer still attempts its normal direct relaunch; GUI acceptance is separate.
-  process=subprocess.Popen([str(bundle/'xivlauncher-backend'),'--frontend-host','--data-root',str(root/'data/xivlauncher-super')],
+  process=subprocess.Popen([str(bundle/'xivlauncher-backend'),'--frontend-host','--data-root',str(root)],
    env=backend_env,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,text=True)
   try:
    request(process,'system.initialize')
