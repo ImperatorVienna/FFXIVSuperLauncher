@@ -1,0 +1,2 @@
+FFXIV Super Launcher 2.2.0 — Windows x64 and Linux x86_64
+Official binaries are GitHub Release assets. This directory preserves source, signed update metadata, release notes and validation.

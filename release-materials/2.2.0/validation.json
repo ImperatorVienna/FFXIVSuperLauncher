@@ -1,0 +1,28 @@
+{
+  "version": "2.2.0",
+  "sourceCommit": "0343eb49561ad60e38489a9dadbe90bc1c731137",
+  "linuxBackendTestsPassed": 612,
+  "windowsBackendTestsPassed": 90,
+  "frontendUnitTestsPassed": 94,
+  "frontendUnitTestsSkipped": 2,
+  "electronUiRegressions": "passed",
+  "linuxUpdateSmoke": "2.1.2 -> 2.2.0: signed replacement, new filename and backup verified",
+  "windowsProgramFilesVerified": 994,
+  "windowsExeIcon": "ICON and GROUP_ICON resources verified",
+  "nativeWindowsOnlineUpdate": "Not executed on native Windows; install/rollback covered by automated tests on Linux",
+  "sha256": {
+    "xivlauncher-super-2.2.0-x86_64.AppImage": "163840de5cfecca0c41baab6f0605dd01f03d4f43231a912364fcbe4adcace8f",
+    "FFXIVSuperLauncher-2.2.0-win-x64.zip": "9c90be44f958895082218bb363e2c6bb7e49eac9b7129061328a73d265e658f1",
+    "xivlauncher-super-2.2.0-source.tar.gz": "2301d9ee8e39e6da8c771dc095a1f43b491dba4bc5e2d91f8f70e51055d549b1",
+    "RELEASE-NOTES.en.md": "e702c5f6827818db2fa1d42172ecf914b0c8131885e157f9ff9c86471daa2a2f",
+    "RELEASE-NOTES.zh-CN.md": "6eb523592dc26fea7904cfb66554683acb8fa660669afb05b63b42824d652140",
+    "RELEASE-NOTES.zh-TW.md": "f12ab56b79f8e3180c2ae35418fa0e9ab8a8fda5ba5764c28961e69601ff2daa",
+    "RELEASE-NOTES.ja.md": "d86796553646925fc30aaed7358df4c17b3f7a6a556140c83b849f05a09fef29",
+    "windows-x64-update.json": "1d5ed30fbef4c60c69caee69ffaccfc970fc93ad989e48b23413fcc61f1c8b7d",
+    "appimage-update.json": "fad218510cc22ad0d1d019bde30aa52caceaeb0869fdedf846c21fc52392a4f0",
+    "appimage-update.sig": "faeac54b133ae53f90c38b3db33f25f31ac82549b9e7e0f00dcb605fbad4d875",
+    "windows-x64-update.sig": "c57c4ecdd97875c508a8dffbed3aedf41fcf440b815a5a0bf752c3f08223b17f",
+    "SOURCE-DELIVERY.json": "3edba20174429c8566a15e582bedfdec74518177a9a10b3336128cf611d46a19",
+    "SHA256SUMS": "742e9b7fcf6df26e752d892bc5ed5494def0b9e87811a2ad00a27d9a66d5f5f1"
+  }
+}
