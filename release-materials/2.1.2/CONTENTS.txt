@@ -3,5 +3,5 @@ FFXIV Super Launcher 2.1.2 release materials
 The Linux AppImage and signed update metadata are on the v2.1.2 Release.
 Launcher source, checksums, public key, multilingual notes and validation are retained here.
 SOURCE-DELIVERY.json references unchanged dependency sources under ../1.0.0.
-Windows remains in development; no Windows binary is distributed in 2.1.2.
+Windows development source and binaries are excluded from this Linux release.
 No private signing keys are included.

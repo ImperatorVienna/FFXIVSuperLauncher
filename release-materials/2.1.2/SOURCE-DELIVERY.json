@@ -1,12 +1,12 @@
 {
   "version": "2.1.2",
-  "sourceCommit": "f7f537b492d85c4e26c7ed78568851fa7d497762",
+  "sourceCommit": "32badf15791ffdaa8d4e6310c10ea9de711ba360",
   "scope": "Corresponding source materials. Unchanged bundled dependency sources are retained under 1.0.0; this is not a byte-identical rebuild or license-clearance claim.",
   "files": [
     {
       "component": "launcher",
       "file": "xivlauncher-super-2.1.2-source.tar.gz",
-      "sha256": "948790c10e5c4b69f20d63b871f06f16c4ff11e9794269271cb8609c8401113d"
+      "sha256": "ed77c2153995ce5eda8cc92ed25a34607dd654a4161e9f7452c750173de161f6"
     },
     {
       "component": "bundled injectors and local patch",
