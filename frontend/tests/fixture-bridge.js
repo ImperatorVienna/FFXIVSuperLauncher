@@ -2,14 +2,18 @@
 // Synthetic browser fixture only, loaded by create-preview-fixture.cjs. No disk/network/game access.
 (() => {
   const ok=result=>Promise.resolve({ok:true,result:structuredClone(result)});
-  const snapshot={protocolVersion:5,autoCheckUpdates:true,setupComplete:new URL(location.href).searchParams.get("setup")!=="new",language:'en',selectedRegion:'ffxiv',protonScript:'/fixture/proton',regions:['ffxiv_cn','ffxiv_tc','ffxiv'].map(id=>({id,gamePath:'/fixture/'+id,clientVersion:'test',dalamudVersion:'test',enableDalamud:false,areaName:'陆行鸟',cdKeyVersion:'NA',euShopLanguage:'en-gb',clientLanguage:1}))};
+  const snapshot={protocolVersion:5,autoCheckUpdates:true,setupComplete:new URL(location.href).searchParams.get("setup")!=="new",language:'en',selectedRegion:'ffxiv',protonScript:'/fixture/proton',regions:['ffxiv_cn','ffxiv_tc','ffxiv'].map(id=>({id,gamePath:(new URL(location.href).searchParams.get('platform')==='windows'?'C:\\Games\\':'/fixture/')+id,clientVersion:'test',dalamudVersion:'test',enableDalamud:false,areaName:'陆行鸟',cdKeyVersion:'NA',euShopLanguage:'en-gb',clientLanguage:1}))};
+  const windows=new URL(location.href).searchParams.get('platform')==='windows';
+  snapshot.capabilities=['preferences.language','preferences.region','preferences.paths','accounts','launch','game-update','official-news','official-browser','plugins','plugin-sync','dalamud-update','travel','setup','about','launcher-update',...(windows?[]:['compatibility'])];
+  snapshot.isAppImage=!windows;
   const records={ffxiv_cn:{ChinaFixture:{password:'',secret:''}},ffxiv_tc:{TaiwanFixture:{password:'fixture-password',secret:''}},ffxiv:{FixtureAccount:{password:'fixture-password',secret:'JBSWY3DPEHPK3PXP'}}};
   const list=region=>({region,selectedAccount:Object.keys(records[region])[0]||'',enableDalamud:snapshot.regions.find(x=>x.id===region).enableDalamud,accounts:Object.entries(records[region]).map(([name,r])=>({name,hasPassword:!!r.password,hasOtp:!!r.secret,steamAccount:false,freeTrial:false}))});
   const repositories=Object.fromEntries(['ffxiv_cn','ffxiv_tc','ffxiv'].map(region=>[region,{revision:'fixture-repositories',main:'https://main.invalid/catalog.json',presetsEnabled:region==='ffxiv_cn',presets:region==='ffxiv_cn'?['https://preset.invalid/catalog.json']:[],entries:[]}]));
   let operation,sequence=0,newsRevision=0,newsKey,newsPolls=0;
   function official({refresh=false}={}) {
     const global=snapshot.regions.find(x=>x.id==='ffxiv');
-    const key=snapshot.selectedRegion==='ffxiv'?`ffxiv:${global.cdKeyVersion}:${global.euShopLanguage}`:snapshot.selectedRegion;
+    const newsLanguage=global.cdKeyVersion==='JP'?'ja':global.cdKeyVersion==='EU'?({'fr-fr':'fr','de-de':'de'}[global.euShopLanguage]||'en-gb'):'en-us';
+    const key=snapshot.selectedRegion==='ffxiv'?`ffxiv:${newsLanguage}`:snapshot.selectedRegion;
     if(newsKey!==key||refresh){newsKey=key;newsPolls=0;newsRevision++;}
     const mode=new URL(location.href).searchParams.get('news');
     const state=mode==='failed'?'failed':newsPolls++===0?'loading':'ready';
@@ -51,7 +55,7 @@
       return ok(snapshot);
     },
     completeSetup:()=>{snapshot.setupComplete=true;return ok(snapshot);},
-    readAbout:()=>ok({version:'1.1.0',author:'ImperatorVienna',isAppImage:false,notice:'',diagnosticPath:'/fixture/logs/launcher.log',links:['project','issues','author','XIVLauncher','XIVLauncherCN','XIVLauncherCN (Soil)','XIVTCLauncher','Dalamud (goatcorp)','sources','icon']}),
+    readAbout:()=>ok({version:'2.2.0-preview',author:'ImperatorVienna',isAppImage:!windows,notice:'',diagnosticPath:'/fixture/logs/launcher.log',links:['project','issues','author','XIVLauncher','XIVLauncherCN','XIVLauncherCN (Soil)','XIVTCLauncher','Dalamud (goatcorp)','sources','icon']}),
     openAbout:()=>ok({opened:true}),readNotice:()=>ok({text:'Synthetic GPL notice\nSynthetic third-party notice'}),
     installDesktop:()=>ok({installed:true}),
     readLauncherUpdate:()=>ok(new URL(location.href).searchParams.get('updates')==='new'?{state:'ready',release:'fixture-release',version:'2.0.0',available:true,canInstall:true}:{state:'ready',release:'fixture-current',version:'1.0.0',available:false,canInstall:false}),

@@ -184,15 +184,8 @@ public static class OfflinePluginManager
         root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(root));
         var path = Path.Combine(root, region, "dalamud"); SafePath(root, path); return path;
     }
-    private static void SafePath(string root, string path)
-    {
-        for (var p = path; ; p = Path.GetDirectoryName(p)!)
-        {
-            if (new FileInfo(p).LinkTarget != null || new DirectoryInfo(p).LinkTarget != null) throw new IOException("插件路径包含符号链接，未自动跟随。");
-            if (p == root) return;
-            if (string.IsNullOrEmpty(p)) throw new IOException("插件路径超出区服目录。");
-        }
-    }
+    private static void SafePath(string root, string path) => ContainedPath.Ensure(root, path,
+        escapeMessage: "插件路径超出区服目录。", linkMessage: "插件路径包含符号链接，未自动跟随。");
     private static void WritePrivate(string path, string content)
     {
         using var stream = Platforms.PlatformServices.Storage.OpenPrivateFile(path, FileMode.CreateNew, FileAccess.Write);

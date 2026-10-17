@@ -16,7 +16,7 @@ public sealed class VcdiffClient(string workerExecutablePath) : IDisposable
         await channelGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            await LinuxVcdiff.ApplyAsync(workerExecutablePath, sourceFile, deltaData, targetFile,
+            await NativeVcdiff.ApplyAsync(workerExecutablePath, sourceFile, deltaData, targetFile,
                 expectedMd5, expectedSize, progress, cancellationToken).ConfigureAwait(false);
         }
         finally { channelGate.Release(); }

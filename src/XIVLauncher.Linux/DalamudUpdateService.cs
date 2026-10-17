@@ -10,7 +10,17 @@ public sealed class DalamudUpdateService(HttpClient client, IDalamudSource sourc
 {
     public async Task<RegionDalamudFiles> PrepareAsync(string root, Action<string> progress, CancellationToken token)
     {
+        var diagnostics = new SessionDiagnostics(Path.GetDirectoryName(Path.GetFullPath(root))!);
+        var region = Path.GetFileName(root);
+        var stage = System.Diagnostics.Stopwatch.StartNew();
+        void Completed(string name)
+        {
+            diagnostics.Write($"Dalamud {name} completed after {stage.Elapsed.TotalSeconds:F1} seconds.", region, "INFO");
+            stage.Restart();
+        }
+        diagnostics.Write("Resolving Dalamud update manifests.", region, "INFO");
         var info = await source.ResolveAsync(client, token);
+        Completed("manifest requests");
         DalamudSources.ValidateVersion(info.Version); DalamudSources.ValidateVersion(info.RuntimeVersion);
         var addon = Path.Combine(root, info.Soil ? "addon/Hooks" : "addon", info.Version);
         var runtime = Path.Combine(root, "runtime");
@@ -42,12 +52,14 @@ public sealed class DalamudUpdateService(HttpClient client, IDalamudSource sourc
                 progress("下载 Dalamud"); await UpdateDownload.FileAsync(client, info.Archive, archive, token);
                 await Task.Run(() => { if (info.Zip) ZipFile.ExtractToDirectory(archive, staging); else PlatformHelpers.Unzip7ZAsset(archive, staging); }, token);
                 if (!await Task.Run(() => Valid(staging), token)) throw new IOException("Dalamud 程序校验失败。");
-                ReplaceDirectory(staging, addon);
+                StagedDirectoryCommit.Replace(staging, addon);
             }
             finally { if (File.Exists(archive)) File.Delete(archive); if (Directory.Exists(staging)) Directory.Delete(staging, true); }
         }
+        Completed("program download and validation");
         await XIVLauncher.Common.Runtime.DotNetRuntimeManager.EnsureRuntimeAsync(new DirectoryInfo(runtime), info.RuntimeVersion, "win-x64", ".NET Runtime",
             progress, cancellationToken: token, packageSource: RuntimeSourceAsync);
+        Completed("runtime preparation");
         token.ThrowIfCancellationRequested();
         var assetRoot = Path.Combine(root, "assets", info.AssetVersion.ToString());
         bool ValidAsset(string path, DalamudAsset asset)
@@ -76,10 +88,11 @@ public sealed class DalamudUpdateService(HttpClient client, IDalamudSource sourc
                     else await UpdateDownload.FileAsync(client, asset.Url, file, token);
                 }
                 if (!info.Assets.All(a => ValidAsset(staging, a))) throw new IOException("Dalamud 资源校验失败。");
-                ReplaceDirectory(staging, assetRoot);
+                StagedDirectoryCommit.Replace(staging, assetRoot);
             }
             finally { if (Directory.Exists(staging)) Directory.Delete(staging, true); }
         }
+        Completed("asset preparation");
         LocalDalamud.Record(root, info, assetRoot);
         return new(new FileInfo(Path.Combine(addon, "Dalamud.Injector.exe")), new DirectoryInfo(runtime), new DirectoryInfo(assetRoot), 4, info.Soil, info.SupportedGameVersion);
     }
@@ -94,18 +107,5 @@ public sealed class DalamudUpdateService(HttpClient client, IDalamudSource sourc
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException) { token.ThrowIfCancellationRequested(); }
         return "https://repo.huaweicloud.com/artifactory/api/nuget/v3/nuget-remote";
     }
-    private static void ReplaceDirectory(string staging, string target)
-    {
-        var backup = target + ".old-" + Guid.NewGuid().ToString("N");
-        if (Directory.Exists(target)) Directory.Move(target, backup);
-        try { Directory.Move(staging, target); }
-        catch { if (Directory.Exists(backup)) Directory.Move(backup, target); throw; }
-        if (Directory.Exists(backup)) Directory.Delete(backup, true);
-    }
-    internal static string SafeChild(string root, string relative)
-    {
-        root = Path.GetFullPath(root); var path = Path.GetFullPath(Path.Combine(root, relative.Replace('\\', '/')));
-        if (!path.StartsWith(root.TrimEnd('/') + "/", StringComparison.Ordinal)) throw new IOException("更新文件路径超出目标目录。");
-        return path;
-    }
+    internal static string SafeChild(string root, string relative) => ContainedPath.Resolve(root, relative);
 }

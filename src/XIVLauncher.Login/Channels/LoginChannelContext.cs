@@ -20,13 +20,15 @@ public sealed class LoginChannelContext
 
     private int casDomainMode;
 
-    public LoginChannelContext(DeviceProfileSnapshot deviceProfile)
+    public LoginChannelContext(DeviceProfileSnapshot deviceProfile) : this(deviceProfile, null) { }
+
+    internal LoginChannelContext(DeviceProfileSnapshot deviceProfile, HttpMessageHandler? transport)
     {
         ArgumentNullException.ThrowIfNull(deviceProfile);
 
         this.deviceProfile = deviceProfile;
         loginCookies       = new CookieContainer();
-        var loginHandler = new HttpClientHandler
+        var loginHandler = transport ?? new HttpClientHandler
         {
             UseCookies      = true,
             CookieContainer = loginCookies

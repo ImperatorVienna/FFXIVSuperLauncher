@@ -79,5 +79,37 @@ public sealed class Release062Tests : IDisposable
         Assert.Null(await RegionCredentials.ReadAsync(s,"another-account","password",default));
         s.SelectedRegion="ffxiv_cn";Assert.Null(await RegionCredentials.ReadAsync(s,"test@example.invalid","password",default));
     }
+    [Theory]
+    [InlineData(-16027517)]
+    [InlineData(16027517)]
+    public async Task MarkedRejectionClearsOnlySessionAndReachesQrCallback(int code)
+    {
+        var s = Settings(); s.Account = "synthetic-account";
+        var profile = s.GetDeviceProfile(s.Account);
+        await RegionCredentials.StoreAsync(s, s.Account, "session", "old", default);
+        await RegionCredentials.StoreAsync(s, s.Account, "otp", "unrelated", default);
+        var calls = new List<LoginType>(); var qrShown = false;
+        using var cancellation = new CancellationTokenSource();
+        await ChinaLoginSession.AuthenticateAsync(s, new()
+        {
+            Account = s.Account, DeviceProfile = profile,
+            LoginCancellationTokenSource = cancellation,
+            ShowQRCode = _ => qrShown = true
+        }, _ => {}, cancellation.Token, async (method, request, token) =>
+        {
+            calls.Add(method);
+            if (method == LoginType.QuickLogin) throw new LoginException(code, "synthetic rejection", true);
+            Assert.Null(await RegionCredentials.ReadAsync(s, s.Account, "session", token));
+            Assert.Equal(profile, request.DeviceProfile);
+            Assert.Same(cancellation, request.LoginCancellationTokenSource);
+            request.ShowQRCode!(new byte[] { 1 });
+            return Ok(s.Account, "replacement");
+        });
+        Assert.Equal(new[] { LoginType.QuickLogin, LoginType.QRCode }, calls);
+        Assert.True(qrShown);
+        Assert.Equal("replacement", await RegionCredentials.ReadAsync(s, s.Account, "session", default));
+        Assert.Equal("unrelated", await RegionCredentials.ReadAsync(s, s.Account, "otp", default));
+        Assert.Equal(profile, LinuxSettings.Load(root).GetDeviceProfile(s.Account));
+    }
     public void Dispose(){if(Directory.Exists(root))Directory.Delete(root,true);}
 }

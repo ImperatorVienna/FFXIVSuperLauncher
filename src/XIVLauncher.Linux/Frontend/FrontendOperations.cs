@@ -175,7 +175,7 @@ internal sealed class FrontendOperation(string root, string region) : IDisposabl
             var value=response.Value;
             if(value==null || value.Length>32)throw new ArgumentException("Invalid verification reply.");
             if(challenge.Kind=="otp" && !(OneTimePassword.IsManualCode(value) || challenge.Optional && value.Length==0))throw new ArgumentException("Invalid OTP format.");
-            if(challenge.Kind=="dalamud-timeout" && !(value=="disable" || value=="local" && challenge.AllowLocal))throw new ArgumentException("Invalid update decision.");
+            if(challenge.Kind=="dalamud-timeout" && !(value=="retry" || value=="disable" || value=="local" && challenge.AllowLocal))throw new ArgumentException("Invalid update decision.");
             reply.TrySetResult(value);
         }
     }
@@ -192,6 +192,9 @@ internal static class FrontendErrors
         Global.GlobalAuthenticationException authentication => authentication.UserMessage,
         Taiwan.TaiwanAuthenticationException authentication => authentication.Diagnostic,
         XIVLauncher.Login.Exceptions.LoginException authentication => UserLogMessage.Failure(authentication),
+        IOException { Message: "ffxiv Steam initialization failed. Start Steam, sign in online, then retry." }
+            or IOException { Message: "ffxiv Steam must be running and signed in online." }
+            or IOException { Message: "ffxiv Steam did not return an authentication ticket." } => ex.Message,
         TimeoutException => "Operation timed out. Please retry.",
         OperationCanceledException => "Operation cancelled.",
         ArgumentException or System.Text.Json.JsonException => "Invalid request.",
@@ -201,5 +204,16 @@ internal static class FrontendErrors
     internal static string LogMessage(Exception ex) => ex is CredentialValidationException validation
         ? Localization.Catalog("en").GetValueOrDefault(UiVocabulary.Normalize(validation.UserMessage), "Validation failed.")
         : Message(ex);
-    internal static string Diagnostic(Exception ex) => $"Exception: {ex.GetType().FullName}\n{LogMessage(ex)}\n{ex.StackTrace}";
+    internal static string Diagnostic(Exception ex)
+    {
+        var text = new System.Text.StringBuilder();
+        for (Exception? current = ex; current != null; current = current.InnerException)
+        {
+            text.AppendLine($"Exception: {current.GetType().FullName}; HRESULT: 0x{current.HResult:X8}");
+            if (current is System.ComponentModel.Win32Exception native) text.AppendLine($"Windows error code: {native.NativeErrorCode}");
+            text.AppendLine(LogMessage(current));
+            text.AppendLine(current.StackTrace);
+        }
+        return text.ToString();
+    }
 }

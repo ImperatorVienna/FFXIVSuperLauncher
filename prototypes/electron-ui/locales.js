@@ -1,17 +1,55 @@
 // Shared frontend strings. Tuple order: Traditional Chinese, Japanese, English.
 window.previewStrings = {
-  "勾选后将启动器注册为 Steam 兼容性工具；通过 Steam 启动时自动全屏，点击输入框会调用 Steam 虚拟键盘。桌面窗口尺寸单独保留。更改后请重启 Steam。": ["勾選後將啟動器註冊為 Steam 相容性工具；透過 Steam 啟動時自動全螢幕，點選輸入欄位會呼叫 Steam 虛擬鍵盤。桌面視窗尺寸會獨立保留。變更後請重新啟動 Steam。", "有効にするとランチャーを Steam 互換ツールとして登録します。Steam から起動すると全画面表示になり、入力欄をクリックすると Steam のスクリーンキーボードを呼び出します。デスクトップのウィンドウサイズは別に保持されます。変更後は Steam を再起動してください。", "Registers the launcher as a Steam compatibility tool. Launching through Steam uses fullscreen, and clicking a text field requests the Steam on-screen keyboard. Desktop window size is preserved separately. Restart Steam after changing this setting."],
-  "无法调用 Steam 虚拟键盘，请使用键盘输入。": ["無法呼叫 Steam 虛擬鍵盤，請使用鍵盤輸入。", "Steam のスクリーンキーボードを呼び出せません。キーボードで入力してください。", "Could not request the Steam on-screen keyboard. Please use a keyboard to type."],
-
-  "下一步：游戏区服": ["下一步：遊戲區服", "次へ：ゲームリージョン", "Next: game region"],
-  "请先保存或修正未保存的设置。": ["請先儲存或修正尚未儲存的設定。", "未保存の設定を保存または修正してください。", "Save or correct the unsaved settings first."],
-  "第三步：确认自动发现的 Steam / Proton。未发现时请手动选择；Steam 启动适配为可选项。": ["第三步：確認自動找到的 Steam / Proton。若未找到，請手動選擇；Steam 啟動適配為選用項目。", "ステップ3：自動検出された Steam / Proton を確認します。見つからない場合は手動で選択してください。Steam 起動への対応は任意です。", "Step 3: confirm the detected Steam / Proton. Select manually if none was found. Steam launch integration is optional."],
-
-  "美术素材来源": ["美術素材來源", "アート素材の出典", "Artwork sources"],
-  "启动器图标": ["啟動器圖示", "ランチャーアイコン", "Launcher icon"],
-  "写入结果未确认，请重新启动启动器后核对设置。": ["寫入結果未確認，請重新啟動啟動器後核對設定。", "書き込み結果を確認できませんでした。ランチャーを再起動して設定を確認してください。", "The write result could not be confirmed. Restart the launcher and check the settings."],
-  "读取超时，请刷新后重试。": ["讀取逾時，請重新整理後再試。", "読み込みがタイムアウトしました。更新して再試行してください。", "Reading timed out. Refresh and try again."],
-  "修改已保存，但刷新失败，请重新载入。": ["修改已儲存，但重新整理失敗，請重新載入。", "変更は保存されましたが、再読み込みに失敗しました。もう一度読み込んでください。", "Changes were saved, but refreshing failed. Please reload."],
+  "勾选后将启动器注册为 Steam 兼容性工具；通过 Steam 启动时自动全屏，点击输入框会调用 Steam 虚拟键盘。桌面窗口尺寸单独保留。更改后请重启 Steam。": [
+    "勾選後將啟動器註冊為 Steam 相容性工具；透過 Steam 啟動時自動全螢幕，點選輸入欄位會呼叫 Steam 虛擬鍵盤。桌面視窗尺寸會獨立保留。變更後請重新啟動 Steam。",
+    "有効にするとランチャーを Steam 互換ツールとして登録します。Steam から起動すると全画面表示になり、入力欄をクリックすると Steam のスクリーンキーボードを呼び出します。デスクトップのウィンドウサイズは別に保持されます。変更後は Steam を再起動してください。",
+    "Registers the launcher as a Steam compatibility tool. Launching through Steam uses fullscreen, and clicking a text field requests the Steam on-screen keyboard. Desktop window size is preserved separately. Restart Steam after changing this setting."
+  ],
+  "无法调用 Steam 虚拟键盘，请使用键盘输入。": [
+    "無法呼叫 Steam 虛擬鍵盤，請使用鍵盤輸入。",
+    "Steam のスクリーンキーボードを呼び出せません。キーボードで入力してください。",
+    "Could not request the Steam on-screen keyboard. Please use a keyboard to type."
+  ],
+  "下一步：游戏版本": [
+    "下一步：遊戲版本",
+    "次へ：ゲームリージョン",
+    "Next: game region"
+  ],
+  "请先保存或修正未保存的设置。": [
+    "請先儲存或修正尚未儲存的設定。",
+    "未保存の設定を保存または修正してください。",
+    "Save or correct the unsaved settings first."
+  ],
+  "第三步：确认自动发现的 Steam / Proton。未发现时请手动选择；Steam 启动适配为可选项。": [
+    "第三步：確認自動找到的 Steam / Proton。若未找到，請手動選擇；Steam 啟動適配為選用項目。",
+    "ステップ3：自動検出された Steam / Proton を確認します。見つからない場合は手動で選択してください。Steam 起動への対応は任意です。",
+    "Step 3: confirm the detected Steam / Proton. Select manually if none was found. Steam launch integration is optional."
+  ],
+  "美术素材来源": [
+    "美術素材來源",
+    "アート素材の出典",
+    "Artwork sources"
+  ],
+  "启动器图标": [
+    "啟動器圖示",
+    "ランチャーアイコン",
+    "Launcher icon"
+  ],
+  "写入结果未确认，请重新启动启动器后核对设置。": [
+    "寫入結果未確認，請重新啟動啟動器後核對設定。",
+    "書き込み結果を確認できませんでした。ランチャーを再起動して設定を確認してください。",
+    "The write result could not be confirmed. Restart the launcher and check the settings."
+  ],
+  "读取超时，请刷新后重试。": [
+    "讀取逾時，請重新整理後再試。",
+    "読み込みがタイムアウトしました。更新して再試行してください。",
+    "Reading timed out. Refresh and try again."
+  ],
+  "修改已保存，但刷新失败，请重新载入。": [
+    "修改已儲存，但重新整理失敗，請重新載入。",
+    "変更は保存されましたが、再読み込みに失敗しました。もう一度読み込んでください。",
+    "Changes were saved, but refreshing failed. Please reload."
+  ],
   "FFXIV Super Launcher · 交互预览": [
     "FFXIV Super Launcher · 互動預覽",
     "FFXIV Super Launcher · 操作プレビュー",
@@ -22,8 +60,8 @@ window.previewStrings = {
     "メインページ",
     "Main pages"
   ],
-  "前往语言和区服设置": [
-    "前往語言與遊戲區服設定",
+  "前往语言和版本设置": [
+    "前往語言與遊戲版本設定",
     "言語とゲームリージョンの設定へ",
     "Open language and game region settings"
   ],
@@ -97,8 +135,8 @@ window.previewStrings = {
     "ログはまだありません",
     "No logs yet"
   ],
-  "仅显示当前游戏区服的示例账户": [
-    "僅顯示目前遊戲區服的範例帳戶",
+  "仅显示当前游戏版本的示例账户": [
+    "僅顯示目前遊戲版本的範例帳戶",
     "現在のゲームリージョンのサンプルアカウントのみ表示します",
     "Only sample accounts for the current game region are shown"
   ],
@@ -237,8 +275,8 @@ window.previewStrings = {
     "このプレビューの設定は現在のページ内だけに反映され、ランチャー設定には保存されません。実際のパスの読み取りは未接続です。",
     "Options affect this preview page only and are not saved to launcher settings. Reading real paths is not connected yet."
   ],
-  "游戏区服：{region}": [
-    "遊戲區服：{region}",
+  "游戏版本：{region}": [
+    "遊戲版本：{region}",
     "ゲームリージョン：{region}",
     "Game region: {region}"
   ],
@@ -442,9 +480,13 @@ window.previewStrings = {
     "ログイン認証情報の管理",
     "Login credential management"
   ],
-  "Steam 和 Proton 设置": ["Steam 與 Proton 設定", "Steam と Proton の設定", "Steam and Proton settings"],
-  "语言和区服": [
-    "語言和區服",
+  "Steam 和 Proton 设置": [
+    "Steam 與 Proton 設定",
+    "Steam と Proton の設定",
+    "Steam and Proton settings"
+  ],
+  "语言和版本": [
+    "語言和版本",
     "言語とリージョン",
     "Language and region"
   ],
@@ -458,18 +500,18 @@ window.previewStrings = {
     "情報",
     "About"
   ],
-  "中国区": [
-    "中國區",
+  "中国版": [
+    "中國版",
     "中国版",
     "China"
   ],
-  "繁中区": [
-    "繁中區",
+  "繁体中文版": [
+    "繁體中文版",
     "繁体字中国語版",
     "Traditional Chinese"
   ],
-  "国际区": [
-    "國際區",
+  "国际版": [
+    "國際版",
     "グローバル版",
     "Global"
   ],
@@ -503,13 +545,13 @@ window.previewStrings = {
     "ランチャーの表示言語",
     "Launcher interface language"
   ],
-  "游戏区服": [
-    "遊戲區服",
+  "游戏版本": [
+    "遊戲版本",
     "ゲームリージョン",
     "Game region"
   ],
-  "国际区客户端语言": [
-    "國際區用戶端語言",
+  "国际版客户端语言": [
+    "國際版用戶端語言",
     "グローバル版クライアントの言語",
     "Global client language"
   ],
@@ -608,33 +650,33 @@ window.previewStrings = {
     "ログイン名を選択",
     "Select login name"
   ],
-  "中国区客户端目录（包含 game 文件夹）": [
-    "中國區用戶端目錄（包含 game 資料夾）",
+  "中国版客户端目录（包含 game 文件夹）": [
+    "中國版用戶端目錄（包含 game 資料夾）",
     "中国版クライアントのディレクトリ（game フォルダーを含む）",
     "China client directory (containing the \"game\" folder)"
   ],
-  "中国区客户端目录": [
-    "中國區用戶端目錄",
+  "中国版客户端目录": [
+    "中國版用戶端目錄",
     "中国版クライアントのディレクトリ",
     "China client directory"
   ],
-  "繁中区客户端目录（包含 game 文件夹）": [
-    "繁中區用戶端目錄（包含 game 資料夾）",
+  "繁体中文版客户端目录（包含 game 文件夹）": [
+    "繁體中文版用戶端目錄（包含 game 資料夾）",
     "繁体字中国語版クライアントのディレクトリ（game フォルダーを含む）",
     "Traditional Chinese client directory (containing the \"game\" folder)"
   ],
-  "繁中区客户端目录": [
-    "繁中區用戶端目錄",
+  "繁体中文版客户端目录": [
+    "繁體中文版用戶端目錄",
     "繁体字中国語版クライアントのディレクトリ",
     "Traditional Chinese client directory"
   ],
-  "国际区客户端目录（包含 game 文件夹）": [
-    "國際區用戶端目錄（包含 game 資料夾）",
+  "国际版客户端目录（包含 game 文件夹）": [
+    "國際版用戶端目錄（包含 game 資料夾）",
     "グローバル版クライアントのディレクトリ（game フォルダーを含む）",
     "Global client directory (containing the \"game\" folder)"
   ],
-  "国际区客户端目录": [
-    "國際區用戶端目錄",
+  "国际版客户端目录": [
+    "國際版用戶端目錄",
     "グローバル版クライアントのディレクトリ",
     "Global client directory"
   ],
@@ -713,8 +755,8 @@ window.previewStrings = {
     "バックエンドに接続できませんでした。画面の閲覧は可能です。",
     "Backend connection failed. You can still browse the interface."
   ],
-  "整合开发预览：已接入语言与区服设置，其余功能待接入。": [
-    "整合開發預覽：已接入語言與區服設定，其餘功能待接入。",
+  "整合开发预览：已接入语言与版本设置，其余功能待接入。": [
+    "整合開發預覽：已接入語言與版本設定，其餘功能待接入。",
     "統合開発プレビュー：言語とゲームリージョンの設定は接続済みです。他の機能は未接続です。",
     "Integration development preview: language and game region settings are connected; other features are pending."
   ],
@@ -839,8 +881,8 @@ window.previewStrings = {
     "Enter your current six-digit 2FA code"
   ],
   "Dalamud 更新连接超时。是否跳过本次更新？使用本地版本不能保证与当前游戏兼容。": [
-    "Dalamud 更新連線逾時。要略過本次更新嗎？無法保證本機版本與目前遊戲之間的 compatibility。",
-    "Dalamud 更新の接続がタイムアウトしました。今回の更新をスキップしますか？ローカル版と現在のゲームの compatibility は保証できません。",
+    "Dalamud 更新連線逾時。要略過本次更新嗎？無法保證本機版本與目前遊戲之間的 相容性。",
+    "Dalamud 更新の接続がタイムアウトしました。今回の更新をスキップしますか？ローカル版と現在のゲームの 互換性 は保証できません。",
     "The Dalamud update connection timed out. Skip this update? Compatibility between the local version and the current game cannot be guaranteed."
   ],
   "正在读取…": [
@@ -868,8 +910,8 @@ window.previewStrings = {
     "ページを開けませんでした。情報を再読み込みしてから再試行してください。再び失敗する場合はログを確認してください。",
     "Could not open the page. Refresh the news and try again; if it still fails, check the log."
   ],
-  "以哪个游戏区服为基准": [
-    "以哪個遊戲區服為基準",
+  "以哪个游戏版本为基准": [
+    "以哪個遊戲版本為基準",
     "どのゲームリージョンを同期元にしますか",
     "Which game region should be the source?"
   ],
@@ -878,19 +920,23 @@ window.previewStrings = {
     "すべて選択",
     "Select all"
   ],
-  "勾选启用、取消勾选禁用，更改后立即保存，下次启动游戏生效。横线表示受插件集合条件控制；不修改则保留原规则。": ["勾選啟用、取消勾選停用，變更後立即儲存，下次啟動遊戲生效。橫線表示受插件集合條件控制；不修改則保留原規則。", "チェックを付けると有効、外すと無効になります。変更は直ちに保存され、次回のゲーム起動時に反映されます。横線はプラグインコレクションの条件による制御を示します。変更しなければ元のルールを保持します。", "Check to enable or uncheck to disable. Changes are saved immediately and take effect on the next game launch. A dash indicates control by plugin collection conditions; leaving it unchanged preserves the existing rules."],
+  "勾选启用、取消勾选禁用，更改后立即保存，下次启动游戏生效。横线表示受插件集合条件控制；不修改则保留原规则。": [
+    "勾選啟用、取消勾選停用，變更後立即儲存，下次啟動遊戲生效。橫線表示受插件集合條件控制；不修改則保留原規則。",
+    "チェックを付けると有効、外すと無効になります。変更は直ちに保存され、次回のゲーム起動時に反映されます。横線はプラグインコレクションの条件による制御を示します。変更しなければ元のルールを保持します。",
+    "Check to enable or uncheck to disable. Changes are saved immediately and take effect on the next game launch. A dash indicates control by plugin collection conditions; leaving it unchanged preserves the existing rules."
+  ],
   "取消操作": [
     "取消操作",
     "操作をキャンセル",
     "Cancel operation"
   ],
-  "各游戏区服均无此项数据，请先在来源游戏区服生成设置或安装插件。": [
-    "各遊戲區服均無此項資料，請先在來源遊戲區服產生設定或安裝外掛程式。",
+  "各游戏版本均无此项数据，请先在来源游戏版本生成设置或安装插件。": [
+    "各遊戲版本均無此項資料，請先在來源遊戲版本產生設定或安裝外掛程式。",
     "どのゲームリージョンにもこのデータがありません。先に同期元のゲームリージョンで設定を生成するか、プラグインをインストールしてください。",
     "None of the game regions has this data. Generate settings or install plugins in the source game region first."
   ],
-  "同步到所选游戏区服": [
-    "同步至所選遊戲區服",
+  "同步到所选游戏版本": [
+    "同步至所選遊戲版本",
     "選択したゲームリージョンに同期",
     "Sync to selected game regions"
   ],
@@ -909,9 +955,9 @@ window.previewStrings = {
     "上書き先：",
     "Overwrite targets:"
   ],
-  "请勿将繁中区的插件 DLL 与中国区或国际区的版本互相覆盖。同步插件文件不代表它们兼容目标游戏区服。": [
-    "請勿將繁中區的外掛程式 DLL 與中國區或國際區的版本互相覆寫。同步外掛程式檔案不代表它們與目標遊戲區服之間具有 compatibility。",
-    "繁体字中国語版のプラグイン DLL と、中国版またはグローバル版の DLL を相互に上書きしないでください。プラグインファイルを同期しても、同期先のゲームリージョンとの compatibility があることにはなりません。",
+  "请勿将繁体中文版的插件 DLL 与中国版或国际版的版本互相覆盖。同步插件文件不代表它们兼容目标游戏版本。": [
+    "請勿將繁體中文版的外掛程式 DLL 與中國版或國際版的版本互相覆寫。同步外掛程式檔案不代表它們與目標遊戲版本之間具有 相容性。",
+    "繁体字中国語版のプラグイン DLL と、中国版またはグローバル版の DLL を相互に上書きしないでください。プラグインファイルを同期しても、同期先のゲームリージョンとの 互換性 があることにはなりません。",
     "Do not overwrite plugin DLLs from the Traditional Chinese region with versions from China or Global, or vice versa. Synchronizing plugin files does not mean they are compatible with the destination game region."
   ],
   "选择更新插件": [
@@ -919,8 +965,8 @@ window.previewStrings = {
     "更新するプラグインを選択",
     "Choose plugins to update"
   ],
-  "选择来源游戏区服及需要覆盖的目标游戏区服。仅替换勾选目标的对应内容，目标中来源没有的文件也会被移除。被覆盖的内容会保留备份。": [
-    "選擇來源遊戲區服及需要覆蓋的目標遊戲區服。僅替換勾選目標的對應內容，目標中來源沒有的檔案也會移除。被覆蓋的內容會保留備份。",
+  "选择来源游戏版本及需要覆盖的目标游戏版本。仅替换勾选目标的对应内容，目标中来源没有的文件也会被移除。被覆盖的内容会保留备份。": [
+    "選擇來源遊戲版本及需要覆蓋的目標遊戲版本。僅替換勾選目標的對應內容，目標中來源沒有的檔案也會移除。被覆蓋的內容會保留備份。",
     "コピー元と上書き先のゲームリージョンを選択してください。選択した上書き先の該当データのみを置き換えます。コピー元に存在しないファイルは上書き先からも削除されます。上書き前のデータはバックアップされます。",
     "Select a source game region and the destination regions to overwrite. Only checked destinations will be replaced; files absent from the source will also be removed from those destinations. Replaced content will be backed up."
   ],
@@ -949,8 +995,8 @@ window.previewStrings = {
     "削除予定",
     "Scheduled for deletion"
   ],
-  "当前游戏区服尚未安装插件。": [
-    "目前遊戲區服尚未安裝外掛程式。",
+  "当前游戏版本尚未安装插件。": [
+    "目前遊戲版本尚未安裝外掛程式。",
     "現在のゲームリージョンにはプラグインがインストールされていません。",
     "No plugins are installed for the current game region."
   ],
@@ -1009,30 +1055,34 @@ window.previewStrings = {
     "Proton データディレクトリ（ここに pfx を自動作成します。専用ディレクトリの使用を推奨）",
     "Proton data directory (pfx is created here automatically; a dedicated directory is recommended)"
   ],
-  "适配从 Steam 启动": ["適配從 Steam 啟動", "Steam 起動に対応", "Enable Steam launch integration"],
-  "国际区使用 Steam 已有 pfx": [
-    "國際區使用 Steam 現有的 pfx",
-    "グローバル版で Steam の既存 pfx を使用",
-    "Use an existing Steam pfx for Global (Steam)"
+  "适配从 Steam 启动": [
+    "適配從 Steam 啟動",
+    "Steam 起動に対応",
+    "Enable Steam launch integration"
   ],
-  "扫描 Steam 国际区兼容环境": [
-    "掃描國際區（Steam 版）的 compatibility environments",
-    "グローバル版（Steam 版）の compatibility environments を検索",
-    "Scan compatibility environments for Global (Steam)"
+  "国际版使用 Steam 已有 pfx": [
+    "國際版使用 Steam 現有的 pfx",
+    "グローバル版で Steam の既存 pfx を使用",
+    "Use an existing Steam pfx for Global (Steam Version)"
+  ],
+  "扫描 Steam 国际版兼容环境": [
+    "掃描國際版（Steam 版）的 相容環境",
+    "グローバル版（Steam 版）の 互換環境 を検索",
+    "Scan compatibility environments for Global (Steam Version)"
   ],
   "Steam 兼容数据目录": [
-    "Steam compatibility data 目錄",
+    "Steam 相容性資料 目錄",
     "Steam compatibility data ディレクトリ",
     "Steam compatibility data directory"
   ],
-  "未勾选时三端共用上方 Proton 数据目录。勾选后仅国际区直接读写 Steam 已有环境，沿用其中的本地游戏设置和角色配置；不会复制文件。更换 Proton 可能升级该环境，请勿同时通过 Steam 启动游戏或官方启动器。": [
-    "未勾選時，三區共用上方的 Proton 資料目錄。勾選後，僅國際區會直接讀寫 Steam 現有的 compatibility environment，沿用其中的本機遊戲設定和角色設定，不會複製檔案。更換 Proton 可能升級該 compatibility environment，請勿同時透過 Steam 啟動遊戲或官方啟動器。",
-    "チェックを外すと、3 つのゲームリージョンで上記の Proton データディレクトリを共有します。チェックを入れると、グローバル版のみが Steam の既存の compatibility environment を直接読み書きし、その中のローカルのゲーム設定とキャラクター設定を引き継ぎます。ファイルはコピーしません。Proton を変更すると、その compatibility environment がアップグレードされる場合があります。同時に Steam からゲームや公式ランチャーを起動しないでください。",
-    "When unchecked, all three game regions share the Proton data directory above. When checked, only Global reads and writes the existing Global (Steam) compatibility environment directly, retaining its local game settings and character configurations; no files are copied. Changing Proton may upgrade that compatibility environment. Do not launch the game or official launcher through Steam at the same time."
+  "未勾选时三端共用上方 Proton 数据目录。勾选后仅国际版直接读写 Steam 已有环境，沿用其中的本地游戏设置和角色配置；不会复制文件。更换 Proton 可能升级该环境，请勿同时通过 Steam 启动游戏或官方启动器。": [
+    "未勾選時，三個版本共用上方的 Proton 資料目錄。勾選後，僅國際版會直接讀寫 Steam 現有的 相容環境，沿用其中的本機遊戲設定和角色設定，不會複製檔案。更換 Proton 可能升級該 相容環境，請勿同時透過 Steam 啟動遊戲或官方啟動器。",
+    "チェックを外すと、3 つのゲームリージョンで上記の Proton データディレクトリを共有します。チェックを入れると、グローバル版のみが Steam の既存の 互換環境 を直接読み書きし、その中のローカルのゲーム設定とキャラクター設定を引き継ぎます。ファイルはコピーしません。Proton を変更すると、その 互換環境 がアップグレードされる場合があります。同時に Steam からゲームや公式ランチャーを起動しないでください。",
+    "When unchecked, all three game regions share the Proton data directory above. When checked, only Global reads and writes the existing Global (Steam Version) compatibility environment directly, retaining its local game settings and character configurations; no files are copied. Changing Proton may upgrade that compatibility environment. Do not launch the game or official launcher through Steam at the same time."
   ],
   "环境检测": [
-    "compatibility environment 檢查",
-    "compatibility environment を確認",
+    "相容環境 檢查",
+    "互換環境 を確認",
     "Check compatibility environment"
   ],
   "（缺少 Steam Runtime {id}）": [
@@ -1155,7 +1205,11 @@ window.previewStrings = {
     "更新を確認",
     "Check for updates"
   ],
-  "自动检查更新": ["自動檢查更新", "更新を自動確認", "Automatically check for updates"],
+  "自动检查更新": [
+    "自動檢查更新",
+    "更新を自動確認",
+    "Automatically check for updates"
+  ],
   "添加到应用菜单": [
     "加入應用程式選單",
     "アプリケーションメニューに追加",
@@ -1266,7 +1320,11 @@ window.previewStrings = {
     "完全な診断ログ：",
     "Full diagnostic log:"
   ],
-  "下一步：Steam 和 Proton 设置": ["下一步：Steam 與 Proton 設定", "次へ：Steam と Proton の設定", "Next: Steam and Proton settings"],
+  "下一步：Steam 和 Proton 设置": [
+    "下一步：Steam 與 Proton 設定",
+    "次へ：Steam と Proton の設定",
+    "Next: Steam and Proton settings"
+  ],
   "Dalamud 功能违反游戏用户协议，使用后果由用户自行承担。": [
     "Dalamud 功能違反遊戲使用者協議，使用後果由使用者自行承擔。",
     "Dalamud の機能の使用はゲームの利用規約に違反します。使用による結果はユーザー自身の責任となります。",
@@ -1356,10 +1414,7 @@ window.previewStrings = {
     "網頁驗證顯示失敗，請取消後重試。",
     "ウェブ認証を表示できませんでした。キャンセルして再試行してください。",
     "Unable to display web verification. Cancel and retry."
-  ]
-};
-
-Object.assign(window.previewStrings, {
+  ],
   "第三方插件仓库": [
     "第三方插件倉庫",
     "外部プラグインリポジトリ",
@@ -1385,8 +1440,8 @@ Object.assign(window.previewStrings, {
     "リポジトリの URL",
     "Repository URL"
   ],
-  "仓库设置与游戏内 Dalamud 共用，仅影响当前游戏区服。": [
-    "倉庫設定與遊戲內 Dalamud 共用，僅影響目前遊戲區服。",
+  "仓库设置与游戏内 Dalamud 共用，仅影响当前游戏版本。": [
+    "倉庫設定與遊戲內 Dalamud 共用，僅影響目前遊戲版本。",
     "リポジトリ設定はゲーム内の Dalamud と共有され、現在のゲームリージョンにのみ適用されます。",
     "Repository settings are shared with in-game Dalamud and apply only to the current game region."
   ],
@@ -1429,23 +1484,17 @@ Object.assign(window.previewStrings, {
     "倉庫可存取，共 {count} 個插件。",
     "リポジトリに接続できました。プラグイン数：{count}。",
     "Repository is accessible: {count} plugins."
-  ]
-});
-
-Object.assign(window.previewStrings, {
+  ],
   "同步第三方仓库": [
     "同步第三方倉庫",
     "外部リポジトリを同期",
     "Sync third-party repositories"
   ],
-  "选择来源及目标游戏区服。仅替换目标的第三方仓库列表及启用状态，始终保留目标主仓库、预置仓库开关和其他 Dalamud 设置。原配置会保留备份。": [
-    "選擇來源及目標遊戲區服。僅替換目標的第三方倉庫清單及啟用狀態，始終保留目標主倉庫、預設倉庫開關和其他 Dalamud 設定。原設定會保留備份。",
+  "选择来源及目标游戏版本。仅替换目标的第三方仓库列表及启用状态，始终保留目标主仓库、预置仓库开关和其他 Dalamud 设置。原配置会保留备份。": [
+    "選擇來源及目標遊戲版本。僅替換目標的第三方倉庫清單及啟用狀態，始終保留目標主倉庫、預設倉庫開關和其他 Dalamud 設定。原設定會保留備份。",
     "同期元と同期先のゲームリージョンを選択します。同期先の外部リポジトリ一覧と有効状態のみを置き換え、メインリポジトリ、同梱リポジトリの有効設定、その他の Dalamud 設定は必ず保持します。元の設定はバックアップされます。",
     "Select the source and destination game regions. Only the destination third-party repository list and enablement states are replaced. Its main repository, preset repository switch, and other Dalamud settings are always preserved. The original configuration is backed up."
-  ]
-});
-
-Object.assign(window.previewStrings, {
+  ],
   "存储清理": [
     "儲存空間清理",
     "ストレージの整理",
@@ -1501,8 +1550,8 @@ Object.assign(window.previewStrings, {
     "DCトラベルの認証を更新しました。ゲームに戻り、もう一度DCトラベルを実行してください。",
     "DC travel authorization was restored. Return to the game and try DC travel again."
   ],
-  "繁中区登录验证": [
-    "繁中區登入驗證",
+  "繁体中文版登录验证": [
+    "繁體中文版登入驗證",
     "繁体字中国語版のログイン認証",
     "Traditional Chinese login verification"
   ],
@@ -1566,17 +1615,74 @@ Object.assign(window.previewStrings, {
     "移動先サーバーが混雑しています。後で再試行してください。",
     "The destination server is busy. Please try again later."
   ],
-  "跨区服务请求未能确认结果，请先查询官方订单状态。": [
-    "無法確認跨區服務請求結果，請先查詢官方訂單狀態。",
+  "跨版本务请求未能确认结果，请先查询官方订单状态。": [
+    "無法確認跨版本務請求結果，請先查詢官方訂單狀態。",
     "DCトラベルのリクエスト結果を確認できませんでした。公式の申請状況を先に確認してください。",
     "The DC travel request result could not be confirmed. Check the official order status first."
-  ]
-});
-
-Object.assign(window.previewStrings, {
+  ],
   "清理启动器管理的缓存和日志，并保留 Dalamud 管理的内容；游戏运行时也可清理，但下载或安装进行中时暂不可清理下载缓存；浏览器缓存清理保留 Cookies 和验证状态。": [
     "清理啟動器管理的快取和日誌，並保留 Dalamud 管理的內容；遊戲執行時也可清理，但下載或安裝進行中時無法清理下載快取；清理瀏覽器快取會保留 Cookies 和驗證狀態。",
     "ランチャーが管理するキャッシュとログを削除し、Dalamud が管理する内容は保持します。ゲーム実行中も利用できますが、ダウンロード・インストール中はダウンロードキャッシュを削除できません。ブラウザーのキャッシュを削除しても Cookie と認証状態は保持されます。",
     "Clears launcher-managed caches and logs while preserving content managed by Dalamud; available while the game is running, but download caches cannot be cleared during downloads or installation; clearing browser caches preserves cookies and verification state."
+  ],
+  "本地 Dalamud 与运行时版本不匹配，不能跳过更新。": [
+    "本機 Dalamud 與執行階段版本不符，無法略過更新。",
+    "ローカルの Dalamud とランタイムのバージョンが一致しません。",
+    "Local Dalamud and runtime versions do not match."
+  ],
+  "本地 Dalamud 程序校验失败，不能跳过更新。": [
+    "本機 Dalamud 程式驗證失敗，無法略過更新。",
+    "ローカルの Dalamud プログラムの整合性検証に失敗しました。",
+    "Local Dalamud program integrity checks failed."
+  ],
+  "本地 Dalamud 缺少完整性清单。": [
+    "本機 Dalamud 缺少完整性清單。",
+    "ローカルの Dalamud の整合性マニフェストがありません。",
+    "The local Dalamud integrity manifest is missing."
+  ],
+  "本地 Dalamud 组件不完整，不能跳过更新。": [
+    "本機 Dalamud 元件不完整，無法略過更新。",
+    "ローカルの Dalamud コンポーネントが不足しています。",
+    "Local Dalamud components are incomplete."
+  ],
+  "缺少本地 Dalamud 资源。": [
+    "缺少本機 Dalamud 資源。",
+    "ローカルの Dalamud リソースがありません。",
+    "Local Dalamud assets are missing."
+  ],
+  "本地 Dalamud 资源清单为空。": [
+    "本機 Dalamud 資源清單為空。",
+    "ローカルの Dalamud リソースマニフェストが空です。",
+    "The local Dalamud asset manifest is empty."
+  ],
+  "本地 Dalamud 资源校验失败。": [
+    "本機 Dalamud 資源驗證失敗。",
+    "ローカルの Dalamud リソースの整合性検証に失敗しました。",
+    "Local Dalamud asset integrity checks failed."
+  ],
+  "继续等待或重试更新": [
+    "繼續等待或重試更新",
+    "待機を続ける／更新を再試行",
+    "Continue waiting / retry update"
+  ],
+  "Dalamud 更新等待时间较长。可以继续等待，或跳过本次更新。": [
+    "Dalamud 更新等待時間較長。可以繼續等待，或略過本次更新。",
+    "Dalamud の更新に時間がかかっています。待機を続けるか、今回の更新をスキップできます。",
+    "The Dalamud update is taking longer than expected. You can keep waiting or skip this update."
+  ],
+  "本地 Dalamud 文件缺失，无法跳过更新使用本地版本。": [
+    "本機 Dalamud 檔案缺失，無法略過更新使用本機版本。",
+    "ローカルの Dalamud ファイルが不足しているため、使用できません。",
+    "Local Dalamud files are missing. The local version cannot be used."
+  ],
+  "无法读取本地 Dalamud 文件，请检查文件权限。": [
+    "無法讀取本機 Dalamud 檔案，請檢查檔案權限。",
+    "ローカルの Dalamud ファイルを読み取れません。アクセス権を確認してください。",
+    "Cannot read local Dalamud files. Check file permissions."
+  ],
+  "本地 Dalamud 完整性检查失败，无法跳过更新使用本地版本。": [
+    "本機 Dalamud 完整性檢查失敗，無法略過更新使用本機版本。",
+    "ローカルの Dalamud の整合性検証に失敗したため、使用できません。",
+    "Local Dalamud integrity checks failed. The local version cannot be used."
   ]
-});
+};

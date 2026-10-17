@@ -20,28 +20,28 @@
 
 # FFXIV Super Launcher
 
-## Version 2.1.2
+## Version 2.2.0
 
-Settings, logs, Electron and internal-browser data are now stored beside the AppImage. Old data is not moved automatically, and Proton data paths saved in existing settings are preserved. Before upgrading, read the [2.1.2 release notes](https://github.com/ImperatorVienna/FFXIVSuperLauncher/blob/main/docs/releases/2.1.2.en.md) and relocate settings and the entire `compatdata` folder if needed. A Windows version is planned for the next release; this release remains Linux-only.
+Windows x64 and Linux x86_64 are now released together. Version 2.2.0 adds native Windows launching and desktop shortcuts, improves Dalamud update recovery and China QR login, and refines the interface. See the [2.2.0 release notes](docs/releases/2.2.0.en.md).
 
-A community launcher for FINAL FANTASY XIV (hereafter FFXIV) on **Linux**, using **Proton** to run the game. It supports the **China, Traditional Chinese, and Global** game clients.
+A community launcher for FINAL FANTASY XIV (FFXIV) on **Windows and Linux**, supporting the **China, Traditional Chinese, and Global** clients. Windows launches the game natively; Linux uses an installed Proton.
 
 Maintained by **[ImperatorVienna](https://github.com/ImperatorVienna)**, this project continues development based on the source code and experience of [XIVLauncher](https://github.com/goatcorp/FFXIVQuickLauncher), [XIVLauncherCN](https://github.com/ottercorp/FFXIVQuickLauncher), and [XIVLauncherCN (Soil)](https://github.com/AtmoOmen/FFXIVQuickLauncher), with reference to [XIVTCLauncher](https://github.com/cycleapple/XIVTCLauncher) for the Traditional Chinese login protocol and feature design. It is an independently maintained community derivative, not an official release of Square Enix, Shengqu Games, or USERJOY, nor maintained or endorsed by those upstream projects. The original authors' copyright and license notices are retained.
 
-> **Supported platform: x86_64 Linux.** Obtain release files and release notes from [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases).
+> **Platforms: Windows x64 and Linux x86_64.** Download the ZIP for Windows or AppImage for Linux from [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases).
 
 The built-in browser is shared by official pages and web verification and is independent of each game region's login module.
 
 ## Features
 
-- **Three game regions**: a shared graphical frontend and Proton launch workflow, with separate management of client directories, account credentials, Dalamud, and plugin data.
-- **Proton support**: scans installed versions in the system and Steam libraries and supports manually specified paths; tested on real hardware with Arch Linux–based CachyOS / proton-cachyos-slr.
+- **Three game regions**: one graphical interface, with separate client directories, credentials, Dalamud and plugin data. Platform-specific adapters handle native Windows or Linux/Proton launching.
+- **Linux Proton support**: discovers installed Proton versions in system and Steam libraries; manual paths are supported. Tested on CachyOS with proton-cachyos-slr.
 - **Account management**: add, select, edit, and delete accounts by game region; credentials are saved in local plaintext files.
 - **Verification codes**: manual code entry and automatic local TOTP generation for Traditional Chinese and Global. Global requires a code only if OTP is enabled on the account.
 - **Game updates**: check and install client patches for the corresponding game region, including updating the game without launching it.
 - **Dalamud and plugins**: optionally enable Dalamud; manage plugin enablement states and check for Dalamud and plugin updates without entering the game.
 - **Cross-region synchronization**: use “Sync third-party repositories”, “Sync installed plugins”, and “Sync plugin settings” to synchronize each category after selecting the source and destination game regions. Repository synchronization replaces only the repository list and enablement states, always preserving the destination main repository, preset repository switch, and other Dalamud settings. Original data is backed up.
-- **Steam integration**: supports Global (Steam) account login. Enabling “Enable Steam launch integration” registers the launcher as a Steam compatibility tool, automatically enters fullscreen when launched through Steam, and lets input fields request the Steam virtual keyboard. Desktop window dimensions are retained separately.
+- **Steam integration**: both platforms support Global (Steam Version) account authentication with Steam running. Linux additionally offers Steam compatibility-tool registration, Steam-launch fullscreen and the Steam virtual keyboard; Windows does not display these Linux-specific settings.
 - **Interface and announcements**: the Electron graphical interface supports 简体中文, 繁體中文, 日本語, and English, with instant switching and no restart required; it displays official events and announcements for the corresponding game region and provides links to the official game website, server status, and other official pages.
 - **Third-party plugin repositories**: add, edit, enable/disable, delete repositories, or check their connections on the right of plugin management; China region plugin updates also recognize enabled preset repositories.
 - **China cross-data-center travel**: submit travel requests, query history, and return to the original data center, with an option to launch the game upon completion. Supports in-game travel and authorization recovery through DCTravelerX ([Dalamud-DailyRoutines/DCTraveler](https://github.com/Dalamud-DailyRoutines/DCTraveler)).
@@ -51,12 +51,12 @@ Before using a third-party launcher, Dalamud, or plugins, read the game's applic
 
 ## Project highlights
 
-- **Linux distribution**: an x86_64 Linux AppImage is currently available, with a Windows version planned for the next release. No macOS, ARM, or 32-bit x86 version is provided. AppImage distribution facilitates deployment on Linux desktops, including immutable systems; consult release notes for specific compatibility information.
-- **Uses Proton for compatibility**: removes the bundled Wine + DXVK approach of XIVLauncher and XIVLauncherCN and calls an installed Proton instead. The launcher automatically discovers installed Proton versions and has been verified on real hardware using CachyOS's proton-cachyos-slr.
+- **Two distribution formats**: Windows x64 ZIP and Linux x86_64 AppImage. No macOS, ARM or 32-bit x86 build is provided. Keep the Windows folder intact; do not copy only its EXE.
+- **Linux uses installed Proton**: no bundled Wine environment is required. Windows uses native game launching and does not need Proton.
 - **Unified management of game regions**: switch between China, Traditional Chinese, and Global logins in one launcher, with separate account, client, and plugin data. Each game region's Dalamud application is downloaded on demand; the runtime package may include shared or preinstalled helper components.
 - **Plugin management outside the game**: change plugin enablement states, select plugins to update, or synchronize settings between game regions without entering the game.
 - **Credential management**: manage account login credentials by game region, with local plaintext storage and local TOTP generation.
-- **Reuse an existing Global (Steam) pfx**: retain local game settings and character configuration files from the original pfx when switching from the official launcher to FFXIV Super Launcher (this does not concern character progress stored on the game servers).
+- **Reuse an existing Global (Steam Version) pfx**: retain local game settings and character configuration files from the original pfx when switching from the official launcher to FFXIV Super Launcher (this does not concern character progress stored on the game servers).
 - **Traditional Chinese Dalamud injection adaptation**: adjusts the injection workflow for Linux/Proton, using the same entrypoint path as Global and skipping ArgFixer from the original Traditional Chinese injection workflow; entering a character and installing and running plugins have been verified in game on real hardware.
 - **China Dalamud branch selection**: uses the Dalamud-DailyRoutines branch and update source, rather than adopting the ottercorp branch's plugin blacklist policy; this does not mean every plugin is compatible or exempt from the game's terms of service.
 
@@ -64,18 +64,26 @@ Before using a third-party launcher, Dalamud, or plugins, read the game's applic
 
 ### Requirements
 
-- An x86_64 Linux graphical desktop.
-- An installed Proton version and the Steam Linux Runtime required by that version; consult the selected Proton version's documentation for specific dependencies.
+- Windows x64 or an x86_64 Linux graphical desktop, with the game’s required graphics drivers and dependencies.
+- On Linux: an installed Proton and its required Steam Linux Runtime.
 - A complete client for the corresponding game region. **This project does not download a complete client into an empty directory.**
-- Working graphics drivers and the Vulkan support required by the selected Proton version.
+- On Linux: the Vulkan support required by the selected Proton.
 
 The runtime package includes .NET and Electron runtime components (including Chromium and Node.js); no separate installation of the .NET SDK, Electron, or a browser is required. Consult the specific release notes for dependencies and validation on other distributions; working on CachyOS does not mean every distribution or sandbox environment has been tested.
 
-### AppImage
+### Linux AppImage
 
-Download the x86_64 AppImage from [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases), make it executable, and run it. You may place it in a writable directory of your choice. AppImage is the only release package format.
+Download the Linux AppImage from [Releases](https://github.com/ImperatorVienna/FFXIVSuperLauncher/releases), make it executable, and run it from a writable directory.
 
-The first-run wizard starts in English and separates launcher language, game region, and Steam / Proton setup into steps. For Global, you can also select the client language, CDKey version, and preferred store language for EU accounts. Initial defaults are NA, an English client, and English (UK) for the store preference. Individual selections are saved immediately; automatic launcher update checks start only after setup is complete.
+### Windows ZIP
+
+Download and fully extract `FFXIVSuperLauncher-2.2.0-win-x64.zip`. Keep the `FFXIV Super Launcher` folder in a writable location and run `FFXIVSuperLauncher.exe`. Do not run it from inside the ZIP or move the EXE without the other files. .NET and Electron are included.
+
+The launcher refreshes its fixed launch scripts and desktop shortcut, including the icon. After moving or renaming the launcher, run the EXE directly once to refresh its path. No Start-menu registration is performed. Windows initial setup skips Steam / Proton discovery. Steam authentication still requires the Steam client to be running; a Steam installation path is not required for that authentication.
+
+### Shared initial setup
+
+The first-run wizard starts in English and separates launcher language and game region into steps, followed by Steam / Proton setup on Linux. For Global, you can also select the client language, CDKey version, and preferred store language for EU accounts. Initial defaults are NA, an English client, and English (UK) for the store preference. Individual selections are saved immediately; automatic launcher update checks start only after setup is complete.
 
 Next, configure client directories in “Language and region”. Select the game installation directory containing the `game` subdirectory; Global also requires a complete `boot` subdirectory.
 
@@ -98,7 +106,7 @@ If your Global account's CDKey was purchased on Steam, check “My CDKey was pur
 
 The launcher does not request or store your Steam account password (Steam is used only to verify CDKey ownership; the game login account remains your Square Enix account).
 
-### Launching this launcher through Steam
+### Launching this launcher through Steam — Linux
 
 In “Steam and Proton settings”, enable “Enable Steam launch integration” to register **FFXIV Super Launcher** as a Steam compatibility tool. Restart Steam, then select this compatibility tool in FFXIV’s properties in your Steam library. Disable the option to remove the registration. When enabled, launching through Steam automatically enters fullscreen, and clicking an input field requests the Steam virtual keyboard. If unavailable, the launcher asks you to use a keyboard; it never starts Steam just to open the keyboard. Desktop window dimensions and maximized state are retained separately.
 
@@ -108,21 +116,29 @@ This feature provides a Steam launch entry; **it does not enable Steam account a
 
 This feature uses a fixed launcher script. After manually moving or renaming the AppImage, run it once to refresh the path. After an automatic update, the launcher restarts and refreshes the path automatically; no manual action is required.
 
-### Compatibility environment / pfx
+### Compatibility environment / pfx — Linux
 
-By default, the launcher uses “Proton data directory (pfx is created here automatically; a dedicated directory is recommended)” in “Steam and Proton settings”. For Global, check “Use an existing Steam pfx for Global (Steam)” to reuse the existing environment of an installed Global (Steam) client and its local game settings.
+By default, the launcher uses “Proton data directory (pfx is created here automatically; a dedicated directory is recommended)” in “Steam and Proton settings”. For Global, check “Use an existing Steam pfx for Global (Steam Version)” to reuse the existing environment of an installed Global (Steam Version) client and its local game settings.
 
 When this option is disabled, Global uses the shared environment settings used by the other two game regions. Selecting an existing Steam environment does not migrate or synchronize plugin configurations.
 
 ## Updates
 
-Automatic update checks are enabled by default. The launcher checks for stable releases after initial setup is complete and on each subsequent launch. You can turn off “Automatically check for updates” to the right of “Add to applications menu” in “About”; regardless of the toggle state, you can click “Check for updates” beside the version in “About”. There is no update-channel selector. AppImage updates require user confirmation. After the complete download, the manifest signature and SHA256 are verified before the original file is replaced. The updated file is saved in the same directory with the new version number in its filename, and the old version is retained as `.previous`. Steam and application-menu entries launch through `<AppImage directory>/appimage-launcher`. After manually moving or renaming the AppImage, double-click it once to refresh the path automatically; Steam and application-menu entries will then continue to work. If there are multiple copies, the last one launched is used. Exit the game before updating. After installation, the interface opens automatically using the new AppImage’s absolute path, independently of application-menu registration. Accounts and settings are stored separately, and failed background update checks do not block game login.
+### Windows folder updates
+
+Update checks and downloads are shared with Linux, but Windows selects its own ZIP and signed update manifest. After confirmation, the launcher verifies the signature, archive hash and file inventory. A separate helper waits for the launcher to exit, replaces only program files and restarts it. Accounts, settings, plugins and logs remain intact. Previous program files are retained under `update-backups`; installation failures attempt rollback. Exit the game before updating. Native Windows end-to-end online update/restart still needs further field verification; automated replacement and rollback tests have passed.
+
+### Linux AppImage updates
+
+Automatic update checks are enabled by default. The launcher checks for stable releases after initial setup is complete and on each subsequent launch. You can turn off “Automatically check for updates” to the right of “Add to applications menu” in “About”; regardless of the toggle state, you can click “Check for updates” beside the version in “About”. There is no update-channel selector. AppImage updates require user confirmation. After the complete download, the manifest signature and SHA256 are verified before the original file is replaced. The updated file is saved in the same directory with the new version number in its filename, and the old version is retained as `.previous`. Steam and application-menu entries launch through `<launcher directory>/appimage-launcher`. After manually moving or renaming the AppImage, double-click it once to refresh the path automatically; Steam and application-menu entries will then continue to work. If there are multiple copies, the last one launched is used. Exit the game before updating. After installation, the interface opens automatically using the new AppImage’s absolute path, independently of application-menu registration. Accounts and settings are stored separately, and failed background update checks do not block game login.
 
 Run an older AppImage to roll back the launcher, then turn off automatic update checks. Whether an older version supports this toggle depends on that version. When multiple AppImages share the same launch entry, the last file launched is used.
 
 The application-menu entry is created automatically when the AppImage starts. “Add to applications menu” in “About” rebuilds the entry manually; normally, no extra action is needed. The default entry file is `~/.local/share/applications/xivlauncher-super.desktop`, honoring `XDG_DATA_HOME`. After manually moving or renaming the AppImage, run it directly once to refresh the record.
 
 At AppImage startup, missing default configuration is created, the fixed launcher script and application-menu entry are written, and then initial setup begins. Automatic update checks run after initial setup is complete. The entry can also be rebuilt manually in “About”. After setup or adding the entry, available application-menu caches are refreshed in the background without opening a terminal window; a refresh failure does not prevent use of the launcher. The menu entry uses the absolute path to a persistently stored icon file, so the icon remains readable after the AppImage is unmounted.
+
+### Game, Dalamud and plugin updates
 
 | Action | Behavior |
 | --- | --- |
@@ -141,7 +157,7 @@ Before synchronizing plugins between game regions, check compatibility with the 
 
 ## In-game cross-data-center travel in China
 
-Version 2.1.0 adds Proton communication support for **DCTravelerX** ([Dalamud-DailyRoutines/DCTraveler](https://github.com/Dalamud-DailyRoutines/DCTraveler)). Enable China Dalamud, install a compatible version of DCTravelerX, and launch the game through this launcher to use in-game cross-data-center travel. This does not guarantee compatibility with ottercorp's DcTraveler or other plugins.
+Windows and Linux provide platform-specific launcher communication for **DCTravelerX** ([Dalamud-DailyRoutines/DCTraveler](https://github.com/Dalamud-DailyRoutines/DCTraveler)). Enable China Dalamud, install a compatible version of DCTravelerX, and launch the game through this launcher to use in-game cross-data-center travel. This does not guarantee compatibility with ottercorp's DcTraveler or other plugins.
 
 The frontend can close after the game starts while the backend maintains the game session, travel authorization, and Steam status. Do not terminate that backend process manually. Open the launcher again to access the frontend.
 
@@ -166,7 +182,7 @@ Startup also checks session records and known temporary files, reclaiming record
 The default data directory is:
 
 ```text
-<AppImage directory>/
+<launcher directory>/
 ├── ffxiv_cn/     # China data
 ├── ffxiv_tc/     # Traditional Chinese data
 ├── ffxiv/        # Global data
@@ -174,7 +190,7 @@ The default data directory is:
 └── logs/        # Diagnostic logs
 ```
 
-Application data is stored beside the AppImage; only the application-menu entry honors `XDG_DATA_HOME`. Shared Steam and Proton settings are stored in the launcher data directory; account and Dalamud data are isolated by game region.
+Launcher data is stored beside the AppImage on Linux or beside `FFXIVSuperLauncher.exe` on Windows. Linux application-menu entries follow `XDG_DATA_HOME`; Windows creates a desktop shortcut and does not register a Start-menu entry. Account and Dalamud data remain separate for each game region.
 
 Credentials are stored only as plaintext in `credentials.json` inside each game-region directory. Passwords, 2FA secrets, and quick-login credentials are not encrypted. Credential files created by the launcher allow only the current user to read and write them; do not upload or share these files.
 
@@ -186,7 +202,7 @@ Submit issues and feature suggestions through [GitHub Issues](https://github.com
 
 When reporting an issue, please provide as much of the following as possible:
 
-- Launcher version, Linux distribution, desktop environment, and Proton version.
+- Launcher version and operating system; on Linux, also distribution, desktop environment and Proton version.
 - Current game region and whether you launch directly or through the Steam compatibility tool.
 - Reproduction steps, expected behavior, actual behavior, and the time of the error.
 - Necessary screenshots or relevant diagnostic logs.

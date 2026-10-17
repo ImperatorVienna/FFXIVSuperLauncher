@@ -4,7 +4,7 @@ namespace XIVLauncher.Linux;
 public sealed class SessionDiagnostics(string root)
 {
     private sealed record SessionFile(string Path) { internal readonly object Gate = new(); }
-    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, SessionFile> Files = new(StringComparer.Ordinal);
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, SessionFile> Files = new(Platforms.PlatformServices.Paths.Comparer);
     private readonly SessionFile file = Files.GetOrAdd(Path.GetFullPath(root), directory => new(Path.Combine(directory, "logs", $"launcher-{DateTime.Now:yyyyMMdd-HHmmss}-{Environment.ProcessId}.log")));
     public string FilePath => file.Path;
     public string? WriteError { get; private set; }
@@ -13,7 +13,7 @@ public sealed class SessionDiagnostics(string root)
         lock (file.Gate)
         {
             if (Processes.ProcessFileOwner.IsProtected(path + ".in-use")) throw new IOException("Log owner is active.");
-            if (Path.GetFullPath(path) != file.Path)
+            if (!Platforms.PlatformServices.Paths.Same(Path.GetFullPath(path), file.Path))
             {
                 var name = Path.GetFileNameWithoutExtension(path);
                 if (!int.TryParse(name[(name.LastIndexOf('-') + 1)..], out var pid) || pid <= 0 ||
@@ -23,7 +23,7 @@ public sealed class SessionDiagnostics(string root)
             using var stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.Delete);
             var size = stream.Length;
             // Preserve the current log inode; subsequent writes continue normally.
-            if (Path.GetFullPath(path) == file.Path) stream.SetLength(0);
+            if (Platforms.PlatformServices.Paths.Same(Path.GetFullPath(path), file.Path)) stream.SetLength(0);
             else File.Delete(path);
             return size;
         }

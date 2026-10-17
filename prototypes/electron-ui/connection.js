@@ -92,7 +92,7 @@ window.frontendConnection = (() => {
     if(ready())for(const name of ['open-official','status','refresh-official'])actions.add(name);
     if(editable)for(const name of ['recover-game-auth','browse-client','accounts','login','travel','download','add-account','delete-account','save-account','discard-account'])actions.add(name);
     if(active()&&view?.state==='running')actions.add('cancel-operation');
-    if(active()&&view?.state==='running'&&!replying)for(const name of ['submit-otp','skip-otp','dalamud-disable'])actions.add(name);
+    if(active()&&view?.state==='running'&&!replying)for(const name of ['submit-otp','skip-otp','dalamud-disable','dalamud-retry'])actions.add(name);
     if(active()&&view?.state==='running'&&!replying&&view?.challenge?.allowLocal)actions.add('dalamud-local');
     if(editor?.loading||!editor?.existing)actions.delete('delete-account');
     if(!editor||editor.loading||editor.readFailed)actions.delete('save-account');
@@ -290,7 +290,7 @@ window.frontendConnection = (() => {
     const heading=document.createElement('div');heading.className='section-heading';
     const title=document.createElement('h2');title.id='verification-title';title.textContent=t('登录验证');heading.append(title);panel.append(heading);
     const body=document.createElement('div');body.className='verification-body';panel.append(body);
-    const text=document.createElement('p');text.className='muted';text.textContent=t(challenge?.message||'')||t(view.state==='running'?'正在处理，请稍候…':view.state==='cancelling'?'正在取消…':view.state==='completed'?(operationKind==='recovery'?'跨区授权已恢复，请回到游戏重新点击跨区。':'操作已完成。'):view.state==='cancelled'?'已取消。':view.error||'操作失败，请查看日志。');body.append(text);
+    const text=document.createElement('p');text.className='muted';text.textContent=(challenge?.message||'').split('\n').map(line=>t(line)).join('\n')||t(view.state==='running'?'正在处理，请稍候…':view.state==='cancelling'?'正在取消…':view.state==='completed'?(operationKind==='recovery'?'跨区授权已恢复，请回到游戏重新点击跨区。':'操作已完成。'):view.state==='cancelled'?'已取消。':view.error||'操作失败，请查看日志。');body.append(text);
     const buttons=document.createElement('div');buttons.className='row';
     const add=(action,label,disabled=false)=>{const button=document.createElement('button');button.dataset.action=action;button.textContent=t(label);button.disabled=disabled;buttons.append(button);return button;};
     if(challenge?.kind==='qr'&&challenge.image?.startsWith('data:image/png;base64,')){const image=document.createElement('img');image.src=challenge.image;image.alt=t('请使用叨鱼扫描二维码登录。');image.className='backend-qr';body.append(image);}
@@ -301,7 +301,7 @@ window.frontendConnection = (() => {
       line.append(label,code);body.append(line);
     }
     if(challenge?.kind==='web-captcha'){
-      body.classList.add('web-verification');const slot=document.createElement('div');slot.id='captcha-slot';slot.setAttribute('aria-label',t('繁中区登录验证'));body.append(slot);
+      body.classList.add('web-verification');const slot=document.createElement('div');slot.id='captcha-slot';slot.setAttribute('aria-label',t('繁体中文版登录验证'));body.append(slot);
       requestAnimationFrame(()=>void syncCaptchaLayout());
     }
     if(challenge?.kind==='otp'){
@@ -309,7 +309,7 @@ window.frontendConnection = (() => {
       add('submit-otp','确认并登录').classList.add('primary');if(challenge.optional)add('skip-otp','账号未启用 2FA，继续');
     }
     if(challenge?.kind==='dalamud-timeout'){
-      add('dalamud-local','跳过更新，使用本地 Dalamud',!challenge.allowLocal);add('dalamud-disable','禁用 Dalamud 并继续启动');
+      add('dalamud-retry','继续等待或重试更新');add('dalamud-local','跳过更新，使用本地 Dalamud',!challenge.allowLocal);add('dalamud-disable','禁用 Dalamud 并继续启动');
       const note=document.createElement('p');note.textContent=t('选择禁用后将保存设置；以后需要自行重新勾选“启用 Dalamud”。');note.className='muted';body.append(note);
     }
     if(active())add('cancel-operation','取消登录',view.state==='cancelling');
@@ -359,6 +359,7 @@ window.frontendConnection = (() => {
           case 'download':await startOperation('game-update');break;
           case 'submit-otp':if(!/^\d{6}$/.test($('#otp')?.value||'')){feedback('请输入六位数字。');break;}await reply($('#otp').value);break;
           case 'skip-otp':await reply('');break;
+          case 'dalamud-retry':await reply('retry');break;
           case 'dalamud-local':await reply('local');break;
           case 'dalamud-disable':await reply('disable');break;
           case 'cancel-operation':await cancelOperation();break;

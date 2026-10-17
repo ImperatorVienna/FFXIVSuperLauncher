@@ -102,6 +102,10 @@ internal static class FrontendHost
                     case "snapshot":result=preferences.Snapshot();break;
                     case "session.release":
                         var releaseView=operations.Poll(Parse<OperationIdentity>());
+#if WINDOWS_BACKEND
+                        if (FrontendSessionRelease.CanRelease(releaseView,gameSession))
+                            await Platforms.Windows.WindowsGameSessionLifetime.VerifyAsync(root, travelSessions.Select(x => x.Port), "before frontend release");
+#endif
                         releasedSession=FrontendSessionRelease.CanRelease(releaseView,gameSession);
                         if(releasedSession)
                         {
@@ -181,6 +185,10 @@ internal static class FrontendHost
             try
             {
             // Disposing UI services must not drop the AppImage mount while a game is alive.
+#if WINDOWS_BACKEND
+            if (gameSession != null)
+                await Platforms.Windows.WindowsGameSessionLifetime.WaitAsync(root, gameSession, travelSessions.Select(x => x.Port));
+#else
             if ((steamEntry || releasedSession) && gameSession != null)
             {
                 try { await gameSession.WaitForExitAsync(); }
@@ -190,6 +198,7 @@ internal static class FrontendHost
                     while(gameSession.ObserveGame())await Task.Delay(1000);
                 }
             }
+#endif
             }
             finally
             {

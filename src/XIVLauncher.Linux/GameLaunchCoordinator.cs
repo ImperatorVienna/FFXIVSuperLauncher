@@ -22,7 +22,10 @@ internal static class GameLaunchCoordinator
         if (settings.SelectedRegion == "ffxiv_tc") PlatformServices.EnsureWebVerificationAvailable();
         if (!GameHelpers.IsValidGamePath(settings.GamePath)) throw new InvalidOperationException(Localization.T("请选择当前游戏区服的完整客户端目录，需包含 game/ffxiv_dx11.exe 和有效版本文件。"));
         using var gameLock = AcquireClientLock(settings.GamePath);
+        var diagnostics = new SessionDiagnostics(settings.Root);
+        var stage = Stopwatch.StartNew();
         var gameArguments = await authenticate(token);
+        diagnostics.Write($"Authentication and game update stage completed after {stage.Elapsed.TotalSeconds:F1} seconds.", settings.SelectedRegion, "INFO");
         await runner.DiagnoseAsync(status, token);
         Paths.OverrideRoamingPath(settings.RegionRoot);
         var game = new DirectoryInfo(settings.GamePath);
@@ -46,7 +49,9 @@ internal static class GameLaunchCoordinator
         if (settings.SelectedRegion == "ffxiv" && settings.EnableDalamud && files?.SupportedGameVersion is { Length: > 0 } supported && supported != Patching.GamePatchFiles.Version(settings.GamePath))
             throw new CredentialValidationException("ffxiv Dalamud does not support the installed game version.", "当前国际区 Dalamud 尚不支持已安装的客户端版本。可取消“启用 Dalamud”后重新启动，或等待上游更新。");
         onStarting?.Invoke(runner);
-        await runner.LaunchAsync(settings, prepared, gameArguments, files != null, status, token);
+        stage.Restart();
+        try { await runner.LaunchAsync(settings, prepared, gameArguments, files != null, status, token); }
+        finally { diagnostics.Write($"Game launch/injection stage finished after {stage.Elapsed.TotalSeconds:F1} seconds.", settings.SelectedRegion, "INFO"); }
         return files != null;
     }
 }

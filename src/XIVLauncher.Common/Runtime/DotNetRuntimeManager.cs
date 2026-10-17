@@ -60,10 +60,10 @@ public static class DotNetRuntimeManager
         Log.Information("[Runtime] 需要更新 {DisplayName}: 本地={LocalVersion}, 目标={RemoteVersion}", displayName, localVersion, version);
         setLoadingMessage?.Invoke("正在更新依赖库...");
 
-        if (runtimeDirectory.Exists)
-            runtimeDirectory.Delete(true);
-
+        var destination = runtimeDirectory.FullName;
+        runtimeDirectory = new DirectoryInfo(destination + ".staging-" + Guid.NewGuid().ToString("N"));
         runtimeDirectory.Create();
+        versionFile = new FileInfo(Path.Combine(runtimeDirectory.FullName, "version"));
 
         var downloadPath = runtimeDirectory.FullName + ".download-" + Guid.NewGuid().ToString("N");
 
@@ -75,12 +75,12 @@ public static class DotNetRuntimeManager
             var dotnetVersion = version.Split('.')[0];
 
             Log.Information("[Runtime] 正在下载 .NET 运行时 {RuntimeIdentifier} v{Version}", runtimeIdentifier, version);
-            await DownloadFiles([(dotnetUrl, downloadPath)], reportProgress).ConfigureAwait(false);
+            await DownloadFiles([(dotnetUrl, downloadPath)], reportProgress, cancellationToken).ConfigureAwait(false);
             ExtractSpecificDirectory(downloadPath, Path.Combine(runtimeDirectory.FullName, "shared", "Microsoft.NETCore.App", version), $"runtimes/{runtimeIdentifier}/native/");
             ExtractSpecificDirectory(downloadPath, Path.Combine(runtimeDirectory.FullName, "shared", "Microsoft.NETCore.App", version), $"runtimes/{runtimeIdentifier}/lib/net{dotnetVersion}.0/");
 
             Log.Information("[Runtime] 正在下载 .NET 桌面运行时 {RuntimeIdentifier} v{Version}", runtimeIdentifier, version);
-            await DownloadFiles([(desktopUrl, downloadPath)], reportProgress).ConfigureAwait(false);
+            await DownloadFiles([(desktopUrl, downloadPath)], reportProgress, cancellationToken).ConfigureAwait(false);
             ExtractSpecificDirectory(downloadPath, Path.Combine(runtimeDirectory.FullName, "shared", "Microsoft.WindowsDesktop.App", version), $"runtimes/{runtimeIdentifier}/native/");
             ExtractSpecificDirectory
                 (downloadPath, Path.Combine(runtimeDirectory.FullName, "shared", "Microsoft.WindowsDesktop.App", version), $"runtimes/{runtimeIdentifier}/lib/net{dotnetVersion}.0/");
@@ -94,6 +94,15 @@ public static class DotNetRuntimeManager
             );
 
             await File.WriteAllTextAsync(versionFile.FullName, version, cancellationToken);
+            foreach (var required in new[] {
+                $"host/fxr/{version}/hostfxr.dll",
+                $"shared/Microsoft.NETCore.App/{version}/System.Private.CoreLib.dll",
+                $"shared/Microsoft.NETCore.App/{version}/coreclr.dll",
+                $"shared/Microsoft.WindowsDesktop.App/{version}/PresentationCore.dll" })
+                if (!File.Exists(Path.Combine(runtimeDirectory.FullName, required)) || new FileInfo(Path.Combine(runtimeDirectory.FullName, required)).Length == 0)
+                    throw new IOException("Downloaded runtime is incomplete.");
+            cancellationToken.ThrowIfCancellationRequested();
+            XIVLauncher.Common.Util.StagedDirectoryCommit.Replace(runtimeDirectory.FullName, destination);
             Log.Information("[Runtime] {DisplayName} 更新完成", displayName);
         }
         catch (Exception ex)
@@ -105,6 +114,7 @@ public static class DotNetRuntimeManager
         {
             if (File.Exists(downloadPath))
                 File.Delete(downloadPath);
+            if (Directory.Exists(runtimeDirectory.FullName)) Directory.Delete(runtimeDirectory.FullName, true);
         }
     }
 
@@ -130,11 +140,11 @@ public static class DotNetRuntimeManager
         return string.Empty;
     }
 
-    private static async Task DownloadFiles(IReadOnlyList<(string Url, string Path)> files, Action<long?, long, double?>? reportProgress)
+    private static async Task DownloadFiles(IReadOnlyList<(string Url, string Path)> files, Action<long?, long, double?>? reportProgress, CancellationToken cancellationToken)
     {
         using var client = new HttpClient { Timeout = TimeSpan.FromMinutes(30) };
         foreach (var file in files)
-            await UpdateDownload.FileAsync(client, file.Url, file.Path).ConfigureAwait(false);
+            await UpdateDownload.FileAsync(client, file.Url, file.Path, cancellationToken).ConfigureAwait(false);
     }
 
     private static void ExtractSpecificDirectory(string zipPath, string extractPath, string directoryToExtract)

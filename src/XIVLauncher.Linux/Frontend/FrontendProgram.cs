@@ -11,7 +11,10 @@ internal static class FrontendProgram
         if (startup.SteamEntry)
             foreach (var key in new[] { "WINEPREFIX", "STEAM_COMPAT_DATA_PATH", "STEAM_COMPAT_TOOL_PATHS", "STEAM_COMPAT_MOUNTS", "STEAM_COMPAT_INSTALL_PATH" })
                 Environment.SetEnvironmentVariable(key, null);
-        return FrontendHost.RunAsync(startup.Root, Console.In, Console.Out,
+        // IPC is UTF-8 on every platform, independent of the Windows console code page.
+        using var input = new StreamReader(Console.OpenStandardInput(), new System.Text.UTF8Encoding(false), detectEncodingFromByteOrderMarks: false);
+        using var output = new StreamWriter(Console.OpenStandardOutput(), new System.Text.UTF8Encoding(false)) { AutoFlush = true };
+        return FrontendHost.RunAsync(startup.Root, input, output,
             launcherEntry: startup.LauncherEntry, steamEntry: startup.SteamEntry).GetAwaiter().GetResult();
     }
 }

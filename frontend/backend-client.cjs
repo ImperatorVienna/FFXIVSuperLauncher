@@ -1,5 +1,6 @@
 'use strict';
 const { spawn } = require('node:child_process');
+const {backendProcessOptions} = require('./platforms/backend-process.cjs');
 const {contracts} = require('./ipc-contract.cjs');
 
 // Used only in Electron's main process. Each call has a deadline and a bounded response.
@@ -11,13 +12,13 @@ class BackendClient {
     this.timeout = timeout;
     this.closed = false;
     this.buffer = '';
-    this.child = spawnProcess(executable, args, { stdio: ['pipe','pipe','pipe'], shell: false });
+    this.child = spawnProcess(executable, args, backendProcessOptions());
     this.child.stdout.setEncoding('utf8');
     this.child.stdout.on('data', chunk => this.receive(chunk));
     // Never forward raw child-process diagnostics or potential secrets into the renderer.
     this.child.stderr.resume();
     this.child.on('error', () => this.fail('backend-unavailable'));
-    this.child.on('exit', () => {this.exited=true;this.fail('backend-exited');});
+    this.child.on('exit', code => {this.exitCode=Number.isInteger(code)?code:null;this.exited=true;this.fail('backend-exited');});
     this.child.stdin.on('error', () => this.fail('backend-unavailable'));
   }
   request(method, params = {}) {

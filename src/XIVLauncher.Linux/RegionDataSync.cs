@@ -158,15 +158,8 @@ public static class RegionDataSync
     {
         if (!LinuxSettings.Regions.Any(r => r.Id == region)) throw new ArgumentException("未知来源区服。", nameof(region));
     }
-    private static void CheckParents(string root, string path)
-    {
-        for (var current = path; ; current = Path.GetDirectoryName(current)!)
-        {
-            RejectLink(current);
-            if (current == root) break;
-            if (string.IsNullOrEmpty(current)) throw new IOException("同步路径超出数据目录。");
-        }
-    }
+    private static void CheckParents(string root, string path) => ContainedPath.Ensure(root, path,
+        escapeMessage: "同步路径超出数据目录。", linkMessage: "同步路径含符号链接，未自动跟随。");
     private static void RejectLink(string path)
     {
         if (new FileInfo(path).LinkTarget != null || new DirectoryInfo(path).LinkTarget != null)

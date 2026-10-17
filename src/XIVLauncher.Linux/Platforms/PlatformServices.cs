@@ -5,6 +5,10 @@ namespace XIVLauncher.Linux.Platforms;
 // use Linux behavior on an unsupported OS.
 internal static class PlatformServices
 {
+    internal static IPlatformEnvironment Environment { get; } = OperatingSystem.IsLinux()
+        ? new Linux.LinuxEnvironment() : OperatingSystem.IsWindows() ? new Windows.WindowsEnvironment() : throw new PlatformNotSupportedException();
+    internal static FileSystemPathRules Paths { get; } = OperatingSystem.IsLinux()
+        ? FileSystemPathRules.Linux : OperatingSystem.IsWindows() ? FileSystemPathRules.Windows : throw new PlatformNotSupportedException();
     internal static void ValidateSetup(LinuxSettings settings)
     {
         if (OperatingSystem.IsLinux()) Linux.LinuxGameRuntime.ValidateSetup(settings);

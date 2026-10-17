@@ -62,11 +62,11 @@ window.createSetupWizard=({call,snapshot,apply,completed,chooseProton,chooseDire
     });parent.append(b);return b;}
     if(step===1){
       select('setup-language','启动器界面语言',Object.entries(languages).map(([name,id])=>[id,name]),draft.language,async value=>{await apply({language:value},true);draft.language=value;});
-      const actions=node('div',null,'row dialog-actions');dialog.append(actions);button('setup-next','下一步：游戏区服',async()=>{step=2;},actions).classList.add('primary');
+      const actions=node('div',null,'row dialog-actions');dialog.append(actions);button('setup-next','下一步：游戏版本',async()=>{step=2;},actions).classList.add('primary');
     }else if(step===2){
-      select('setup-region','游戏区服',[['ffxiv_cn',t('中国区')],['ffxiv_tc',t('繁中区')],['ffxiv',t('国际区')]],draft.region,async value=>{await apply({region:value},true);draft.region=value;draft.enableDalamud=snapshot().regions.find(x=>x.id===value)?.enableDalamud||false;});
+      select('setup-region','游戏版本',[['ffxiv_cn',t('中国版')],['ffxiv_tc',t('繁体中文版')],['ffxiv',t('国际版')]],draft.region,async value=>{await apply({region:value},true);draft.region=value;draft.enableDalamud=snapshot().regions.find(x=>x.id===value)?.enableDalamud||false;});
       if(draft.region==='ffxiv'){
-        select('setup-clientLanguage','国际区客户端语言',[[0,'日本語'],[1,'English'],[2,'Deutsch'],[3,'Français']],draft.clientLanguage,async value=>{await apply({clientLanguage:Number(value)},true);draft.clientLanguage=Number(value);});
+        select('setup-clientLanguage','国际版客户端语言',[[0,'日本語'],[1,'English'],[2,'Deutsch'],[3,'Français']],draft.clientLanguage,async value=>{await apply({clientLanguage:Number(value)},true);draft.clientLanguage=Number(value);});
         const pair=node('div',null,'settings-pair');dialog.append(pair);
         select('setup-cdkey','账户 CDKey 版本',['NA','JP','EU'].map(v=>[v,v]),draft.cdKeyVersion,async value=>{await apply({cdKeyVersion:value},true);draft.cdKeyVersion=value;},pair);
         if(draft.cdKeyVersion==='EU')select('setup-euShopLanguage','官网及商城偏好语言',[['en-gb','English(UK)'],['fr-fr','Français'],['de-de','Deutsch']],draft.euShopLanguage,async value=>{await apply({euShopLanguage:value},true);draft.euShopLanguage=value;},pair);

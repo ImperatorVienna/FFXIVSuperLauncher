@@ -3,8 +3,8 @@ using System.Security.Cryptography;
 
 namespace XIVLauncher.GamePatchV3;
 
-/// <summary>Native xdelta3 worker. Replaces the Windows named-memory RPC worker on Linux.</summary>
-public static class LinuxVcdiff
+/// <summary>Shared native xdelta3 invocation; the platform adapter supplies the executable.</summary>
+public static class NativeVcdiff
 {
     public static async Task ApplyAsync(string executable, string sourceFile, ReadOnlyMemory<byte> delta,
         string targetFile, string expectedMd5, long expectedSize,

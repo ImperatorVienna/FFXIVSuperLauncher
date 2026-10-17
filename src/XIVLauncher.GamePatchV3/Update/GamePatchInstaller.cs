@@ -616,7 +616,7 @@ public sealed class GamePatchInstaller : IDisposable
         return paths;
     }
 
-    private static List<Uri> BuildDownloadUrls
+    internal static List<Uri> BuildDownloadUrls
     (
         string          relativeUrl,
         params string[] baseUrls
@@ -624,7 +624,11 @@ public sealed class GamePatchInstaller : IDisposable
     {
         var urls           = new List<Uri>();
         var seen           = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var hasAbsoluteUrl = Uri.TryCreate(relativeUrl, UriKind.Absolute, out var absoluteUrl);
+        // A leading slash is a CDN-relative path, not a file:// URI.
+        var hasAbsoluteUrl = Uri.TryCreate(relativeUrl, UriKind.Absolute, out var absoluteUrl)
+            && absoluteUrl.Scheme is "http" or "https";
+        if (!hasAbsoluteUrl && (relativeUrl.Contains(':') || relativeUrl.Contains('\\')))
+            throw new InvalidDataException("Unsupported patch download URL.");
 
         foreach (var baseUrl in baseUrls)
         {
@@ -634,6 +638,8 @@ public sealed class GamePatchInstaller : IDisposable
             var sourceUrl = hasAbsoluteUrl ?
                                 absoluteUrl! :
                                 new Uri(new Uri(baseUrl.TrimEnd('/') + "/"), relativeUrl.TrimStart('/'));
+            if (sourceUrl.Scheme is not ("http" or "https"))
+                throw new InvalidDataException("Unsupported patch download URL.");
             var signedUrl = CDNLinkSigner.Sign(sourceUrl);
             if (seen.Add(signedUrl.AbsoluteUri))
                 urls.Add(signedUrl);

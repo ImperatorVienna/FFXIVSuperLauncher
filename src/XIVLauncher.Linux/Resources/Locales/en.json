@@ -116,5 +116,17 @@
   "官方超域旅行服务维护中，请稍后重试。": "The official DC travel service is under maintenance. Please try again later.",
   "目标服务器繁忙，请您稍晚再次尝试。": "The destination server is busy. Please try again later.",
   "跨区服务请求未能确认结果，请先查询官方订单状态。": "The DC travel request result could not be confirmed. Check the official order status first.",
-  "清理启动器管理的缓存和日志，并保留 Dalamud 管理的内容；游戏运行时也可清理，但下载或安装进行中时暂不可清理下载缓存；浏览器缓存清理保留 Cookies 和验证状态。": "Clears launcher-managed caches and logs while preserving content managed by Dalamud; available while the game is running, but download caches cannot be cleared during downloads or installation; clearing browser caches preserves cookies and verification state."
+  "清理启动器管理的缓存和日志，并保留 Dalamud 管理的内容；游戏运行时也可清理，但下载或安装进行中时暂不可清理下载缓存；浏览器缓存清理保留 Cookies 和验证状态。": "Clears launcher-managed caches and logs while preserving content managed by Dalamud; available while the game is running, but download caches cannot be cleared during downloads or installation; clearing browser caches preserves cookies and verification state.",
+  "继续等待或重试更新": "Continue waiting / retry update",
+  "Dalamud 更新等待时间较长。可以继续等待，或跳过本次更新。": "The Dalamud update is taking longer than expected. You can keep waiting or skip this update.",
+  "本地 Dalamud 文件缺失，无法跳过更新使用本地版本。": "Local Dalamud files are missing. The local version cannot be used.",
+  "无法读取本地 Dalamud 文件，请检查文件权限。": "Cannot read local Dalamud files. Check file permissions.",
+  "本地 Dalamud 完整性检查失败，无法跳过更新使用本地版本。": "Local Dalamud integrity checks failed. The local version cannot be used.",
+  "本地 Dalamud 与运行时版本不匹配，不能跳过更新。": "Local Dalamud and runtime versions do not match.",
+  "本地 Dalamud 程序校验失败，不能跳过更新。": "Local Dalamud program integrity checks failed.",
+  "本地 Dalamud 缺少完整性清单。": "The local Dalamud integrity manifest is missing.",
+  "本地 Dalamud 组件不完整，不能跳过更新。": "Local Dalamud components are incomplete.",
+  "缺少本地 Dalamud 资源。": "Local Dalamud assets are missing.",
+  "本地 Dalamud 资源清单为空。": "The local Dalamud asset manifest is empty.",
+  "本地 Dalamud 资源校验失败。": "Local Dalamud asset integrity checks failed."
 }

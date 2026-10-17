@@ -6,13 +6,13 @@ namespace XIVLauncher.Linux.Patching.ZiPatch.Util
 {
     public class SqexFileStreamStore : IDisposable
     {
-        private readonly Dictionary<string, SqexFileStream> _streams = new Dictionary<string, SqexFileStream>();
+        private readonly Dictionary<string, SqexFileStream> _streams = new Dictionary<string, SqexFileStream>(Platforms.PlatformServices.Paths.Comparer);
 
         public SqexFileStream GetStream(string path, FileMode mode, int tries, int sleeptime)
         {
             // Normalise path
             path = Path.GetFullPath(path);
-            var key = path.ToLowerInvariant();
+            var key = path;
 
             if (_streams.TryGetValue(key, out var stream))
                 return stream;
@@ -26,7 +26,7 @@ namespace XIVLauncher.Linux.Patching.ZiPatch.Util
         public void CloseStream(string path)
         {
             path = Path.GetFullPath(path);
-            var key = path.ToLowerInvariant();
+            var key = path;
 
             if (this._streams.TryGetValue(key, out var s))
             {

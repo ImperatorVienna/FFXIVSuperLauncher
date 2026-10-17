@@ -78,15 +78,34 @@ internal static class FrontendGame
     }
     private static async Task<RegionDalamudFiles?> PrepareDalamudAsync(LinuxSettings settings, FrontendOperation operation, CancellationToken token)
     {
-        try {return await new RegionDalamudUpdates().UpdateAsync(settings,operation.Status,token);}
-        catch(Exception ex) when(LocalDalamud.IsTimeout(ex,token))
+        var diagnostics = new SessionDiagnostics(settings.Root);
+        void Log(string text) => diagnostics.Write(text, settings.SelectedRegion, "INFO");
+        var started = System.Diagnostics.Stopwatch.StartNew();
+        try
         {
-            RegionDalamudFiles? local=null;
-            try { local=await Task.Run(()=>LocalDalamud.Find(settings,token),token); }
-            catch(Exception check) when(check is IOException or System.Text.Json.JsonException or ArgumentException or InvalidOperationException) { }
-            var choice=await operation.AskAsync("dalamud-timeout","Dalamud 更新连接超时。是否跳过本次更新？使用本地版本不能保证与当前游戏兼容。",allowLocal:local!=null,token:token);
-            if(choice=="local")return local;
-            LocalDalamud.Disable(settings);return null;
+            var result = await UpdateWait.RunAsync<RegionDalamudFiles?>(
+                ct => new RegionDalamudUpdates().UpdateAsync(settings, operation.Status, ct),
+                async (timedOut, ct) =>
+                {
+                    var message = timedOut
+                        ? "Dalamud 更新连接超时。是否跳过本次更新？使用本地版本不能保证与当前游戏兼容。"
+                        : "Dalamud 更新等待时间较长。可以继续等待，或跳过本次更新。";
+                    var available = false;
+                    try { _ = await Task.Run(() => LocalDalamud.Find(settings, ct), ct); available = true; }
+                    catch (Exception ex) when (ex is IOException or System.Text.Json.JsonException or ArgumentException or InvalidOperationException or UnauthorizedAccessException or FormatException)
+                    {
+                        message += "\n" + LocalDalamud.UnavailableReason(ex);
+                        Log("Local Dalamud unavailable: " + Localization.Catalog("en").GetValueOrDefault(LocalDalamud.UnavailableReason(ex), "Local integrity check failed."));
+                    }
+                    Log(timedOut ? "Showing Dalamud timeout choices." : "Showing Dalamud slow-update choices.");
+                    return await operation.AskAsync("dalamud-timeout", message, allowLocal:available,
+                        timeout:Timeout.InfiniteTimeSpan, token:ct);
+                }, Log, token);
+            if (result.Choice == "local")
+                return await Task.Run(() => LocalDalamud.Find(settings, token), token);
+            if (result.Choice == "disable") { LocalDalamud.Disable(settings); return null; }
+            return result.Value;
         }
+        finally { Log($"Dalamud preparation finished after {started.Elapsed.TotalSeconds:F1} seconds."); }
     }
 }

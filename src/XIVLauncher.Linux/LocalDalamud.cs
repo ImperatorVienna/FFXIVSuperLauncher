@@ -10,6 +10,14 @@ public static class LocalDalamud
          error is System.Net.Sockets.SocketException { SocketErrorCode: System.Net.Sockets.SocketError.TimedOut } ||
          error.InnerException != null && IsTimeout(error.InnerException, caller));
 
+    internal static string UnavailableReason(Exception error) => error switch
+    {
+        FileNotFoundException or DirectoryNotFoundException => "本地 Dalamud 文件缺失，无法跳过更新使用本地版本。",
+        UnauthorizedAccessException => "无法读取本地 Dalamud 文件，请检查文件权限。",
+        IOException when error.Message.StartsWith("本地 Dalamud") || error.Message.StartsWith("缺少本地 Dalamud") => error.Message,
+        _ => "本地 Dalamud 完整性检查失败，无法跳过更新使用本地版本。"
+    };
+
     internal static void Record(string root, DalamudDistribution distribution, string assetRoot)
     {
         var hashes = Directory.EnumerateFiles(assetRoot, "*", SearchOption.AllDirectories).ToDictionary(

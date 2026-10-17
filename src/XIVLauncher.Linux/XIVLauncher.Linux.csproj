@@ -5,7 +5,7 @@
     <OutputType>Exe</OutputType>
     <AssemblyName>xivlauncher-super</AssemblyName>
     <Product>FFXIV Super Launcher</Product>
-    <Version>1.0.0</Version>
+    <Version>2.2.0</Version>
     <RootNamespace>XIVLauncher.Linux</RootNamespace>
   </PropertyGroup>
   <ItemGroup>

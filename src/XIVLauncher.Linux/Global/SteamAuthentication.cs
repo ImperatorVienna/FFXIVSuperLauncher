@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using Steamworks;
 using XIVLauncher.Common.Encryption;
 namespace XIVLauncher.Linux.Global;
@@ -7,15 +6,11 @@ namespace XIVLauncher.Linux.Global;
 // Keep Steam alive through authentication; do not request or save the Steam password.
 public sealed class SteamAuthentication : IDisposable
 {
-    [DllImport("libc", SetLastError = true)] private static extern int setenv(string name, string value, int overwrite);
     private bool initialized;
     public async Task<Ticket> GetAsync(bool freeTrial, CancellationToken token)
     {
         var app = freeTrial ? 312060u : 39210u;
-        if (OperatingSystem.IsLinux())
-        { setenv("SteamAppId", app.ToString(), 1); setenv("SteamGameId", app.ToString(), 1); }
-        else
-        { Environment.SetEnvironmentVariable("SteamAppId", app.ToString()); Environment.SetEnvironmentVariable("SteamGameId", app.ToString()); }
+        Platforms.PlatformServices.Environment.SetSteamApplication(app);
         try { SteamClient.Init(app); initialized = true; }
         catch (Exception ex) { throw new IOException("ffxiv Steam initialization failed. Start Steam, sign in online, then retry.", ex); }
         if (!SteamClient.IsValid || !SteamClient.IsLoggedOn) throw new IOException("ffxiv Steam must be running and signed in online.");

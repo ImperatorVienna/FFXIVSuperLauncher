@@ -41,10 +41,10 @@ window.createCompatibilityPage=({call,ready,start,cancel,operation,chooseDirecto
     panel.append(element('p','勾选后将启动器注册为 Steam 兼容性工具；通过 Steam 启动时自动全屏，点击输入框会调用 Steam 虚拟键盘。桌面窗口尺寸单独保留。更改后请重启 Steam。','muted'));
     if(!state.canRegister&&!state.registered){registered.dataset.unavailable='';panel.append(element('p','当前启动方式尚未提供可注册的启动入口。','muted'));}
     if(state.registered&&state.registeredRoot!==state.steamRoot)panel.append(element('p',t('已注册目录：{path}',{path:state.registeredRoot}),'muted'));
-    select('steam-prefix-choice','扫描 Steam 国际区兼容环境',state.prefixes.map(x=>[x.path,x.name]),state.steamPrefix,value=>({steamPrefix:value}));
+    select('steam-prefix-choice','扫描 Steam 国际版兼容环境',state.prefixes.map(x=>[x.path,x.name]),state.steamPrefix,value=>({steamPrefix:value}));
     field('steam-prefix-path','Steam 兼容数据目录',state.steamPrefix,value=>({steamPrefix:value}),true);
-    check('use-steam-prefix','国际区使用 Steam 已有 pfx',state.useSteamPrefix,value=>({useSteamPrefix:value}));
-    panel.append(element('p','未勾选时三端共用上方 Proton 数据目录。勾选后仅国际区直接读写 Steam 已有环境，沿用其中的本地游戏设置和角色配置；不会复制文件。更换 Proton 可能升级该环境，请勿同时通过 Steam 启动游戏或官方启动器。','muted'));
+    check('use-steam-prefix','国际版使用 Steam 已有 pfx',state.useSteamPrefix,value=>({useSteamPrefix:value}));
+    panel.append(element('p','未勾选时三端共用上方 Proton 数据目录。勾选后仅国际版直接读写 Steam 已有环境，沿用其中的本地游戏设置和角色配置；不会复制文件。更换 Proton 可能升级该环境，请勿同时通过 Steam 启动游戏或官方启动器。','muted'));
     const diagnostic=element('div',null,'row compatibility-actions');panel.append(diagnostic);
     button(diagnostic,'diagnose-proton','环境检测',()=>start({}));
     button(diagnostic,'cancel-diagnosis','取消',cancel);

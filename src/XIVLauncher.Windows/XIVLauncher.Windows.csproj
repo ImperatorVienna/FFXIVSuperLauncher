@@ -5,7 +5,7 @@
     <AssemblyName>xivlauncher-backend</AssemblyName>
     <Product>FFXIV Super Launcher Backend</Product>
     <RootNamespace>XIVLauncher.Linux</RootNamespace>
-    <Version>2.1.1</Version>
+    <Version>2.2.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);WINDOWS_BACKEND</DefineConstants>
   </PropertyGroup>

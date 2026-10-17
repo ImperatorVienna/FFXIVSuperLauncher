@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
 namespace XIVLauncher.Linux.Platforms.Windows;
 
@@ -81,15 +82,37 @@ internal sealed class WindowsLocalHttpListener : LocalHttpListener
         }
         catch (OperationCanceledException) { http.Abort(); }
     }
+    // Verify the actual socket, without invoking account or travel operations.
+    internal static async Task VerifyAsync(int port)
+    {
+        Host host;
+        lock (Gate)
+            host = Hosts.GetValueOrDefault(port) ?? throw new IOException("Windows local listener is not registered.");
+        using var client = new HttpClient(new SocketsHttpHandler { UseProxy = false, AllowAutoRedirect = false })
+        { Timeout = TimeSpan.FromSeconds(3) };
+        using var response = await client.GetAsync($"http://127.0.0.1:{port}{host.ProbePath}");
+        if (response.StatusCode != HttpStatusCode.NoContent)
+            throw new IOException("Windows local listener did not pass its readiness check.");
+    }
+
+    // This embedded server belongs to the game session, not console/UI lifetime.
+    private sealed class SessionHostLifetime : IHostLifetime
+    {
+        public Task WaitForStartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    }
+
     private sealed class Host
     {
         public readonly Dictionary<string, WindowsLocalHttpListener> Routes = new(StringComparer.Ordinal);
         private readonly WebApplication application;
         public int Port { get; }
+        public string ProbePath { get; } = "/session-health/" + Guid.NewGuid().ToString("N");
         public Host(int port)
         {
             var builder = WebApplication.CreateEmptyBuilder(new WebApplicationOptions { Args = [] });
             builder.Logging.ClearProviders();
+            builder.Services.AddSingleton<IHostLifetime>(new SessionHostLifetime());
             builder.WebHost.UseKestrel(options =>
             {
                 options.AddServerHeader = false;
@@ -103,6 +126,8 @@ internal sealed class WindowsLocalHttpListener : LocalHttpListener
             application = builder.Build();
             application.Run(async context =>
             {
+                if (context.Request.Method == "GET" && context.Request.Path == ProbePath)
+                { context.Response.StatusCode = StatusCodes.Status204NoContent; return; }
                 WindowsLocalHttpListener? listener;
                 lock (Gate) listener = Routes.FirstOrDefault(pair => context.Request.Path.StartsWithSegments(pair.Key.TrimEnd('/'), StringComparison.Ordinal)).Value;
                 if (listener == null) { context.Response.StatusCode = 404; return; }

@@ -119,24 +119,24 @@ test('real host account APIs and failed launch leave the command channel respons
     const client=new BackendClient(process.env.FFXIV_BACKEND,['--frontend-host','--data-root',root]);
     t.after(async()=>{await client.close();await rm(root,{recursive:true,force:true});});
     await client.request('preferences.update',{region:'ffxiv'});
-    await client.request('accounts.save',{region:'ffxiv',name:'synthetic',existing:false,password:'synthetic-password'});
+    await client.request('accounts.save',{region:'ffxiv',name:'测试账户-é',existing:false,password:'测试密码-é'});
     const list=await client.request('accounts.list',{region:'ffxiv'});
-    assert.equal(list.accounts[0].name,'synthetic');assert.equal(list.accounts[0].hasPassword,true);
-    assert.ok(!JSON.stringify(list).includes('synthetic-password'));
-    const editor=await client.request('accounts.read',{region:'ffxiv',name:'synthetic'});
-    assert.equal(editor.password,'synthetic-password');
+    assert.equal(list.accounts[0].name,'测试账户-é');assert.equal(list.accounts[0].hasPassword,true);
+    assert.ok(!JSON.stringify(list).includes('测试密码-é'));
+    const editor=await client.request('accounts.read',{region:'ffxiv',name:'测试账户-é'});
+    assert.equal(editor.password,'测试密码-é');
     // No valid client or Proton configured: fail before any network authentication.
-    const {operationId}=await client.request('operations.start',{region:'ffxiv',kind:'launch',account:'synthetic'});
+    const {operationId}=await client.request('operations.start',{region:'ffxiv',kind:'launch',account:'测试账户-é'});
     let state;const deadline=Date.now()+2000;
     do {state=await client.request('operations.poll',{operationId});if(state.state!=='running')break;await new Promise(resolve=>setTimeout(resolve,10));}while(Date.now()<deadline);
-    assert.equal(state.state,'failed');assert.ok(!JSON.stringify(state).includes('synthetic-password'));
+    assert.equal(state.state,'failed');assert.ok(!JSON.stringify(state).includes('测试密码-é'));
     const plugins=await client.request('plugins.read',{region:'ffxiv'});
     assert.deepEqual(plugins.plugins,[]);assert.ok(plugins.revision);
     const sources=await client.request('plugins.sources',{content:'installed-plugins'});
     assert.equal(sources.length,3);assert.ok(sources.every(source=>!source.hasSource));
     await client.request('operations.clear-log',{operationId});assert.equal((await client.request('operations.poll',{operationId})).log,'');
     assert.equal((await client.request('snapshot')).selectedRegion,'ffxiv');
-    await client.request('accounts.save',{region:'ffxiv',name:'synthetic',existing:true,delete:true,revision:editor.revision});
+    await client.request('accounts.save',{region:'ffxiv',name:'测试账户-é',existing:true,delete:true,revision:editor.revision});
     assert.equal((await client.request('accounts.list',{region:'ffxiv'})).accounts.length,0);
   });
 

@@ -4,7 +4,8 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>FFXIVSuperLauncher</AssemblyName>
     <Product>FFXIV Super Launcher</Product>
-    <Version>2.1.1</Version>
+    <ApplicationIcon>../../packaging/windows/launcher.ico</ApplicationIcon>
+    <Version>2.2.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../XIVLauncher.Linux/Platforms/Windows/WindowsSessionHandoff.cs" Link="WindowsSessionHandoff.cs" />

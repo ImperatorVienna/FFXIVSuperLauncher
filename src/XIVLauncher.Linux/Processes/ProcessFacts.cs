@@ -29,7 +29,7 @@ internal static class ProcessFacts
             if (process.HasExited) return new(process.Id, name, started, ProcessPresence.Gone);
             name = process.ProcessName;
             started = process.StartTime.ToUniversalTime().Ticks;
-            var presence = OperatingSystem.IsLinux() ? ParseStat(File.ReadAllText($"/proc/{process.Id}/stat")) : ProcessPresence.Alive;
+            var presence = Platforms.PlatformServices.Environment.ProcessPresence(process.Id);
             return new(process.Id, name, started, presence);
         }
         catch (Exception ex) when (ex is InvalidOperationException or FileNotFoundException or DirectoryNotFoundException)
@@ -55,7 +55,7 @@ internal static class ProcessFacts
         if (fact.Presence == ProcessPresence.Gone) return null;
         try
         {
-            var environment = File.ReadAllText($"/proc/{fact.Id}/environ");
+            var environment = Platforms.PlatformServices.Environment.ReadProcessEnvironment(fact.Id);
             // Avoid attaching another process's environment after PID reuse.
             return fact.StartedAt is long started && Identify(fact.Id, started) == ProcessPresence.Alive ? environment : null;
         }

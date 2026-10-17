@@ -9,6 +9,10 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <ProjectReference Include="../XIVLauncher.Windows/XIVLauncher.Windows.csproj" />
+    <Compile Include="../XIVLauncher.Linux.Tests/UpdateWaitTests.cs" Link="UpdateWaitTests.cs" />
+    <Compile Include="../XIVLauncher.Linux.Tests/QrLoginRecoveryTests.cs" Link="QrLoginRecoveryTests.cs" />
+    <Compile Include="../XIVLauncher.Linux.Tests/Release062Tests.cs" Link="Release062Tests.cs" />
+    <Compile Include="../XIVLauncher.Linux.Tests/ContainedPathTests.cs" Link="ContainedPathTests.cs" />
     <Compile Include="../XIVLauncher.Linux.Tests/DcTravelerBridgeTests.cs" Link="DcTravelerBridgeTests.cs" />
     <Compile Include="../XIVLauncher.Linux.Tests/GameSessionAuthenticationTests.cs" Link="GameSessionAuthenticationTests.cs" />
     <Compile Include="../XIVLauncher.Linux.Tests/WindowsUpdateTests.cs" Link="WindowsUpdateTests.cs" />

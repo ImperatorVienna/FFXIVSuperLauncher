@@ -55,15 +55,8 @@ namespace XIVLauncher.Linux.Patching.ZiPatch.Util
                 Directory.CreateDirectory(dirName);
         }
 
-        public static string Resolve(string root, string relative)
-        {
-            root = Path.GetFullPath(root).TrimEnd('/');
-            var path = Path.GetFullPath(Path.Combine(root, relative.Replace('\\', '/').TrimStart('/')));
-            if (!path.StartsWith(root + "/", StringComparison.Ordinal)) throw new IOException("补丁路径超出游戏目录。");
-            for (var p = path; p != root; p = Path.GetDirectoryName(p)!)
-                if (new FileInfo(p).LinkTarget != null || new DirectoryInfo(p).LinkTarget != null) throw new IOException("补丁目标包含符号链接。");
-            return path;
-        }
+        public static string Resolve(string root, string relative) =>
+            ContainedPath.Resolve(root, relative, allowLeadingSeparator: true);
 
         public override string ToString() => RelativePath;
 

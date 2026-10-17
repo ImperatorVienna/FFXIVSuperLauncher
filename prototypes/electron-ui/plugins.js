@@ -5,7 +5,7 @@ window.createPluginPage = ({call,ready,region,start,cancel,operation,report}) =>
   const caches=new Map();
   let host=null,hostRegion=null,dialog=null,pluginView=null,repositoryHost=null,repositoryView=null;
   const unchanged=(a,b)=>a?.length===b.length&&b.every((v,i)=>Object.is(v,a[i]));
-  const names={ffxiv_cn:'中国区',ffxiv_tc:'繁中区',ffxiv:'国际区'};
+  const names={ffxiv_cn:'中国版',ffxiv_tc:'繁体中文版',ffxiv:'国际版'};
   const labels={'third-party-repositories':'同步第三方仓库','installed-plugins':'同步已安装插件','plugin-settings':'同步插件设置'};
   function state(key=region()) {
     if(!caches.has(key))caches.set(key,{list:null,loading:false,repositoryLoading:false,initialized:false,error:'',message:'',plan:null,repositories:null,repositoryFeedback:{error:'',message:''},operationTarget:'plugins'});
@@ -86,7 +86,7 @@ window.createPluginPage = ({call,ready,region,start,cancel,operation,report}) =>
       body.append(node('p',t('勾选启用、取消勾选禁用，更改后立即保存，下次启动游戏生效。横线表示受插件集合条件控制；不修改则保留原规则。'),'muted'));
       body.append(node('p',t('手动启用会加入默认集合；禁用会关闭此插件在所有集合中的启用项。不会删除插件或插件设置。'),'muted'));
       if(s.list.problemCount)body.append(node('p',t('有 {count} 个插件无法读取，其余插件仍可管理。',{count:s.list.problemCount}),'inline-error'));
-      if(!s.list.plugins.length)body.append(node('p',t('当前游戏区服尚未安装插件。'),'muted'));
+      if(!s.list.plugins.length)body.append(node('p',t('当前游戏版本尚未安装插件。'),'muted'));
       for(const p of s.list.plugins) {
         const label=node('label','','check plugin-row');const check=node('input');check.type='checkbox';check.dataset.pluginId=p.id;
         check.checked=p.enabled===true;check.indeterminate=p.enabled===null;check.disabled=busy||p.scheduledForDeletion;
@@ -131,12 +131,12 @@ window.createPluginPage = ({call,ready,region,start,cancel,operation,report}) =>
       const row=node('div','','row dialog-actions');row.append(repoButton('关闭',closeDialog));d.append(row);window.uiState.showDialog(d);input.focus();
     };
     const controls=node('div','','row');controls.append(repoButton('添加仓库',()=>edit(),{disabled:busy}),repoButton('刷新仓库状态',refreshRepositories,{disabled:busy}),repoButton('同步第三方仓库',()=>chooseSync('third-party-repositories'),{disabled:busy}));panel.append(controls);
-    panel.append(node('p',t('仓库设置与游戏内 Dalamud 共用，仅影响当前游戏区服。'),'muted'));
+    panel.append(node('p',t('仓库设置与游戏内 Dalamud 共用，仅影响当前游戏版本。'),'muted'));
     if(data.presets.length){
       const label=node('label','','check'),check=node('input');check.type='checkbox';check.checked=data.presetsEnabled;check.disabled=busy;
       check.addEventListener('change',()=>void save(data.entries,check.checked).catch(err=>error(err,'repositories',key)));label.append(check,document.createTextNode(t('启用预置仓库')));panel.append(label);
       panel.append(node('p',t('预置仓库由 Dalamud 提供，开启时不受下方同地址条目的停用或删除影响。'),'muted'));
-      const details=node('details');details.append(node('summary',t('查看预置仓库')));
+      const details=node('details',null,'preset-repositories');details.append(node('summary',t('查看预置仓库')));
       for(const url of data.presets)details.append(node('p',url,'plugin-repository'));panel.append(details);
     }
     for(const [index,entry] of data.entries.entries()){
@@ -165,17 +165,17 @@ window.createPluginPage = ({call,ready,region,start,cancel,operation,report}) =>
     const key=region();const sources=await call('pluginSources',{content});
     if(region()!==key||!ready())return;
     const target=content==='third-party-repositories'?'repositories':'plugins';const d=openDialog(labels[content],target);
-    d.append(node('p',t(content==='third-party-repositories'?'选择来源及目标游戏区服。仅替换目标的第三方仓库列表及启用状态，始终保留目标主仓库、预置仓库开关和其他 Dalamud 设置。原配置会保留备份。':'选择来源游戏区服及需要覆盖的目标游戏区服。仅替换勾选目标的对应内容，目标中来源没有的文件也会被移除。被覆盖的内容会保留备份。'),'muted'));
-    if(content==='installed-plugins')d.append(node('p',t('请勿将繁中区的插件 DLL 与中国区或国际区的版本互相覆盖。同步插件文件不代表它们兼容目标游戏区服。'),'muted'));
-    const label=node('label',t('以哪个游戏区服为基准'),'field'),select=node('select');
+    d.append(node('p',t(content==='third-party-repositories'?'选择来源及目标游戏版本。仅替换目标的第三方仓库列表及启用状态，始终保留目标主仓库、预置仓库开关和其他 Dalamud 设置。原配置会保留备份。':'选择来源游戏版本及需要覆盖的目标游戏版本。仅替换勾选目标的对应内容，目标中来源没有的文件也会被移除。被覆盖的内容会保留备份。'),'muted'));
+    if(content==='installed-plugins')d.append(node('p',t('请勿将繁体中文版的插件 DLL 与中国版或国际版的版本互相覆盖。同步插件文件不代表它们兼容目标游戏版本。'),'muted'));
+    const label=node('label',t('以哪个游戏版本为基准'),'field'),select=node('select');
     for(const source of sources){const option=node('option',t(names[source.region])+(source.hasSource?'':t('（无来源数据）')));option.value=source.region;option.disabled=!source.hasSource;select.append(option);}
     select.value=sources.find(x=>x.hasSource&&x.region===key)?.region||sources.find(x=>x.hasSource)?.region||'';label.append(select);d.append(label,node('p',t('覆盖目标：')));
     const targets=[];
-    const apply=button('同步到所选游戏区服',()=>run({kind:'sync',content,source:select.value,targets:targets.filter(x=>x.checked&&!x.disabled).map(x=>x.value)}),{primary:true,disabled:true,target});
+    const apply=button('同步到所选游戏版本',()=>run({kind:'sync',content,source:select.value,targets:targets.filter(x=>x.checked&&!x.disabled).map(x=>x.value)}),{primary:true,disabled:true,target});
     const changed=()=>{apply.disabled=!select.value||!targets.some(x=>x.checked&&!x.disabled);};
     for(const [id,name] of Object.entries(names)){const row=node('label','','check sync-target'),check=node('input');check.type='checkbox';check.value=id;check.addEventListener('change',changed);targets.push(check);row.append(check,document.createTextNode(t(name)));d.append(row);}
     const resetTargets=()=>{for(const check of targets){check.checked=false;check.disabled=!select.value||check.value===select.value;}changed();};select.addEventListener('change',resetTargets);resetTargets();
-    if(!select.value)d.append(node('p',t('各游戏区服均无此项数据，请先在来源游戏区服生成设置或安装插件。'),'muted'));
+    if(!select.value)d.append(node('p',t('各游戏版本均无此项数据，请先在来源游戏版本生成设置或安装插件。'),'muted'));
     const row=node('div','','row');row.append(apply,button('取消',closeDialog));d.append(row);window.uiState.showDialog(d);
   }
   function showPlan(plan) {

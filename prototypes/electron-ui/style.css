@@ -210,3 +210,14 @@ select:not([multiple]){min-block-size:calc(1.55em + 20px)}
 button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{position:relative;z-index:1;outline-offset:1px}
 
 .steam-keyboard-hint { display:block; margin-block:10px; font-size:.85em; }
+
+/* Expandable repository links use the same spacing as other explanatory groups. */
+.preset-repositories{margin-block:16px}
+.preset-repositories>summary{cursor:pointer}
+.preset-repositories[open]>summary{margin-bottom:16px}
+.preset-repositories>.plugin-repository{margin:0 0 14px;line-height:1.65;overflow-wrap:anywhere}
+.preset-repositories>.plugin-repository:last-child{margin-bottom:0}
+.verification-body>p{white-space:pre-line}
+.verification-body>.row{gap:12px}
+.setup-dialog>.check+.muted{margin-top:12px}
+@media(max-width:600px){.setup-dialog .settings-pair{grid-template-columns:minmax(0,1fr)}.dialog-actions{flex-wrap:wrap;gap:12px}}

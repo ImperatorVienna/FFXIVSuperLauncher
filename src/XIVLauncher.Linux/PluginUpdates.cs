@@ -119,14 +119,6 @@ public sealed class PluginUpdates(HttpClient client)
         }
         finally { Directory.Delete(stage, true); }
     }
-    internal static void SafePath(string root, string path)
-    {
-        root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(root)); path = Path.GetFullPath(path);
-        if (path != root && !path.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.Ordinal)) throw new IOException("Plugin path escapes its data directory.");
-        for (var p = path; p != null; p = Path.GetDirectoryName(p))
-        {
-            if (new FileInfo(p).LinkTarget != null || new DirectoryInfo(p).LinkTarget != null) throw new IOException("Plugin path contains a symbolic link.");
-            if (p == root) break;
-        }
-    }
+    internal static void SafePath(string root, string path) => ContainedPath.Ensure(root, path,
+        escapeMessage: "Plugin path escapes its data directory.", linkMessage: "Plugin path contains a symbolic link.");
 }

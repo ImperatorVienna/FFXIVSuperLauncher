@@ -18,6 +18,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="XIVLauncher.Linux.Tests" />
+        <InternalsVisibleTo Include="XIVLauncher.Windows.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\XIVLauncher.Account\XIVLauncher.Account.csproj"/>
 
         <ProjectReference Include="..\XIVLauncher.Common\XIVLauncher.Common.csproj"/>

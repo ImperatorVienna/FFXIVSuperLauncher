@@ -47,7 +47,7 @@ public sealed class GamePatchTests : IDisposable
     {
         var data = await MakeDelta();
         var original = await File.ReadAllBytesAsync(data.Source);
-        await Assert.ThrowsAsync<InvalidDataException>(() => LinuxVcdiff.ApplyAsync(Worker, data.Source,
+        await Assert.ThrowsAsync<InvalidDataException>(() => NativeVcdiff.ApplyAsync(Worker, data.Source,
             data.Delta, data.Source, new string('0', 32), data.Expected.Length));
         Assert.Equal(original, await File.ReadAllBytesAsync(data.Source));
         Assert.Empty(Directory.GetFiles(root, "*.tmp*"));
@@ -60,7 +60,7 @@ public sealed class GamePatchTests : IDisposable
         var original = await File.ReadAllBytesAsync(data.Source);
         using var cts = new CancellationTokenSource();
         cts.Cancel();
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => LinuxVcdiff.ApplyAsync(Worker,
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => NativeVcdiff.ApplyAsync(Worker,
             data.Source, data.Delta, data.Source, "", data.Expected.Length, cancellationToken: cts.Token));
         Assert.Equal(original, await File.ReadAllBytesAsync(data.Source));
     }
